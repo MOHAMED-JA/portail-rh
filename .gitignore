@@ -1,0 +1,30 @@
+# Python
+.venv*/
+venv/
+__pycache__/
+*.py[cod]
+
+# Données de l'instance : base, clés, téléversements, sauvegardes
+backend/data/
+*.db
+*.db-wal
+*.db-shm
+secret.key
+chiffrement.key
+
+# Éditeurs et système
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Connecteur pointeuse : clé et état propres au poste
+outils/connecteur_pointeuse.ini
+outils/connecteur_pointeuse.etat.json
+
+# Tests
+.pytest_cache/
+node_modules/
+test-results/
+playwright-report/

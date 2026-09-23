@@ -1,0 +1,11 @@
+{
+  "name": "portail-rh-tests-interface",
+  "private": true,
+  "scripts": {
+    "test:interface": "playwright test",
+    "test:interface:visible": "playwright test --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}

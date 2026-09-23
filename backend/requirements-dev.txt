@@ -1,0 +1,6 @@
+# Outils de développement (tests) — non nécessaires pour faire tourner le portail.
+-r requirements.txt
+pytest>=8
+httpx>=0.27
+# Exécution de la suite complète sur une vraie base PostgreSQL de test.
+psycopg[binary]>=3.2

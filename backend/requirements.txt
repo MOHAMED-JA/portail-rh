@@ -1,0 +1,15 @@
+# Versions minimales : pip installe la version la plus récente disponible en
+# roues précompilées pour le Python du poste (3.12, 3.13 ou 3.14).
+fastapi>=0.115
+uvicorn[standard]>=0.30
+sqlalchemy>=2.0.35
+pydantic[email]>=2.9
+pydantic-settings>=2.5
+python-jose[cryptography]>=3.3
+passlib[bcrypt]>=1.7.4
+bcrypt==4.0.1
+python-multipart>=0.0.9
+openpyxl>=3.1.5
+reportlab>=4.2
+pillow>=10.4
+truststore>=0.10
