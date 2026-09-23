@@ -3,12 +3,12 @@
   "short_name": "Portail RH",
   "description": "Congés, présences, fiches d'objectifs et d'évaluation, notes de frais",
   "lang": "fr",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#F0F3F9",
   "theme_color": "#072241",
   "icons": [
-    { "src": "/assets/marque/logo-picto.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    { "src": "assets/marque/logo-picto.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
   ]
 }

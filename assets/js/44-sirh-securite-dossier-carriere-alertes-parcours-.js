@@ -638,7 +638,7 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   if (navigator.serviceWorker.controller) {
     navigator.serviceWorker.addEventListener("controllerchange", () => location.reload(), { once: true });
   }
-  navigator.serviceWorker.register("/sw.js").catch(() => {});
+  navigator.serviceWorker.register("sw.js").catch(() => {});
 }
 window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); etat.installation = e; });
 

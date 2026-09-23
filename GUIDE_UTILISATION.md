@@ -6,7 +6,13 @@ sans risque, puis repartir d'une base neuve (voir « Remettre à zéro »).
 
 ## 1. Se connecter
 
-Lancez le portail (voir le [README](README.md)) et ouvrez http://127.0.0.1:8000.
+**Sans installation** : ouvrez https://mohamed-ja.github.io/portail-rh/ et
+cliquez sur un profil. Tout se passe dans votre navigateur et repart à zéro à
+chaque rechargement ; quelques fonctions (e-mails, pointeuse, documents PDF)
+demandent le portail installé.
+
+**Portail installé** : lancez-le (voir le [README](README.md)) et ouvrez
+http://127.0.0.1:8000.
 
 1. Choisissez un **profil** : Utilisateur, Supérieur hiérarchique ou
    Administrateur RH. Un compte ne peut pas prendre un profil plus élevé que le

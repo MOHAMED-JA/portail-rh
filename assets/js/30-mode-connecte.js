@@ -515,7 +515,7 @@ function injecterBandeauMode() {
     bandeau.innerHTML = `<span style="color:var(${enBase ? "--succes" : "--alerte"});flex:none">${ico(enBase ? "bouclier" : "alerte")}</span>
       <span>${enBase
         ? "<strong>Connecté à la base Veltaris.</strong> Les comptes, demandes et validations sont enregistrés durablement."
-        : "<strong>Mode démonstration.</strong> Le serveur n'est pas démarré : les données sont simulées et repartent à zéro à chaque rechargement."}</span>`;
+        : "<strong>Mode démonstration.</strong> Société et personnes fictives ; tout se passe dans votre navigateur et repart à zéro à chaque rechargement. Cliquez sur un profil pour entrer."}</span>`;
     boite.insertBefore(bandeau, boite.children[1]);
   }
 }

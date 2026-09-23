@@ -5,6 +5,12 @@ Portail de ressources humaines complet, **en français**, pour une entreprise de
 d'objectifs et d'évaluation, notes de frais, formations, organigramme, dossier
 du collaborateur, prêts, compétences, mobilité interne, analyses RH…
 
+**▶ Essayer tout de suite, sans rien installer :
+[mohamed-ja.github.io/portail-rh](https://mohamed-ja.github.io/portail-rh/)** —
+cliquez sur un profil pour entrer. Cette démonstration tourne entièrement dans
+votre navigateur ; les fonctions qui demandent un serveur (e-mails, pointeuse,
+documents PDF…) s'essaient en installant le portail (voir « Démarrer »).
+
 > **Démonstration** : toutes les données sont fictives. La société « Veltaris »
 > et ses collaborateurs n'existent pas ; toute ressemblance serait fortuite.
 
