@@ -175,7 +175,7 @@ def _titre() -> str:
 
 
 def main() -> None:
-    doc = SimpleDocTemplate(str(SORTIE), pagesize=A4, leftMargin=18 * mm, rightMargin=18 * mm,
+    doc = SimpleDocTemplate(str(SORTIE), pagesize=A4, invariant=True, leftMargin=18 * mm, rightMargin=18 * mm,
                             topMargin=16 * mm, bottomMargin=18 * mm,
                             title=_titre(), author="Portail RH", subject="Portail RH — Veltaris")
     largeur = A4[0] - 36 * mm
