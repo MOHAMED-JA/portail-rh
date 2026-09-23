@@ -128,3 +128,7 @@ Les retours sont les bienvenus, même courts :
 
 Ouvrez une *issue* sur ce dépôt. Merci de ne jamais y joindre de données
 personnelles réelles.
+
+## Licence
+
+Code publié sous licence [MIT](LICENSE).
