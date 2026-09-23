@@ -408,7 +408,7 @@ function ouvrirDetailDemande(ref) {
 
   $("#fermer-tiroir").addEventListener("click", fermerCouche);
   $("#fermer-detail").addEventListener("click", fermerCouche);
-  $("#pdf-demande").addEventListener("click", () => toast("Export PDF", `${d.ref} — le document sera généré par le backend aux couleurs de la marque Assurance.`, "info"));
+  $("#pdf-demande").addEventListener("click", () => toast("Export PDF", `${d.ref} — le document sera généré par le backend aux couleurs de Veltaris.`, "info"));
   const btnAnnuler = $("#annuler-la-demande");
   if (btnAnnuler) btnAnnuler.addEventListener("click", () => annulerMaDemande(d));
 }

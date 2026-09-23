@@ -347,7 +347,7 @@ function ouvrirDetailNote(id) {
       </div>
     </div>`);
   $("#note-fermer").addEventListener("click", fermerCouche);
-  $("#note-pdf").addEventListener("click", () => toast("Export PDF", `${n.reference} — état de frais aux couleurs de la marque Assurance.`, "info"));
+  $("#note-pdf").addEventListener("click", () => toast("Export PDF", `${n.reference} — état de frais aux couleurs de Veltaris.`, "info"));
 }
 
 function deciderNote(id, approuve) {

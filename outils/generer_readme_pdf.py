@@ -1,13 +1,16 @@
-"""Produit README.pdf à partir de README.md, aux couleurs de la marque Assurance.
+"""Produit un PDF à partir d'un fichier Markdown du projet (README.md par défaut).
 
-Gère le sous-ensemble de Markdown utilisé par le README : titres, paragraphes,
-listes, tableaux, blocs de code, séparateurs, gras, code en ligne et liens.
+Gère le sous-ensemble de Markdown utilisé par la documentation : titres,
+paragraphes, listes, tableaux, blocs de code, séparateurs, gras, code en ligne
+et liens.
 
-Usage :  python outils/generer_readme_pdf.py
+Usage :  python outils/generer_readme_pdf.py [SOURCE.md [SORTIE.pdf]]
+Exemple : python outils/generer_readme_pdf.py GUIDE_UTILISATION.md
 """
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
 
 from reportlab.lib import colors
@@ -15,6 +18,7 @@ from reportlab.lib.enums import TA_LEFT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import mm
+from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (
@@ -22,8 +26,8 @@ from reportlab.platypus import (
 )
 
 RACINE = Path(__file__).resolve().parent.parent
-SOURCE = RACINE / "README.md"
-SORTIE = RACINE / "README.pdf"
+SOURCE = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else RACINE / "README.md"
+SORTIE = Path(sys.argv[2]).resolve() if len(sys.argv) > 2 else SOURCE.with_suffix(".pdf")
 LOGO = RACINE / "assets" / "marque" / "logo-clair.png"
 MARINE = colors.HexColor("#072241")
 ROUGE = colors.HexColor("#D92D20")
@@ -157,24 +161,33 @@ def pied(canvas, doc):
     canvas.saveState()
     canvas.setFont(TEXTE, 7.5)
     canvas.setFillColor(GRIS)
-    canvas.drawString(18 * mm, 10 * mm, "Portail RH — Veltaris · document interne")
+    canvas.drawString(18 * mm, 10 * mm, "Portail RH — Veltaris · données fictives de démonstration")
     canvas.drawRightString(A4[0] - 18 * mm, 10 * mm, f"Page {doc.page}")
     canvas.restoreState()
+
+
+def _titre() -> str:
+    """Premier titre du document, sinon le nom du fichier."""
+    for ligne in SOURCE.read_text(encoding="utf-8").splitlines():
+        if ligne.startswith("# "):
+            return ligne[2:].strip()
+    return SOURCE.stem
 
 
 def main() -> None:
     doc = SimpleDocTemplate(str(SORTIE), pagesize=A4, leftMargin=18 * mm, rightMargin=18 * mm,
                             topMargin=16 * mm, bottomMargin=18 * mm,
-                            title="Portail RH — Veltaris", author="Direction des RH", subject="Guide d'utilisation")
+                            title=_titre(), author="Portail RH", subject="Portail RH — Veltaris")
     largeur = A4[0] - 36 * mm
     elements = []
     if LOGO.exists():
-        logo = Image(str(LOGO), width=62 * mm, height=62 * mm * 79 / 937)
+        largeur_logo, hauteur_logo = ImageReader(str(LOGO)).getSize()
+        logo = Image(str(LOGO), width=46 * mm, height=46 * mm * hauteur_logo / largeur_logo)
         logo.hAlign = "LEFT"
         elements += [logo, Spacer(1, 8)]
     elements += construire(SOURCE.read_text(encoding="utf-8"), largeur)
     doc.build(elements, onFirstPage=pied, onLaterPages=pied)
-    print(f"README.pdf généré ({SORTIE.stat().st_size // 1024} Ko)")
+    print(f"{SORTIE.name} généré ({SORTIE.stat().st_size // 1024} Ko)")
 
 
 if __name__ == "__main__":

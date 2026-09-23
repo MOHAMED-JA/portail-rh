@@ -329,7 +329,7 @@ function adminImport() {
         <div class="kpi-ico" style="background:var(--succes-doux);color:var(--succes)">${ico("telecharger")}</div>
         <h3>Exports</h3>
       </div>
-      <p style="font-size:13px;color:var(--encre-2);margin-bottom:12px">Documents générés aux couleurs de la marque Assurance, prêts à transmettre à la direction ou à la paie.</p>
+      <p style="font-size:13px;color:var(--encre-2);margin-bottom:12px">Documents générés aux couleurs de Veltaris, prêts à transmettre à la direction ou à la paie.</p>
       <div style="display:flex;flex-direction:column;gap:8px">
         <button class="btn btn-bloc" data-export="Registre des demandes (Excel)">${ico("telecharger")} Registre des demandes — Excel</button>
         <button class="btn btn-bloc" data-export="Pointages du mois (Excel)">${ico("telecharger")} Pointages du mois — Excel</button>
@@ -736,7 +736,7 @@ function brancherVueCourante() {
     $$("[data-editer]").forEach((b) => b.addEventListener("click", () => ouvrirFicheEmploye(b.dataset.editer)));
     $$("[data-solde]").forEach((b) => b.addEventListener("click", () => ouvrirAjustementSolde(b.dataset.solde)));
     $$("[data-fiche]").forEach((b) => b.addEventListener("click", () => ouvrirFicheEmploye(b.dataset.fiche)));
-    $$("[data-export]").forEach((b) => b.addEventListener("click", () => toast("Export en préparation", `${b.dataset.export} — document aux couleurs de la marque Assurance.`, "info")));
+    $$("[data-export]").forEach((b) => b.addEventListener("click", () => toast("Export en préparation", `${b.dataset.export} — document aux couleurs de Veltaris.`, "info")));
     const lancer = $("#lancer-import");
     if (lancer) lancer.addEventListener("click", () => {
       const fichier = $("#fichier-import").files[0];

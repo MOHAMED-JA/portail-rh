@@ -52,6 +52,9 @@ La documentation de l'API est servie sur http://127.0.0.1:8000/api/docs.
 
 ### Comptes de démonstration
 
+Le **[guide d'utilisation](GUIDE_UTILISATION.md)** ([PDF](GUIDE_UTILISATION.pdf))
+fait découvrir le portail pas à pas avec ces comptes.
+
 Mot de passe commun : **`demo2026`**
 
 | Matricule | Profil | Personne (fictive) |

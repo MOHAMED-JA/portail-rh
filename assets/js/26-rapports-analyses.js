@@ -91,7 +91,7 @@ BRANCHEMENTS["/rapports"] = function () {
   $$("#rapport-periode button").forEach((b) => b.addEventListener("click", () => { f.periode = b.dataset.valeur; rendre(false); }));
   $("#rapport-dept").addEventListener("change", (e) => { f.dept = e.target.value; rendre(false); });
   $$("[data-export-rapport]").forEach((b) => b.addEventListener("click", () =>
-    toast("Export en préparation", `${b.dataset.exportRapport} — généré par le backend aux couleurs de la marque Assurance.`, "info")));
+    toast("Export en préparation", `${b.dataset.exportRapport} — généré par le backend aux couleurs de Veltaris.`, "info")));
   graphiquesRapports();
 };
 
