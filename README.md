@@ -41,7 +41,7 @@ installable).
 
 Double-cliquez sur `DEMARRER.bat`. Au premier lancement, il installe les
 composants dans `%LOCALAPPDATA%\Portail-RH\venv`, crée une base de
-démonstration puis ouvre http://127.0.0.1:8000.
+démonstration puis ouvre http://127.0.0.1:8100.
 
 ### Linux, macOS ou Windows en ligne de commande
 
@@ -51,10 +51,10 @@ python -m venv .venv-portail
 source .venv-portail/bin/activate        # Windows : .venv-portail\Scripts\activate
 pip install -r requirements.txt
 python -m app.seed --reset               # base de démonstration
-python serveur.py                        # http://127.0.0.1:8000
+python serveur.py                        # http://127.0.0.1:8100
 ```
 
-La documentation de l'API est servie sur http://127.0.0.1:8000/api/docs.
+La documentation de l'API est servie sur http://127.0.0.1:8100/api/docs.
 
 ### Comptes de démonstration
 
@@ -82,7 +82,7 @@ Toutes les variables sont facultatives (détail dans `backend/app/core/config.py
 | `PORTAIL_RH_DATA_DIR` | Dossier des fichiers (téléversements, sauvegardes) |
 | `PORTAIL_RH_SECRET` | Clé de signature des sessions (sinon `secret.key` générée) |
 | `PORTAIL_RH_CLE_CHIFFREMENT` | Clé des données sensibles (sinon `chiffrement.key` générée) |
-| `PORTAIL_RH_HOTE` / `PORTAIL_RH_PORT` | Adresse et port d'écoute (127.0.0.1:8000 par défaut) |
+| `PORTAIL_RH_HOTE` / `PORTAIL_RH_PORT` | Adresse et port d'écoute (127.0.0.1:8100 par défaut) |
 | `PORTAIL_RH_ORIGINES` | Origines autorisées (CORS) |
 | `PORTAIL_RH_DOUBLE_AUTH_MATRICULES` | Comptes soumis à la double authentification obligatoire |
 | `PORTAIL_RH_TACHES_FOND` | `0` coupe les tâches automatiques |

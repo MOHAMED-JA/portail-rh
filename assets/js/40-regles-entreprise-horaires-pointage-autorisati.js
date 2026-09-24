@@ -244,7 +244,7 @@ BRANCHEMENTS["/parametres"] = function () {
   if (f.onglet === "messagerie" && $("#mail-enregistrer")) {
     const lire = () => ({ actif: $("#mail-actif").checked, serveur: $("#mail-serveur").value.trim(), port: Number($("#mail-port").value) || 587,
       securite: $("#mail-securite").value, utilisateur: $("#mail-utilisateur").value.trim(), mot_de_passe: $("#mail-mdp").value,
-      expediteur: $("#mail-expediteur").value.trim(), url_application: $("#mail-url").value.trim() || "http://127.0.0.1:8000" });
+      expediteur: $("#mail-expediteur").value.trim(), url_application: $("#mail-url").value.trim() || "http://127.0.0.1:8100" });
     $("#mail-enregistrer").addEventListener("click", async () => {
       try { etat.messagerie = await API.appel("/api/parametres/messagerie", { methode: "PUT", corps: lire() }); toast("Messagerie enregistrée", etat.messagerie.actif ? "Les e-mails partent automatiquement." : "Envoi automatique désactivé.", "succes"); rendre(false); }
       catch (souci) { toast("Enregistrement refusé", souci.message, "danger"); }

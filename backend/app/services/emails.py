@@ -27,7 +27,7 @@ from app.services import parametres
 MESSAGERIE_DEFAUT = {
     "actif": False, "serveur": "", "port": 587, "securite": "starttls",
     "utilisateur": "", "mot_de_passe": "", "expediteur": "",
-    "url_application": "http://127.0.0.1:8000",
+    "url_application": "http://127.0.0.1:8100",
 }
 TYPES = {TypeDemande.CONGE: "congé", TypeDemande.AUTORISATION: "autorisation d'absence", TypeDemande.MISSION: "ordre de mission"}
 

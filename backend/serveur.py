@@ -14,7 +14,7 @@ import socket
 import uvicorn
 
 # Variable d'environnement utile pour lancer une instance de test à côté.
-PORT = int(os.environ.get("PORTAIL_RH_PORT", "8000"))
+PORT = int(os.environ.get("PORTAIL_RH_PORT", "8100"))
 # Sur le serveur de la DSI : adresse d'écoute explicite (ex. 127.0.0.1 derrière
 # le serveur web https, ou 0.0.0.0). Sans elle : boucle locale uniquement.
 HOTE = os.environ.get("PORTAIL_RH_HOTE")

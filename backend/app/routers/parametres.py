@@ -155,7 +155,7 @@ class MessageriePayload(BaseModel):
     utilisateur: str = ""
     mot_de_passe: str = ""
     expediteur: str = ""
-    url_application: str = "http://127.0.0.1:8000"
+    url_application: str = "http://127.0.0.1:8100"
 
 
 class TestPayload(BaseModel):

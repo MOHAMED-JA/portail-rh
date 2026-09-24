@@ -10,11 +10,12 @@ const API = {
   token: null,
 
   async detecter() {
-    const candidats = [
-      location.origin.startsWith("http") ? location.origin : null,
-      "http://127.0.0.1:8000",
-      "http://localhost:8000",
-    ].filter(Boolean);
+    // Page servie en http(s) (serveur du portail, GitHub Pages) : seule son
+    // origine est interrogée. Les adresses locales ne servent qu'au fichier
+    // ouvert directement : la démonstration en ligne ne sonde jamais le poste.
+    const candidats = location.origin.startsWith("http")
+      ? [location.origin]
+      : ["http://127.0.0.1:8100", "http://localhost:8100"];
     for (const base of candidats) {
       try {
         // 1,5 s ne suffisait plus : sur un poste chargé, le portail concluait
@@ -556,6 +557,12 @@ setInterval(async () => {
 /* --------------------------------------------------------------- Démarrage */
 (async function demarrerModeConnecte() {
   etat.mode = (await API.detecter()) ? "connecte" : "demo";
+  // Sans serveur (GitHub Pages, poste hors ligne), la détection échoue en
+  // quelques millisecondes, avant l'exécution des modules suivants : l'écran
+  // était alors dessiné sans eux (bascule de thème réapparue sur la connexion).
+  if (document.readyState === "loading") {
+    await new Promise((suite) => document.addEventListener("DOMContentLoaded", suite, { once: true }));
+  }
   if (!etat.utilisateur) rendre();
   if (etat.mode === "connecte") {
     console.info(`Portail RH — mode connecté sur ${API.base}`);

@@ -16,11 +16,11 @@ echo   ========================================================
 echo.
 
 rem --- Serveur deja demarre : relance pour charger la derniere version du code
-curl.exe -sf -o nul http://127.0.0.1:8000/api/sante
+curl.exe -sf -o nul http://127.0.0.1:8100/api/sante
 if %errorlevel%==0 (
   echo   Un serveur tourne deja : redemarrage pour charger la derniere version...
   taskkill /FI "WINDOWTITLE eq Portail RH - SERVEUR*" /T /F >nul 2>&1
-  powershell -NoProfile -Command "Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }"
+  powershell -NoProfile -Command "Get-NetTCPConnection -LocalPort 8100 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }"
   timeout /t 2 /nobreak >nul
 )
 
@@ -79,7 +79,7 @@ rem --- Attente active : le navigateur ne s'ouvre qu'une fois le serveur pret
 set /a essais=0
 :attente
 set /a essais+=1
-curl.exe -sf -o nul http://127.0.0.1:8000/api/sante
+curl.exe -sf -o nul http://127.0.0.1:8100/api/sante
 if %errorlevel%==0 goto pret
 if %essais% geq 60 goto echec
 <nul set /p "=."
@@ -91,13 +91,13 @@ echo.
 echo   Serveur pret en %essais% seconde(s).
 
 :ouvrir
-start "" http://127.0.0.1:8000
+start "" http://127.0.0.1:8100
 echo.
 echo   ========================================================
 echo     L'application est ouverte dans votre navigateur.
 echo.
-echo     Adresse : http://127.0.0.1:8000
-echo     API     : http://127.0.0.1:8000/api/docs
+echo     Adresse : http://127.0.0.1:8100
+echo     API     : http://127.0.0.1:8100/api/docs
 echo.
 echo     IMPORTANT : ne fermez pas la fenetre
 echo     "Portail RH - SERVEUR (ne pas fermer)" pendant l'utilisation.

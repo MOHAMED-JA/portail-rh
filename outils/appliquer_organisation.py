@@ -37,7 +37,7 @@ def main():
     if args.appliquer:
         for hote in ("127.0.0.1", "::1"):
             try:
-                with socket.create_connection((hote, int(os.environ.get("PORTAIL_RH_PORT", "8000"))), timeout=1):
+                with socket.create_connection((hote, int(os.environ.get("PORTAIL_RH_PORT", "8100"))), timeout=1):
                     raise SystemExit("Arrêtez le portail local avant d'appliquer l'organisation.")
             except OSError:
                 pass

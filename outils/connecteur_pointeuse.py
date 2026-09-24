@@ -36,7 +36,7 @@ CONFIG = ICI / "connecteur_pointeuse.ini"
 ETAT = ICI / "connecteur_pointeuse.etat.json"
 MODELE = """[portail]
 ; Adresse du portail et clé (Paramètres RH → Pointeuse → Copier)
-adresse = http://127.0.0.1:8000
+adresse = http://127.0.0.1:8100
 cle =
 
 [source]
@@ -144,7 +144,7 @@ def main() -> int:
     for i in range(0, len(nouveaux), 2000):
         lot = [{"badge": b, "horodatage": h.isoformat(), "terminal": terminal} for b, h in nouveaux[i:i + 2000]]
         try:
-            resultat = envoyer(config["portail"].get("adresse", "http://127.0.0.1:8000"), cle, lot)
+            resultat = envoyer(config["portail"].get("adresse", "http://127.0.0.1:8100"), cle, lot)
         except urllib.error.HTTPError as erreur:
             sys.exit(f"Refus du portail ({erreur.code}) : {erreur.read().decode('utf-8', 'replace')}")
         except urllib.error.URLError as erreur:

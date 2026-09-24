@@ -12,7 +12,7 @@ chaque rechargement ; quelques fonctions (e-mails, pointeuse, documents PDF)
 demandent le portail installé.
 
 **Portail installé** : lancez-le (voir le [README](README.md)) et ouvrez
-http://127.0.0.1:8000.
+http://127.0.0.1:8100.
 
 1. Choisissez un **profil** : Utilisateur, Supérieur hiérarchique ou
    Administrateur RH. Un compte ne peut pas prendre un profil plus élevé que le

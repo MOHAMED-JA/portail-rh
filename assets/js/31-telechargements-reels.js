@@ -10,7 +10,7 @@ async function telechargerFichier(chemin, nomPropose, libelle) {
   // enregistrements de fichiers : autant le dire que d'échouer en silence.
   if (location.hostname.endsWith("claude.ai")) {
     return toast("Téléchargement impossible ici",
-      `${libelle} : la version en ligne n'a pas le droit d'enregistrer de fichier. Ouvrez l'application locale (http://localhost:8000).`,
+      `${libelle} : la version en ligne n'a pas le droit d'enregistrer de fichier. Ouvrez l'application locale (http://localhost:8100).`,
       "alerte");
   }
   if (!connecte()) {

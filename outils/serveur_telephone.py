@@ -1,7 +1,7 @@
 """Essayer le portail sur un téléphone, par le Wi-Fi de la maison.
 
 Lance une **instance d'essai** du portail, visible des appareils du même réseau
-Wi-Fi, sur le port 8002 — le portail habituel (port 8000) peut tourner à côté.
+Wi-Fi, sur le port 8002 — le portail habituel (port 8100) peut tourner à côté.
 Deux modes :
 
 ``--reel``  **copie de la vraie base** : vrais noms, vrai organigramme, vos
