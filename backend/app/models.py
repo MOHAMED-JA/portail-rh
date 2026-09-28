@@ -139,6 +139,8 @@ class Departement(Base):
     nom: Mapped[str] = mapped_column(String(120))
     couleur: Mapped[str] = mapped_column(String(20), default="#2B63C9")
     parent_id: Mapped[int | None] = mapped_column(ForeignKey("departements.id"))
+    # Responsable nommé à titre provisoire : affiché « par intérim ».
+    interim: Mapped[bool] = mapped_column(Boolean, default=False)
     # use_alter : département → responsable → département forme un cycle que
     # SQLAlchemy doit connaître pour ordonner création et suppression des tables.
     responsable_id: Mapped[int | None] = mapped_column(
@@ -210,6 +212,11 @@ class Employe(Base):
     totp_secret: Mapped[str | None] = mapped_column(TexteChiffre)
     totp_active: Mapped[bool] = mapped_column(Boolean, default=False)
     codes_secours: Mapped[str | None] = mapped_column(Text)
+    # Dernier pas de temps TOTP accepté : un même code ne sert qu'une fois.
+    totp_dernier_pas: Mapped[int | None] = mapped_column(Integer)
+    # Version des sessions, recopiée dans chaque jeton : l'incrémenter (changement
+    # ou réinitialisation du mot de passe) invalide tous les jetons déjà émis.
+    version_session: Mapped[int] = mapped_column(Integer, default=0)
 
     departement: Mapped["Departement | None"] = relationship(
         back_populates="employes", foreign_keys=[departement_id]
@@ -918,7 +925,7 @@ class Pret(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     employe_id: Mapped[int] = mapped_column(ForeignKey("employes.id"), index=True)
-    type_pret: Mapped[str] = mapped_column(String(20))            # avance, pret_social
+    type_pret: Mapped[str] = mapped_column(String(20))            # avance, avance_primes, pret_social
     montant: Mapped[float] = mapped_column(Float)
     nb_mensualites: Mapped[int] = mapped_column(Integer)
     taux_annuel: Mapped[float] = mapped_column(Float, default=0)
@@ -1344,3 +1351,18 @@ class EntretienSortie(Base):
     mene_par_id: Mapped[int | None] = mapped_column(ForeignKey("employes.id"))
     cree_le: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     modifie_le: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+# --------------------------------------------------------------------------
+# Pièces téléversées (servies par /fichiers après contrôle d'accès)
+# --------------------------------------------------------------------------
+class Televersement(Base):
+    """Auteur de chaque pièce déposée : il peut la relire avant même qu'elle
+    soit rattachée à une demande, et personne d'autre ne peut se l'approprier."""
+    __tablename__ = "televersements"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    nom: Mapped[str] = mapped_column(String(80), unique=True, index=True)
+    employe_id: Mapped[int] = mapped_column(ForeignKey("employes.id"), index=True)
+    taille: Mapped[int] = mapped_column(Integer)
+    cree_le: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

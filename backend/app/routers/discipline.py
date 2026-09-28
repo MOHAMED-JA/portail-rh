@@ -3,20 +3,17 @@ et observations sont chiffrés en base. Le collaborateur retrouve les
 sanctions qui lui ont été notifiées dans « Mes données » (droit d'accès)."""
 from __future__ import annotations
 
-import shutil
-import uuid
 from datetime import date
-from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.config import EXTENSIONS_AUTORISEES, UPLOAD_DIR
 from app.core.database import get_db
 from app.core.security import admin_requis
 from app.models import Employe, JournalAudit, Sanction
+from app.services import televersements
 
 router = APIRouter(prefix="/api/discipline", tags=["Dossier disciplinaire"])
 
@@ -146,13 +143,7 @@ def annuler(sanction_id: int, payload: AnnulationPayload, db: Session = Depends(
 @router.post("/{sanction_id}/piece", summary="Joindre une pièce (convocation, décision…) (RH)")
 def joindre(sanction_id: int, fichier: UploadFile = File(...), db: Session = Depends(get_db), utilisateur: Employe = Depends(admin_requis)):
     s = _charger(db, sanction_id, utilisateur)
-    extension = Path(fichier.filename or "").suffix.lower()
-    if extension not in EXTENSIONS_AUTORISEES:
-        raise HTTPException(status_code=415, detail="Format non compatible : PDF, DOC ou DOCX uniquement.")
-    cible = f"{uuid.uuid4().hex}{extension}"
-    with (UPLOAD_DIR / cible).open("wb") as sortie:
-        shutil.copyfileobj(fichier.file, sortie)
-    s.piece_jointe = f"/fichiers/{cible}"
+    s.piece_jointe = televersements.enregistrer_piece(db, fichier, utilisateur)
     db.commit()
     return _json(s)
 

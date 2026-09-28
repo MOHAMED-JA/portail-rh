@@ -16,16 +16,24 @@ from app.core.database import get_db
 from app.core.security import admin_requis, administrateur_requis, utilisateur_courant
 from app.models import ROLES_RH, EcheancePret, Employe, JournalAudit, Pret
 from app.services import parametres
+from app.services import remuneration as remunerations
 from app.services.demandes import administrateurs_rh
 from app.services.notifications import notifier
 
 router = APIRouter(prefix="/api/prets", tags=["Avances et prêts"])
 
-# Valeurs par défaut, à ajuster par l'administrateur RH (Paramètres des prêts).
+# Politique Veltaris (25/09/2026) : les avances n'ont ni plafond de montant
+# ni limite de mensualités ; le prêt social est plafonné à 7 salaires bruts
+# mensuels (salaire de base) et à 7 ans. None = sans limite.
 TYPES_DEFAUT = {
-    "avance": {"libelle": "Avance sur salaire", "plafond": 1000.0, "mensualites_max": 3, "taux": 0.0, "actif": True},
-    "pret_social": {"libelle": "Prêt social", "plafond": 5000.0, "mensualites_max": 24, "taux": 0.0, "actif": True},
+    "avance": {"libelle": "Avance sur salaire", "plafond": None, "plafond_salaires": None, "mensualites_max": None,
+               "taux": 0.0, "actif": True},
+    "avance_primes": {"libelle": "Avance sur primes", "plafond": None, "plafond_salaires": None, "mensualites_max": None,
+                      "taux": 0.0, "actif": True},
+    "pret_social": {"libelle": "Prêt social", "plafond": None, "plafond_salaires": 7.0, "mensualites_max": 84,
+                    "taux": 0.0, "actif": True},
 }
+MENSUALITES_TECHNIQUES = 600  # garde-fou de saisie (50 ans), pas une règle RH
 STATUTS = {"demande": "En attente de décision", "accorde": "Accordé — en remboursement", "refuse": "Refusé",
            "solde": "Remboursé", "annule": "Annulé"}
 
@@ -33,6 +41,29 @@ STATUTS = {"demande": "En attente de décision", "accorde": "Accordé — en rem
 def types_prets(db: Session) -> dict:
     enregistres = parametres.lire(db, "types_prets", {}) or {}
     return {code: {**defaut, **enregistres.get(code, {})} for code, defaut in TYPES_DEFAUT.items()}
+
+
+def plafond_de(db: Session, t: dict, employe_id: int) -> dict:
+    """Plafond applicable à une personne. Un plafond en salaires bruts sans
+    salaire saisi n'est pas calculable : la RH décide au vu de la demande."""
+    if t.get("plafond_salaires"):
+        base = (remunerations.lire(db, employe_id) or {}).get("salaire_base")
+        libelle = f"{t['plafond_salaires']:g} salaires bruts mensuels"
+        if not base:
+            return {"montant": None, "calculable": False, "libelle": libelle}
+        return {"montant": round(base * t["plafond_salaires"], 3), "calculable": True, "libelle": libelle}
+    if t.get("plafond"):
+        return {"montant": t["plafond"], "calculable": True, "libelle": f"{t['plafond']:,.0f} DT".replace(",", " ")}
+    return {"montant": None, "calculable": True, "libelle": "sans plafond"}
+
+
+def controler_limites(db: Session, t: dict, employe_id: int, montant: float, nb_mensualites: int) -> None:
+    plafond = plafond_de(db, t, employe_id)
+    if plafond["montant"] is not None and montant > plafond["montant"]:
+        raise HTTPException(status_code=422, detail=f"{t['libelle']} : plafond de {plafond['libelle']}, "
+                            f"soit {plafond['montant']:,.3f} DT.".replace(",", " "))
+    if t.get("mensualites_max") and nb_mensualites > t["mensualites_max"]:
+        raise HTTPException(status_code=422, detail=f"{t['libelle']} : {t['mensualites_max']} mensualités au plus.")
 
 
 def mois_suivant(jour: date, n: int = 1) -> date:
@@ -55,7 +86,7 @@ def echeancier(montant: float, n: int, taux_annuel: float, premier_mois: date) -
     return lignes
 
 
-def _json(p: Pret, types: dict) -> dict:
+def _json(p: Pret, types: dict, db: Session | None = None) -> dict:
     aujourd_hui = date.today().replace(day=1)
     prevues = [e for e in p.echeances if e.statut == "prevue"]
     reste = round(sum(e.montant for e in prevues if e.mois >= aujourd_hui), 3)
@@ -70,6 +101,7 @@ def _json(p: Pret, types: dict) -> dict:
         "mensualite": prevues[0].montant if prevues else None,
         "rembourse": round(sum(e.montant for e in prevues if e.mois < aujourd_hui), 3),
         "reste_du": reste,
+        "plafond": plafond_de(db, types[p.type_pret], p.employe_id) if db is not None and p.type_pret in types else None,
         "echeances": [{"numero": e.numero, "mois": e.mois, "capital": e.capital, "interets": e.interets, "montant": e.montant,
                        "statut": e.statut, "passee": e.mois < aujourd_hui} for e in p.echeances],
     }
@@ -91,8 +123,9 @@ def lister_types(db: Session = Depends(get_db), utilisateur: Employe = Depends(u
 
 
 class TypePayload(BaseModel):
-    plafond: float = Field(gt=0)
-    mensualites_max: int = Field(ge=1, le=120)
+    plafond: float | None = Field(default=None, gt=0)
+    plafond_salaires: float | None = Field(default=None, gt=0, le=60)
+    mensualites_max: int | None = Field(default=None, ge=1, le=MENSUALITES_TECHNIQUES)
     taux: float = Field(ge=0, le=30)
     actif: bool = True
 
@@ -113,7 +146,7 @@ def modifier_types(payload: dict[str, TypePayload], db: Session = Depends(get_db
 class DemandePayload(BaseModel):
     type_pret: str
     montant: float = Field(gt=0)
-    nb_mensualites: int = Field(ge=1, le=120)
+    nb_mensualites: int = Field(ge=1, le=MENSUALITES_TECHNIQUES)
     motif: str | None = Field(default=None, max_length=1000)
 
 
@@ -134,10 +167,7 @@ def demander(payload: DemandePayload, db: Session = Depends(get_db), utilisateur
     t = types.get(payload.type_pret)
     if not t or not t["actif"]:
         raise HTTPException(status_code=422, detail="Ce type de prêt n'est pas proposé.")
-    if payload.montant > t["plafond"]:
-        raise HTTPException(status_code=422, detail=f"{t['libelle']} : plafond de {t['plafond']:,.0f} DT.".replace(",", " "))
-    if payload.nb_mensualites > t["mensualites_max"]:
-        raise HTTPException(status_code=422, detail=f"{t['libelle']} : {t['mensualites_max']} mensualités au plus.")
+    controler_limites(db, t, utilisateur.id, payload.montant, payload.nb_mensualites)
     en_cours = db.scalars(select(Pret).where(Pret.employe_id == utilisateur.id, Pret.type_pret == payload.type_pret,
                                              Pret.statut.in_(["demande", "accorde"]))).all()
     aujourd_hui = date.today().replace(day=1)
@@ -153,13 +183,13 @@ def demander(payload: DemandePayload, db: Session = Depends(get_db), utilisateur
                  "validation", "/prets")
     db.commit()
     db.refresh(p)
-    return _json(p, types)
+    return _json(p, types, db)
 
 
 @router.get("/mes", summary="Mes avances et prêts")
 def mes_prets(db: Session = Depends(get_db), utilisateur: Employe = Depends(utilisateur_courant)):
     types = types_prets(db)
-    return [_json(p, types) for p in db.scalars(select(Pret).where(Pret.employe_id == utilisateur.id)
+    return [_json(p, types, db) for p in db.scalars(select(Pret).where(Pret.employe_id == utilisateur.id)
                                                 .order_by(Pret.demande_le.desc()))]
 
 
@@ -180,18 +210,18 @@ def lister(statut: str | None = None, db: Session = Depends(get_db), utilisateur
     requete = select(Pret).order_by(Pret.demande_le.desc())
     if statut:
         requete = requete.where(Pret.statut == statut)
-    return [_json(p, types) for p in db.scalars(requete.limit(500))]
+    return [_json(p, types, db) for p in db.scalars(requete.limit(500))]
 
 
 @router.get("/{pret_id}", summary="Détail et échéancier")
 def detail(pret_id: int, db: Session = Depends(get_db), utilisateur: Employe = Depends(utilisateur_courant)):
-    return _json(_charger(db, pret_id, utilisateur), types_prets(db))
+    return _json(_charger(db, pret_id, utilisateur), types_prets(db), db)
 
 
 class DecisionPayload(BaseModel):
     accorde: bool
     montant: float | None = Field(default=None, gt=0)
-    nb_mensualites: int | None = Field(default=None, ge=1, le=120)
+    nb_mensualites: int | None = Field(default=None, ge=1, le=MENSUALITES_TECHNIQUES)
     premiere_echeance: date | None = None
     commentaire: str | None = Field(default=None, max_length=1000)
 
@@ -216,8 +246,7 @@ def decider(pret_id: int, payload: DecisionPayload, db: Session = Depends(get_db
         # La RH peut ajuster le montant ou la durée (sans dépasser les plafonds).
         p.montant = round(payload.montant or p.montant, 3)
         p.nb_mensualites = payload.nb_mensualites or p.nb_mensualites
-        if p.montant > t["plafond"] or p.nb_mensualites > t["mensualites_max"]:
-            raise HTTPException(status_code=422, detail="Montant ou durée au-delà des plafonds du type de prêt.")
+        controler_limites(db, t, p.employe_id, p.montant, p.nb_mensualites)
         p.premiere_echeance = (payload.premiere_echeance or mois_suivant(date.today())).replace(day=1)
         p.statut = "accorde"
         for l in echeancier(p.montant, p.nb_mensualites, p.taux_annuel, p.premiere_echeance):
@@ -230,7 +259,7 @@ def decider(pret_id: int, payload: DecisionPayload, db: Session = Depends(get_db
                         detail=f"{t['libelle']} {p.montant:.3f} DT / {p.nb_mensualites} mois"))
     db.commit()
     db.refresh(p)
-    return _json(p, types)
+    return _json(p, types, db)
 
 
 @router.post("/{pret_id}/reporter/{numero}", summary="Reporter une échéance en fin d'échéancier (RH)")

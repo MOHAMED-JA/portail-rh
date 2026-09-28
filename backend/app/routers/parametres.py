@@ -13,7 +13,7 @@ from app.core.database import get_db
 from app.core.security import admin_requis, administrateur_requis, utilisateur_courant
 from app.models import TYPES_CONGE, Employe, JournalAudit, Role, StatutEmploye
 from app.models import ROLES_RH  # noqa: E402
-from app.services import parametres
+from app.services import chiffrement, parametres
 from app.services.notifications import notifier
 
 router = APIRouter(prefix="/api/parametres", tags=["Paramètres RH"])
@@ -178,6 +178,8 @@ def ecrire_messagerie(payload: MessageriePayload, db: Session = Depends(get_db),
     donnees = payload.model_dump()
     if donnees["mot_de_passe"] == MASQUE:
         donnees["mot_de_passe"] = emails.configuration(db).get("mot_de_passe", "")
+    # Chiffré en base (clé de chiffrement du portail), comme les données de santé.
+    donnees["mot_de_passe"] = chiffrement.chiffrer(donnees["mot_de_passe"])
     parametres.ecrire(db, "messagerie", donnees)
     db.add(JournalAudit(acteur_id=utilisateur.id, action="messagerie", cible=donnees["serveur"] or "—",
                         detail="activée" if donnees["actif"] else "désactivée"))

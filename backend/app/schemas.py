@@ -35,6 +35,7 @@ class DepartementBase(ORMModel):
     nom: str
     couleur: str
     parent_id: int | None = None
+    interim: bool = False
 
 
 class DepartementDetail(DepartementBase):
@@ -50,6 +51,7 @@ class DepartementPayload(BaseModel):
     couleur: str = "#2B63C9"
     responsable_id: int | None = None
     parent_id: int | None = None
+    interim: bool = False
 
 
 class EmployeMini(ORMModel):

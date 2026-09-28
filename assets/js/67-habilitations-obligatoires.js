@@ -134,7 +134,7 @@ async function habSaisirObtention(matricule, habilitationId) {
     ${enteteTiroir("Enregistrer une obtention", "Obtention initiale ou renouvellement ; l'historique est conservé")}
     <div class="tiroir-corps" style="display:grid;gap:12px">
       <div class="champ"><label>Collaborateur *</label><select class="saisie" id="hob-matricule"><option value="">Choisir…</option>
-        ${EMPLOYES.slice().sort((a, b) => a.nom.localeCompare(b.nom)).map((e) => `<option value="${e.matricule}" ${e.matricule === matricule ? "selected" : ""}>${echapper(nomComplet(e))} · ${e.matricule}</option>`).join("")}</select></div>
+        ${EMPLOYES.slice().sort(compareNoms).map((e) => `<option value="${e.matricule}" ${e.matricule === matricule ? "selected" : ""}>${echapper(nomComplet(e))} · ${e.matricule}</option>`).join("")}</select></div>
       <div class="champ"><label>Habilitation *</label><select class="saisie" id="hob-habilitation">
         ${actives.map((h) => `<option value="${h.id}" ${String(h.id) === String(habilitationId) ? "selected" : ""}>${echapper(h.intitule)}</option>`).join("")}</select></div>
       <div class="ligne-champs"><div class="champ"><label>Obtenue le *</label><input class="saisie" type="date" id="hob-obtenue" max="${aujourdhui}" value="${aujourdhui}"></div>

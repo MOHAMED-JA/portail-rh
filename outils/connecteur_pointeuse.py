@@ -6,12 +6,22 @@ Planificateur de tâches Windows. Chaque passage n'est envoyé qu'une fois :
 le dernier horodatage transmis est mémorisé, et le portail ignore de toute
 façon les doublons.
 
-Deux sources au choix :
+Pointeuse de Veltaris : Virdi UBio-X Pro (Union Community ; visage,
+empreinte, carte), constatée sur photo le 25/09/2026. Ce n'est pas une
+ZKTeco : la lecture réseau « zkteco » ne s'applique pas à elle.
 
+Sources au choix :
+
+  fichier  (par défaut, à utiliser pour la Virdi) Fichier exporté par le
+           logiciel de la pointeuse (CSV ou TXT) : une ligne par passage,
+           « badge ou matricule ; date heure », ou date et heure dans deux
+           colonnes distinctes (colonne_heure).
+  virdi    Lecture directe de la Virdi : pas encore branchée. Il faut
+           d'abord identifier le logiciel qui récupère les pointages (le
+           plus souvent Virdi UNIS, base Access ou SQL Server) ; en attendant,
+           utiliser « fichier ».
   zkteco   Pointeuse ZKTeco (et compatibles, protocole réseau port 4370),
-           lue directement sur le réseau. Nécessite :  pip install pyzk
-  fichier  Fichier exporté par le logiciel de la pointeuse (CSV ou TXT) :
-           une ligne par passage « badge ou matricule ; date heure ».
+           pour un autre modèle. Nécessite :  pip install pyzk
 
 Configuration : fichier connecteur_pointeuse.ini à côté de ce script
 (créé au premier lancement avec des valeurs à compléter).
@@ -40,8 +50,8 @@ adresse = http://127.0.0.1:8100
 cle =
 
 [source]
-; zkteco ou fichier
-type = zkteco
+; fichier (pointeuse Virdi UBio-X Pro : export du logiciel), virdi (à venir) ou zkteco
+type = fichier
 ; nom affiché dans le portail
 terminal = Pointeuse principale
 
@@ -57,9 +67,20 @@ chemin = C:\\Pointeuse\\export.csv
 separateur = ;
 colonne_badge = 1
 colonne_horodatage = 2
-format = %Y-%m-%d %H:%M:%S
+; si l'heure est dans une colonne à part (ex. 25/09/2026;08:17:03) : son numéro
+colonne_heure =
+; laisser vide pour essayer les formats courants (dont 2026.09.25 08:17:03)
+format =
+; utf-8-sig (défaut), cp1252 ou utf-16 selon le logiciel d'export
+encodage = utf-8-sig
+
+[virdi]
+; réservé à la lecture directe de la Virdi UBio-X Pro, une fois le logiciel identifié
 """
-FORMATS = ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M", "%Y/%m/%d %H:%M:%S")
+FORMATS = ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M", "%Y/%m/%d %H:%M:%S",
+           "%Y.%m.%d %H:%M:%S", "%Y.%m.%d %H:%M", "%d-%m-%Y %H:%M:%S", "%d.%m.%Y %H:%M:%S",
+           "%Y%m%d %H%M%S", "%Y%m%d%H%M%S")
+SOURCES = ("fichier", "virdi", "zkteco")
 
 
 def lire_config() -> configparser.ConfigParser:
@@ -87,21 +108,39 @@ def depuis_zkteco(section) -> list[tuple[str, datetime]]:
         connexion.disconnect()
 
 
+def depuis_virdi(section) -> list[tuple[str, datetime]]:
+    sys.exit("Lecture directe de la pointeuse Virdi UBio-X Pro : pas encore disponible.\n"
+             "Il faut d'abord identifier le logiciel qui récupère ses pointages (souvent Virdi UNIS).\n"
+             "En attendant : exportez les passages depuis ce logiciel en CSV, puis dans\n"
+             f"{CONFIG.name}, mettez  type = fichier  et le chemin de l'export dans [fichier].")
+
+
+def _entier(section, cle: str, defaut: int | None) -> int | None:
+    valeur = (section.get(cle) or "").strip()
+    return int(valeur) if valeur else defaut
+
+
 def depuis_fichier(section) -> list[tuple[str, datetime]]:
     chemin = Path(section.get("chemin"))
     if not chemin.exists():
         sys.exit(f"Fichier introuvable : {chemin}")
-    col_badge = section.getint("colonne_badge", 1) - 1
-    col_heure = section.getint("colonne_horodatage", 2) - 1
-    formats = tuple(f for f in (section.get("format"),) if f) + FORMATS
+    col_badge = _entier(section, "colonne_badge", 1) - 1
+    col_date = _entier(section, "colonne_horodatage", 2) - 1
+    col_heure = _entier(section, "colonne_heure", None)
+    col_heure = None if col_heure is None else col_heure - 1
+    formats = tuple(f for f in ((section.get("format") or "").strip(),) if f) + FORMATS
+    utiles = max(c for c in (col_badge, col_date, col_heure) if c is not None)
     passages = []
-    with chemin.open(encoding="utf-8-sig", errors="replace") as flux:
-        for ligne in csv.reader(flux, delimiter=section.get("separateur", ";")):
-            if len(ligne) <= max(col_badge, col_heure):
-                continue
+    with chemin.open(encoding=(section.get("encodage") or "utf-8-sig").strip(), errors="replace", newline="") as flux:
+        for ligne in csv.reader(flux, delimiter=section.get("separateur", ";") or ";"):
+            if len(ligne) <= utiles or not ligne[col_badge].strip():
+                continue  # ligne d'en-tête, vide ou incomplète
+            texte = ligne[col_date].strip()
+            if col_heure is not None:
+                texte = f"{texte} {ligne[col_heure].strip()}"
             for fmt in formats:
                 try:
-                    passages.append((ligne[col_badge].strip(), datetime.strptime(ligne[col_heure].strip(), fmt)))
+                    passages.append((ligne[col_badge].strip(), datetime.strptime(texte, fmt)))
                     break
                 except (ValueError, TypeError):
                     continue
@@ -122,9 +161,16 @@ def main() -> int:
     arguments.add_argument("--tout", action="store_true", help="renvoie tout l'historique (les doublons sont ignorés)")
     options = arguments.parse_args()
     config = lire_config()
-    source = config["source"].get("type", "zkteco").strip().lower()
+    source = config["source"].get("type", "fichier").strip().lower()
     terminal = config["source"].get("terminal", "Pointeuse")
-    passages = depuis_zkteco(config["zkteco"]) if source == "zkteco" else depuis_fichier(config["fichier"])
+    if source not in SOURCES:
+        sys.exit(f"Source inconnue « {source} » : choisissez {', '.join(SOURCES)} dans [source] type.")
+    if source == "virdi":
+        passages = depuis_virdi(config["virdi"] if config.has_section("virdi") else {})
+    elif source == "zkteco":
+        passages = depuis_zkteco(config["zkteco"])
+    else:
+        passages = depuis_fichier(config["fichier"])
 
     dernier = None
     if ETAT.exists() and not options.tout:

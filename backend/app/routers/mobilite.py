@@ -6,16 +6,15 @@ le supérieur hiérarchique est informé lorsque le candidat est convoqué en
 entretien."""
 from __future__ import annotations
 
-from datetime import date, datetime
-
-import shutil
-import uuid
+import threading
+import time
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -25,7 +24,7 @@ from app.models import (
     AffectationEmploi, Candidature, CandidatureExterne, Departement, DossierEmploye, Emploi, Employe,
     EvaluationCompetence, FicheEvaluation, JournalAudit, OffreInterne, ROLES_RH, Role, SoldeConge, StatutEmploye,
 )
-from app.services import hierarchie
+from app.services import hierarchie, televersements
 from app.services.demandes import administrateurs_rh
 from app.services.notifications import notifier
 
@@ -251,16 +250,41 @@ def offres_externes_publiques(db: Session = Depends(get_db)):
 
 
 def _repertoire_cv() -> Path:
-    # /fichiers expose UPLOAD_DIR sans authentification ; les CV restent dans
-    # un répertoire privé et passent uniquement par la route protégée RH.
+    # Les CV restent hors du dossier des pièces jointes, dans un répertoire
+    # privé, et passent uniquement par la route protégée RH.
     repertoire = DATA_DIR / "cv_recrutement_prive"
     repertoire.mkdir(parents=True, exist_ok=True)
     return repertoire
 
 
+# Route publique : sans plafond, un robot remplirait le disque (et OneDrive)
+# et la boîte de notifications RH. Chaque essai compte, même refusé.
+DEPOTS_PAR_ADRESSE_ET_HEURE = 10
+DEPOTS_PAR_HEURE = 50            # toutes adresses confondues
+_depots_publics: dict[str, list[float]] = {}
+_verrou_depots = threading.Lock()
+
+
+def _limiter_depots_publics(db: Session, adresse: str) -> None:
+    trop = HTTPException(status_code=429, detail=(
+        "Trop de candidatures déposées en peu de temps : réessayez dans une heure."))
+    maintenant = time.monotonic()
+    with _verrou_depots:
+        for cle in [c for c, instants in _depots_publics.items() if maintenant - instants[-1] >= 3600]:
+            del _depots_publics[cle]
+        recents = [t for t in _depots_publics.get(adresse, []) if maintenant - t < 3600]
+        if len(recents) >= DEPOTS_PAR_ADRESSE_ET_HEURE:
+            raise trop
+        _depots_publics[adresse] = [*recents, maintenant]
+    depuis = datetime.utcnow() - timedelta(hours=1)
+    if (db.scalar(select(func.count(CandidatureExterne.id)).where(CandidatureExterne.cree_le >= depuis)) or 0) >= DEPOTS_PAR_HEURE:
+        raise trop
+
+
 @router.post("/recrutement/offres/{offre_id}/candidater", status_code=201, summary="Déposer une candidature externe")
 def candidater_externe(
     offre_id: int,
+    request: Request,
     nom: str = Form(..., min_length=2, max_length=80),
     prenom: str = Form(..., min_length=2, max_length=80),
     email: str = Form(..., min_length=5, max_length=160),
@@ -269,6 +293,7 @@ def candidater_externe(
     cv: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
+    _limiter_depots_publics(db, request.client.host if request.client else "inconnue")
     offre = db.get(OffreInterne, offre_id)
     if not offre or offre.publication != "externe" or not _ouverte(offre):
         raise HTTPException(status_code=409, detail="Cette offre n'accepte plus de candidatures externes.")
@@ -278,13 +303,9 @@ def candidater_externe(
     if db.scalar(select(CandidatureExterne).where(CandidatureExterne.offre_id == offre.id,
                                                    CandidatureExterne.email == email_normalise)):
         raise HTTPException(status_code=409, detail="Une candidature existe déjà pour cette adresse et cette offre.")
-    extension = Path(cv.filename or "").suffix.lower()
-    if extension not in EXTENSIONS_AUTORISEES:
+    if televersements.extension_de(cv.filename) not in EXTENSIONS_AUTORISEES:
         raise HTTPException(status_code=415, detail="CV au format PDF, DOC ou DOCX uniquement.")
-    nom_stocke = f"{uuid.uuid4().hex}{extension}"
-    chemin = _repertoire_cv() / nom_stocke
-    with chemin.open("wb") as sortie:
-        shutil.copyfileobj(cv.file, sortie)
+    nom_stocke, _ = televersements.enregistrer(cv, _repertoire_cv(), televersements.TAILLE_MAX_CV)
     candidature = CandidatureExterne(offre_id=offre.id, nom=nom.strip(), prenom=prenom.strip(), email=email_normalise,
                                      telephone=(telephone or "").strip() or None,
                                      motivation=(motivation or "").strip() or None,

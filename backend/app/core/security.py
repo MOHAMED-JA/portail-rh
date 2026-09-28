@@ -27,11 +27,20 @@ def verify_password(clair: str, hache: str) -> bool:
 def creer_token(employe: Employe) -> str:
     payload = {
         "sub": str(employe.id),
+        "typ": "session",
+        "ver": employe.version_session or 0,
         "matricule": employe.matricule,
         "role": employe.role.value,
         "exp": datetime.utcnow() + timedelta(minutes=JWT_EXPIRE_MINUTES),
     }
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+
+def revoquer_sessions(employe: Employe) -> None:
+    """Invalide tous les jetons déjà émis pour ce compte (changement ou
+    réinitialisation du mot de passe) : une session dérobée ne survit pas.
+    Les jetons créés ensuite portent la nouvelle version."""
+    employe.version_session = (employe.version_session or 0) + 1
 
 
 def creer_jeton_etape(employe: Employe) -> str:
@@ -58,9 +67,14 @@ def employe_depuis_token(token: str, db: Session) -> Employe | None:
         payload = decoder_token(token)
     except JWTError:
         return None
-    if payload.get("typ") == "2fa":
-        return None   # jeton d'étape : pas une session
-    return db.get(Employe, int(payload.get("sub", 0)))
+    if payload.get("typ") != "session":
+        return None   # jeton d'étape (2fa) ou lien d'e-mail : pas une session
+    employe = db.get(Employe, int(payload.get("sub", 0)))
+    if employe is None or employe.statut == StatutEmploye.SORTI:
+        return None
+    if payload.get("ver", 0) != (employe.version_session or 0):
+        return None   # session ouverte avant le dernier changement de mot de passe
+    return employe
 
 
 CHEMINS_AVANT_CHANGEMENT = {"/api/auth/moi", "/api/auth/mot-de-passe"}

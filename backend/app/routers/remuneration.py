@@ -48,7 +48,7 @@ class SimulationPayload(BaseModel):
 
 
 def _actifs(db: Session) -> list[Employe]:
-    return list(db.scalars(select(Employe).where(Employe.statut != StatutEmploye.SORTI).order_by(Employe.nom, Employe.prenom)))
+    return list(db.scalars(select(Employe).where(Employe.statut != StatutEmploye.SORTI).order_by(Employe.prenom, Employe.nom)))
 
 
 def _texte(valeur: float | None) -> str | None:

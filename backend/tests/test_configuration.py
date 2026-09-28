@@ -28,3 +28,10 @@ def test_migrations_traduites_pour_postgresql(monkeypatch):
 def test_migrations_inchangees_pour_sqlite(monkeypatch):
     monkeypatch.setattr(migrations.engine.dialect, "name", "sqlite")
     assert migrations._traduire("BOOLEAN NOT NULL DEFAULT 1") == "BOOLEAN NOT NULL DEFAULT 1"
+
+
+def test_interface_revalidee_api_intacte(client, entetes):
+    # Sans Cache-Control, le navigateur mélangeait anciens et nouveaux modules après une mise à jour.
+    for chemin in ("/", "/sw.js", "/assets/js/01-outils-dates-formats-aleatoire-deterministe-icon.js", "/annuaire"):
+        assert client.get(chemin).headers.get("cache-control") == "no-cache", chemin
+    assert client.get("/api/sante").headers.get("cache-control") != "no-cache"

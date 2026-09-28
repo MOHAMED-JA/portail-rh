@@ -31,7 +31,7 @@ def _perimetre(db: Session, utilisateur: Employe, departement_id: int | None) ->
         requete = select(Employe).where(Employe.statut != StatutEmploye.SORTI)
         if departement_id:
             requete = requete.where(Employe.departement_id == departement_id)
-        return list(db.scalars(requete.order_by(Employe.nom)))
+        return list(db.scalars(requete.order_by(Employe.prenom, Employe.nom)))
     from app.services import hierarchie
 
     ids = hierarchie.perimetre_ids(db, utilisateur)
@@ -39,7 +39,7 @@ def _perimetre(db: Session, utilisateur: Employe, departement_id: int | None) ->
         requete = select(Employe).where(Employe.id.in_(ids))
         if departement_id:
             requete = requete.where(Employe.departement_id == departement_id)
-        return [utilisateur, *db.scalars(requete.order_by(Employe.nom))]
+        return [utilisateur, *db.scalars(requete.order_by(Employe.prenom, Employe.nom))]
     return [utilisateur]
 
 

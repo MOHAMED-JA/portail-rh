@@ -34,7 +34,7 @@ def _actifs(db: Session, ids: set[int] | None = None) -> list[Employe]:
     requete = select(Employe).where(Employe.statut != StatutEmploye.SORTI)
     if ids is not None:
         requete = requete.where(Employe.id.in_(ids or {-1}))
-    return list(db.scalars(requete.order_by(Employe.nom, Employe.prenom)))
+    return list(db.scalars(requete.order_by(Employe.prenom, Employe.nom)))
 
 
 def _direction(e: Employe) -> str:

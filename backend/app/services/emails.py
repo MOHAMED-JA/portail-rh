@@ -22,7 +22,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import JWT_ALGORITHM, JWT_SECRET
 from app.models import Demande, EmailSortant, Employe, TypeDemande
-from app.services import parametres
+from app.services import chiffrement, parametres
 
 MESSAGERIE_DEFAUT = {
     "actif": False, "serveur": "", "port": 587, "securite": "starttls",
@@ -33,7 +33,10 @@ TYPES = {TypeDemande.CONGE: "congé", TypeDemande.AUTORISATION: "autorisation d'
 
 
 def configuration(db: Session) -> dict:
-    return {**MESSAGERIE_DEFAUT, **(parametres.lire(db, "messagerie", {}) or {})}
+    """Configuration de la messagerie, mot de passe SMTP déchiffré (une
+    valeur enregistrée en clair par une version antérieure reste lue)."""
+    config = {**MESSAGERIE_DEFAUT, **(parametres.lire(db, "messagerie", {}) or {})}
+    return {**config, "mot_de_passe": chiffrement.dechiffrer(config.get("mot_de_passe")) or ""}
 
 
 # ------------------------------------------------------------------ Jetons

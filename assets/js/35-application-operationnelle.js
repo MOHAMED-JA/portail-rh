@@ -186,8 +186,7 @@ function arbreOrganisation() {
     const chef = e.validateur && parMatricule[e.validateur] && e.validateur !== e.matricule ? e.validateur : null;
     if (chef) (enfants[chef] = enfants[chef] || []).push(e); else racines.push(e);
   });
-  const tri = (a, b) => (enfants[b.matricule] || []).length - (enfants[a.matricule] || []).length
-    || (a.nom + a.prenom).localeCompare(b.nom + b.prenom, "fr");
+  const tri = compareNoms;
   Object.values(enfants).forEach((liste) => liste.sort(tri));
   racines.sort(tri);
   return { racines, enfants };

@@ -10,7 +10,8 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models import Departement, Employe, EvenementCarriere, JournalAudit, Role, ROLES_RH, StatutEmploye
+from app.models import (ConfirmationArchitecture, Departement, Employe, EvenementCarriere, JournalAudit,
+                        OffreInterne, Role, ROLES_RH, StatutEmploye, WorkflowValidation)
 from app.services.hierarchie import verifier_niveau, verifier_rattachement
 
 
@@ -21,6 +22,8 @@ class StructurePlan(BaseModel):
     parent: str | None = None
     responsable: str | None = None
     couleur: str = "#2B63C9"
+    # None : mention « par intérim » inchangée (rejouer un ancien plan ne l'efface pas).
+    interim: bool | None = None
 
 
 class AffectationPlan(BaseModel):
@@ -38,6 +41,8 @@ class PlanOrganisation(BaseModel):
     reference: str
     structures: list[StructurePlan]
     affectations: list[AffectationPlan]
+    # Codes des structures à supprimer : vides, sans sous-structure ni donnée liée.
+    suppressions: list[str] = Field(default_factory=list)
 
 
 def appliquer_plan(db: Session, plan: PlanOrganisation) -> dict:
@@ -48,7 +53,9 @@ def appliquer_plan(db: Session, plan: PlanOrganisation) -> dict:
     matricules = [a.matricule for a in plan.affectations]
     if len(codes) != len(set(codes)) or len(matricules) != len(set(matricules)):
         raise ValueError("Le plan contient un code ou un matricule en double.")
-    tous_codes = set(codes) | set(structures)
+    if set(codes) & set(plan.suppressions):
+        raise ValueError("Une structure du plan ne peut pas être à la fois décrite et supprimée.")
+    tous_codes = (set(codes) | set(structures)) - set(plan.suppressions)
     for s in plan.structures:
         if s.parent is not None and s.parent not in tous_codes:
             raise ValueError(f"Structure parente inconnue : {s.parent}.")
@@ -77,7 +84,8 @@ def appliquer_plan(db: Session, plan: PlanOrganisation) -> dict:
     for s in plan.structures:
         d = structures.get(s.code)
         avant_structures[s.code] = None if d is None else {
-            "nom": d.nom, "parent_id": d.parent_id, "responsable_id": d.responsable_id, "couleur": d.couleur}
+            "nom": d.nom, "parent_id": d.parent_id, "responsable_id": d.responsable_id, "couleur": d.couleur,
+            "interim": bool(d.interim)}
         if d is None:
             d = Departement(code=s.code, nom=s.nom, couleur=s.couleur)
             db.add(d)
@@ -88,11 +96,34 @@ def appliquer_plan(db: Session, plan: PlanOrganisation) -> dict:
         d.nom, d.couleur = s.nom, s.couleur
         d.parent_id = structures[s.parent].id if s.parent else None
         d.responsable_id = employes[s.responsable].id if s.responsable else None
+        if s.interim is not None:
+            d.interim = s.interim
+        elif d.interim is None:
+            d.interim = False
     for s in plan.structures:
         d = structures[s.code]
         verifier_rattachement(db, d.id, d.parent_id, structure=True)
         tracer("structure", d.code, avant_structures[s.code], {
-            "nom": d.nom, "parent_id": d.parent_id, "responsable_id": d.responsable_id, "couleur": d.couleur})
+            "nom": d.nom, "parent_id": d.parent_id, "responsable_id": d.responsable_id, "couleur": d.couleur,
+            "interim": bool(d.interim)})
+    db.flush()
+    for code in plan.suppressions:
+        d = structures.get(code)
+        if d is None:
+            continue  # déjà supprimée : rejouer le plan ne change rien
+        if db.scalar(select(Departement.id).where(Departement.parent_id == d.id)):
+            raise ValueError(f"Structure à supprimer encore parente d'autres structures : {code}.")
+        if db.scalar(select(Employe.id).where(Employe.departement_id == d.id)):
+            raise ValueError(f"Structure à supprimer encore rattachée à du personnel : {code}.")
+        if (db.scalar(select(WorkflowValidation.id).where(WorkflowValidation.departement_id == d.id))
+                or db.scalar(select(OffreInterne.id).where(OffreInterne.departement_id == d.id))):
+            raise ValueError(f"Structure à supprimer utilisée par un circuit ou une offre : {code}.")
+        for confirmation in db.scalars(select(ConfirmationArchitecture).where(ConfirmationArchitecture.structure_id == d.id)):
+            db.delete(confirmation)
+        tracer("suppression_structure", code, {"nom": d.nom, "parent_id": d.parent_id,
+                                              "responsable_id": d.responsable_id}, None)
+        db.delete(d)
+        del structures[code]
 
     def valeurs(e):
         return {"departement_id": e.departement_id, "validateur_id": e.validateur_id,

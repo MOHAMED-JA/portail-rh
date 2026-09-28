@@ -208,6 +208,8 @@ const EMPLOYES = [
 
 const parMatricule = Object.fromEntries(EMPLOYES.map((e) => [e.matricule, e]));
 const nomComplet = (e) => `${e.prenom} ${e.nom}`;
+// Ordre alphabétique de A à Z sur le nom affiché, accents et casse ignorés.
+const compareNoms = (a, b) => nomComplet(a).localeCompare(nomComplet(b), "fr", { sensitivity: "base" });
 const initiales = (e) => (e.prenom[0] + e.nom[0]).toUpperCase();
 const couleurDept = (code) => (DEPARTEMENTS.find((d) => d.code === code) || {}).couleur || "#6D7D95";
 const nomDept = (code) => (DEPARTEMENTS.find((d) => d.code === code) || {}).nom || "Non affecté";

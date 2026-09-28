@@ -150,7 +150,7 @@ def _liste_validation(feuille, formule: str, plage: str) -> None:
 def generer_modele(db: Session) -> io.BytesIO:
     """Génère un classeur prérempli avec tous les collaborateurs actifs."""
     employes = list(db.scalars(select(Employe).where(Employe.statut != StatutEmploye.SORTI)
-                               .order_by(Employe.nom, Employe.prenom)))
+                               .order_by(Employe.prenom, Employe.nom)))
     departements = list(db.scalars(select(Departement).order_by(Departement.code)))
     dossiers = {d.employe_id: d for d in db.scalars(select(DossierEmploye))}
 

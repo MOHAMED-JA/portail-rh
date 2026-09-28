@@ -1,3 +1,5 @@
 # Serveur de la DSI (PostgreSQL). Les postes de travail n'en ont pas besoin.
 -r requirements.txt
 psycopg[binary]>=3.2
+# Assistant RH avec IA (PORTAIL_RH_IA=1), seulement si la DSI l'a validé.
+anthropic

@@ -5,14 +5,15 @@ from sqlalchemy import inspect, text
 from app.core.database import engine
 
 COLONNES = {
-    "departements": [("parent_id", "INTEGER REFERENCES departements(id)")],
+    "departements": [("parent_id", "INTEGER REFERENCES departements(id)"), ("interim", "BOOLEAN NOT NULL DEFAULT 0")],
     "offres_internes": [("publication", "VARCHAR(20) NOT NULL DEFAULT 'interne'")],
     "demandes": [("derogation_rh", "BOOLEAN NOT NULL DEFAULT 0"), ("solde_insuffisant", "BOOLEAN NOT NULL DEFAULT 0")],
     "employes": [("motif_sortie", "VARCHAR(40)"), ("date_sortie", "DATE"), ("detail_sortie", "TEXT"),
                  ("reference_sortie", "VARCHAR(80)"), ("sortie_saisie_le", "DATETIME"),
                  ("doit_changer_mdp", "BOOLEAN NOT NULL DEFAULT 1"), ("echecs_connexion", "INTEGER NOT NULL DEFAULT 0"),
                  ("bloque_jusqu", "DATETIME"), ("niveau", "VARCHAR(30) NOT NULL DEFAULT 'collaborateur'"),
-                 ("totp_secret", "TEXT"), ("totp_active", "BOOLEAN NOT NULL DEFAULT 0"), ("codes_secours", "TEXT")],
+                 ("totp_secret", "TEXT"), ("totp_active", "BOOLEAN NOT NULL DEFAULT 0"), ("codes_secours", "TEXT"),
+                 ("totp_dernier_pas", "INTEGER"), ("version_session", "INTEGER NOT NULL DEFAULT 0")],
     "dossiers_employes": [("aptitude_medicale", "TEXT"), ("observations_medicales", "TEXT"),
                           ("adresse", "VARCHAR(255)"), ("code_postal", "VARCHAR(10)"), ("ville", "VARCHAR(80)"),
                           ("adresse_modifiee_le", "DATETIME")],

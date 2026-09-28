@@ -7,16 +7,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.core.config import APP_NAME, APP_VERSION, ORIGINES, TACHES_DE_FOND, UPLOAD_DIR
+from app.core.config import APP_NAME, APP_VERSION, ORIGINES, TACHES_DE_FOND
 from app.core.database import Base, SessionLocal, engine
 from app.routers import (
     administration,
+    assistant,
     auth,
     bilan_individuel,
     departs,
     generateur,
     habilitations,
     indicateurs,
+    previsions,
     remuneration,
     revue_talents,
     demandes,
@@ -24,6 +26,7 @@ from app.routers import (
     espace,
     exports,
     fiches,
+    fichiers,
     formations,
     frais,
     notifications,
@@ -176,11 +179,39 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def revalider_interface(requete, suite):
+    """Interface (HTML, scripts, styles, sw.js) : revalidée à chaque chargement.
+    Sans Cache-Control, le navigateur garde un module plusieurs heures après une
+    mise à jour et mélange ancienne et nouvelle version (réponse 304 si inchangé)."""
+    reponse = await suite(requete)
+    if not requete.url.path.startswith(("/api/", "/fichiers/")):
+        reponse.headers.setdefault("Cache-Control", "no-cache")
+    return reponse
+
+
+ENTETES_SECURITE = {
+    "X-Content-Type-Options": "nosniff",          # pas d'interprétation d'une pièce comme page ou script
+    "X-Frame-Options": "SAMEORIGIN",              # le portail ne s'affiche pas dans le cadre d'un autre site
+    "Referrer-Policy": "same-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+}
+
+
+@app.middleware("http")
+async def entetes_de_securite(requete, suite):
+    reponse = await suite(requete)
+    for nom, valeur in ENTETES_SECURITE.items():
+        reponse.headers.setdefault(nom, valeur)
+    return reponse
+
+
 for module in (auth, tableau_bord, demandes, presences, plannings, notifications, administration, espace, exports,
-               fiches, frais, formations, parametres, pointeuse, email_actions, sirh, pilotage, securite, prets, talents, mobilite, sante_travail, discipline, analyses, architecture, reinitialisation, delegations):
+               fiches, fichiers, frais, formations, parametres, pointeuse, email_actions, sirh, pilotage, securite, prets, talents, mobilite, sante_travail, discipline, analyses, architecture, reinitialisation, delegations):
     app.include_router(module.router)
 app.include_router(supervision.router)
-for module in (generateur, habilitations, indicateurs, remuneration, revue_talents, departs, bilan_individuel):
+for module in (generateur, habilitations, indicateurs, remuneration, revue_talents, departs, bilan_individuel,
+               assistant, previsions):
     app.include_router(module.router)
 app.include_router(qualite_donnees.router)
 
@@ -201,12 +232,14 @@ def sante():
     return {"statut": "ok", "version": APP_VERSION, "supervision": _supervision.apercu_public()}
 
 
-app.mount("/fichiers", StaticFiles(directory=UPLOAD_DIR), name="fichiers")
+# Pièces jointes : route protégée /fichiers/{nom} (routers/fichiers.py), plus
+# aucun montage statique du dossier des pièces.
 
 # Le frontend est servi par la même origine : pas de configuration CORS
 # à gérer côté navigateur, et l'application est installable en PWA.
 RACINE = Path(__file__).resolve().parent.parent.parent
 APPLICATION = RACINE / "portail-rh.html"
+FICHIERS_RACINE = frozenset({"portail-rh.html", "sw.js", "manifest.webmanifest"})
 
 if (RACINE / "assets").exists():
     app.mount("/assets", StaticFiles(directory=RACINE / "assets"), name="assets")
@@ -222,8 +255,9 @@ def application():
 @app.get("/{chemin:path}", include_in_schema=False)
 def spa(chemin: str):
     """Toutes les routes non-API renvoient l'application : le routage est
-    assuré côté client."""
-    fichier = RACINE / chemin
-    if chemin and fichier.is_file() and fichier.suffix in {".html", ".css", ".js", ".png", ".svg", ".webmanifest"}:
-        return FileResponse(fichier)
+    assuré côté client. Seuls les fichiers de FICHIERS_RACINE sont servis tels
+    quels (les ressources passent par /assets) : un chemin construit à partir
+    de l'adresse (« ../ », « C:/… ») donnait accès à tout le disque."""
+    if chemin in FICHIERS_RACINE:
+        return FileResponse(RACINE / chemin)
     return FileResponse(APPLICATION)

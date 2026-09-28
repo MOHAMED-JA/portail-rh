@@ -23,7 +23,7 @@ from sqlalchemy import select  # noqa: E402
 
 from app.core.config import DATA_DIR  # noqa: E402
 from app.core.database import SessionLocal  # noqa: E402
-from app.core.security import hash_password  # noqa: E402
+from app.core.security import hash_password, revoquer_sessions  # noqa: E402
 from app.models import Employe, JournalAudit  # noqa: E402
 
 if not 2 <= len(sys.argv) <= 3:
@@ -48,6 +48,11 @@ if base.exists():
     shutil.copy2(base, copie)
     print(f"Sauvegarde : {copie}")
 
+# Colonnes ajoutées par une version plus récente que la base (serveur pas encore relancé).
+from app.core import migrations  # noqa: E402
+
+migrations.appliquer()
+
 with SessionLocal() as db:
     e = db.scalar(select(Employe).where(Employe.matricule == matricule))
     if e is None:
@@ -56,6 +61,7 @@ with SessionLocal() as db:
     e.doit_changer_mdp = True
     e.echecs_connexion = 0
     e.bloque_jusqu = None
+    revoquer_sessions(e)
     db.add(JournalAudit(action="mot_de_passe_reinitialise", cible=e.matricule,
                         detail="Outil de secours en ligne de commande"))
     db.commit()

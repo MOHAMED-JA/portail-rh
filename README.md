@@ -22,13 +22,14 @@ signaler un défaut, une incompréhension ou une idée (voir « Donner votre avi
 | Domaine | Ce que fait le portail |
 |---|---|
 | Congés et absences | Demandes, circuit de validation N+1 puis RH, solde calculé en direct (jours ouvrés, fériés), report au 31 décembre, remplaçant pendant une absence, validation automatique après 48 h |
-| Présences | Pointages, anomalies et justificatifs, plannings d'équipe (siège, télétravail, terrain…), liaison avec une pointeuse |
+| Présences | Pointages, anomalies et justificatifs, plannings d'équipe (siège, télétravail, terrain…), liaison avec une pointeuse (export CSV ou lecture réseau) |
 | Objectifs et évaluation | Fiche d'objectifs pondérés, évaluation par le N+1, note de comportement par les RH (80 % / 20 %), fiches validées en lecture seule |
-| Organisation | Organigramme dessiné (arbre ou liste), structures et responsables, remplacement d'un responsable avec prévisualisation |
+| Organisation | Organigramme dessiné (arbre ou liste) centré sur la direction générale, pôles regroupés sous leur responsable, unités vacantes signalées ; structures et responsables (mention « par intérim ») ; remplacement d'un responsable avec prévisualisation |
 | Dossier RH | Carrière, documents, attestations PDF vérifiables par QR code, bilan individuel |
-| Pilotage | Tableau de bord d'équipe, indicateurs, bilan social, analyses, qualité des données |
-| Autres | Notes de frais, formations, avances et prêts, compétences et succession, offres internes, accidents du travail, dossier disciplinaire, entretiens de sortie |
-| Sécurité | Sessions JWT, mots de passe robustes, blocage après 5 échecs, double authentification (TOTP), chiffrement des données sensibles, journal d'audit, copies de secours testées |
+| Pilotage | Tableau de bord d'équipe, indicateurs, bilan social, analyses, qualité des données, **prévisions RH sur 12 mois** (présence prévue par pôle, départs connus et probables, effectifs projetés et besoins de recrutement, fiabilité des données) |
+| Assistant RH | Questions en français (solde, demandes, valideur, règles, équipe…) avec réponses calculées dans le périmètre de chacun, demandes pré-remplies à vérifier ; relais facultatif vers une IA, désactivé par défaut |
+| Autres | Notes de frais, formations, avances sur salaire ou sur primes et prêt social (plafonds réglables), compétences et succession, offres internes, accidents du travail, dossier disciplinaire, entretiens de sortie |
+| Sécurité | Sessions JWT fermées au changement de mot de passe, mots de passe robustes, blocage après 5 échecs, double authentification (TOTP, codes à usage unique), pièces jointes servies après connexion et contrôle des droits, dépôts vérifiés et limités, chiffrement des données sensibles, journal d'audit, copies de secours testées |
 
 L'interface fonctionne sur ordinateur et sur téléphone (application web
 installable).
@@ -87,6 +88,7 @@ Toutes les variables sont facultatives (détail dans `backend/app/core/config.py
 | `PORTAIL_RH_DOUBLE_AUTH_MATRICULES` | Comptes soumis à la double authentification obligatoire |
 | `PORTAIL_RH_TACHES_FOND` | `0` coupe les tâches automatiques |
 | `PORTAIL_RH_DOSSIER_SECOURS` | Dossier des copies de secours quotidiennes |
+| `PORTAIL_RH_IA` | `1` active le relais IA de l'assistant (questions non comprises, sans données personnelles) ; clé dans `ANTHROPIC_API_KEY`, SDK dans `requirements-serveur.txt` ; `PORTAIL_RH_IA_MODELE` et `PORTAIL_RH_IA_EFFORT` facultatifs |
 
 **Règles par défaut** : le calendrier (jours fériés, jours ouvrés, acquisition de
 2,5 jours par mois) suit le droit du travail tunisien, pays d'origine du projet.

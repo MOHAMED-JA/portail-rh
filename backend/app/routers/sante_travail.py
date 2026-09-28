@@ -5,21 +5,17 @@ Accès : RH et intéressé (tout) ; ligne hiérarchique (faits et dates, sans le
 données médicales) ; Direction générale (statistiques)."""
 from __future__ import annotations
 
-import shutil
-import uuid
 from datetime import date, datetime, time, timedelta
-from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.core.config import EXTENSIONS_AUTORISEES, UPLOAD_DIR
 from app.core.database import get_db
 from app.core.security import admin_requis, administrateur_requis, utilisateur_courant
 from app.models import ROLES_RH, AccidentTravail, Employe, JournalAudit, Pointage, StatutEmploye, SuiviAccident
-from app.services import hierarchie, parametres
+from app.services import hierarchie, parametres, televersements
 from app.services.calendrier import est_ouvre
 from app.services.demandes import administrateurs_rh
 from app.services.notifications import notifier
@@ -184,13 +180,7 @@ def joindre(suivi_id: int, fichier: UploadFile = File(...), db: Session = Depend
     s = db.get(SuiviAccident, suivi_id)
     if not s:
         raise HTTPException(status_code=404, detail="Suivi introuvable")
-    extension = Path(fichier.filename or "").suffix.lower()
-    if extension not in EXTENSIONS_AUTORISEES:
-        raise HTTPException(status_code=415, detail="Format non compatible : PDF, DOC ou DOCX uniquement.")
-    cible = f"{uuid.uuid4().hex}{extension}"
-    with (UPLOAD_DIR / cible).open("wb") as sortie:
-        shutil.copyfileobj(fichier.file, sortie)
-    s.piece_jointe = f"/fichiers/{cible}"
+    s.piece_jointe = televersements.enregistrer_piece(db, fichier, utilisateur)
     db.commit()
     return {"piece_jointe": s.piece_jointe}
 

@@ -70,6 +70,12 @@ MATRICULES_DOUBLE_AUTH = frozenset(
     if matricule.strip()
 )
 ORIGINES = [o.strip() for o in os.environ.get("PORTAIL_RH_ORIGINES", "*").split(",") if o.strip()]
+# Assistant RH : relais vers une IA (Claude) pour les seules questions que le
+# moteur local ne comprend pas. Désactivé tant que la DSI n'a pas validé le
+# service ; la clé est lue par le SDK dans ANTHROPIC_API_KEY (jamais en base).
+IA_ACTIVE = os.environ.get("PORTAIL_RH_IA", "0") == "1"
+IA_MODELE = os.environ.get("PORTAIL_RH_IA_MODELE", "claude-opus-5")
+IA_EFFORT = os.environ.get("PORTAIL_RH_IA_EFFORT", "low")
 
 APP_NAME = "Portail RH — Plateforme Ressources Humaines"
 APP_VERSION = "1.0.0"

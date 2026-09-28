@@ -32,10 +32,39 @@ def test_mois_suivant():
     assert mois_suivant(date(2026, 1, 31), 13) == date(2027, 2, 1)
 
 
-def test_plafonds(client, entetes):
-    assert demander(client, entetes, "avance", 5000, 2).status_code == 422          # plafond 1 000 DT
-    assert demander(client, entetes, "avance", 500, 6).status_code == 422           # 3 mensualités au plus
+def test_avances_sans_plafond(client, entetes):
+    # Politique du 25/09/2026 : ni plafond de montant ni limite de mensualités.
+    assert demander(client, entetes, "avance", 50000, 48).status_code == 201
+    assert demander(client, entetes, "avance_primes", 25000, 36).status_code == 201
     assert demander(client, entetes, "inexistant", 500, 2).status_code == 422
+    types = client.get("/api/prets/types", headers=entetes("100259")).json()
+    assert types["avance_primes"]["libelle"] == "Avance sur primes"
+    assert types["avance"]["plafond"] is None and types["avance"]["mensualites_max"] is None
+
+
+def test_pret_social_sept_salaires_bruts_et_sept_ans(client, entetes):
+    rh = entetes("ADMINRH")
+    assert client.put("/api/remuneration/collaborateur/100259", headers=rh,
+                      json={"salaire_base": 2000, "primes_fixes": 500}).status_code == 200
+    r = demander(client, entetes, "pret_social", 14001, 24)                     # 7 × 2 000 = 14 000 DT
+    assert r.status_code == 422 and "7 salaires bruts" in r.json()["detail"]
+    assert demander(client, entetes, "pret_social", 14000, 85).status_code == 422  # 84 mensualités (7 ans)
+    p = demander(client, entetes, "pret_social", 14000, 84)
+    assert p.status_code == 201
+    assert p.json()["plafond"] == {"montant": 14000, "calculable": True, "libelle": "7 salaires bruts mensuels"}
+    # La RH ne peut pas non plus accorder au-delà du plafond.
+    d = client.post(f"/api/prets/{p.json()['id']}/decision", headers=rh, json={"accorde": True, "montant": 15000})
+    assert d.status_code == 422
+
+
+def test_pret_social_sans_salaire_saisi_la_rh_decide(client, entetes):
+    p = demander(client, entetes, "pret_social", 30000, 60, qui="100281")
+    assert p.status_code == 201
+    assert p.json()["plafond"]["calculable"] is False
+    liste = client.get("/api/prets", headers=entetes("ADMINRH")).json()
+    assert next(x for x in liste if x["id"] == p.json()["id"])["plafond"]["calculable"] is False
+    d = client.post(f"/api/prets/{p.json()['id']}/decision", headers=entetes("ADMINRH"), json={"accorde": True})
+    assert d.status_code == 200
 
 
 def test_une_seule_demande_en_cours_par_type(client, entetes):
@@ -107,3 +136,4 @@ def test_parametres_reserves_a_l_administrateur(client, entetes):
     r = client.put("/api/prets/types", headers=entetes("ADMINRH"), json=corps)
     assert r.status_code == 200 and r.json()["avance"]["plafond"] == 1500
     assert demander(client, entetes, "avance", 1400, 4).status_code == 201
+    assert demander(client, entetes, "avance_primes", 1400, 5).status_code == 201   # autres types inchangés

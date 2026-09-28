@@ -12,7 +12,9 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.security import admin_requis, administrateur_requis, hash_password, utilisateur_courant, valideur_requis
+from app.core.security import (
+    admin_requis, administrateur_requis, hash_password, revoquer_sessions, utilisateur_courant, valideur_requis,
+)
 from app.models import (
     Anomalie,
     CodePresence,
@@ -100,7 +102,7 @@ def lister_employes(
         requete = requete.where(Employe.departement_id == departement_id)
     if statut:
         requete = requete.where(Employe.statut == statut)
-    return list(db.scalars(requete.order_by(Employe.nom, Employe.prenom).limit(500)))
+    return list(db.scalars(requete.order_by(Employe.prenom, Employe.nom).limit(500)))
 
 
 @router.post("/employes", response_model=EmployeDetail, status_code=201, summary="Créer un employé")
@@ -181,6 +183,7 @@ def modifier_employe(
         employe.doit_changer_mdp = True
         employe.echecs_connexion = 0
         employe.bloque_jusqu = None
+        revoquer_sessions(employe)
         _tracer(db, utilisateur, "reinitialisation_mot_de_passe", employe.matricule)
         notifier_mdp = True
     else:
@@ -360,7 +363,7 @@ def annuaire(db: Session = Depends(get_db), utilisateur: Employe = Depends(utili
     """Vue allégée de l'effectif : pas de solde ni de rôle, donc consultable
     par tout collaborateur connecté."""
     employes = db.scalars(
-        select(Employe).where(Employe.statut != StatutEmploye.SORTI).order_by(Employe.nom, Employe.prenom)
+        select(Employe).where(Employe.statut != StatutEmploye.SORTI).order_by(Employe.prenom, Employe.nom)
     ).all()
     return [
         {
@@ -428,6 +431,7 @@ def _detail_departement(db: Session, departement: Departement) -> DepartementDet
         nom=departement.nom,
         couleur=departement.couleur,
         parent_id=departement.parent_id,
+        interim=bool(departement.interim),
         responsable_id=departement.responsable_id,
         effectif=db.scalar(
             select(func.count(Employe.id)).where(
@@ -436,6 +440,7 @@ def _detail_departement(db: Session, departement: Departement) -> DepartementDet
         ) or 0,
         responsable=(
             f"{departement.responsable.prenom} {departement.responsable.nom}"
+            + (" (par intérim)" if departement.interim else "")
             if departement.responsable else None
         ),
     )
@@ -462,6 +467,7 @@ def creer_departement(
         couleur=payload.couleur,
         responsable_id=payload.responsable_id,
         parent_id=payload.parent_id,
+        interim=payload.interim,
     )
     db.add(departement)
     _tracer(db, utilisateur, "creation_departement", payload.code.upper(), payload.nom)
@@ -487,9 +493,13 @@ def modifier_departement(
     departement.code = payload.code.upper()
     departement.nom = payload.nom
     departement.couleur = payload.couleur
+    if payload.responsable_id != departement.responsable_id and "interim" not in payload.model_fields_set:
+        departement.interim = False  # l'intérim suit la personne, pas la structure
     departement.responsable_id = payload.responsable_id
     if "parent_id" in payload.model_fields_set:
         departement.parent_id = payload.parent_id
+    if "interim" in payload.model_fields_set:
+        departement.interim = payload.interim
     _tracer(db, utilisateur, "modification_departement", departement.code)
     db.commit()
     db.refresh(departement)

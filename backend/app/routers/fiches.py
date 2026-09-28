@@ -332,7 +332,7 @@ def lister(
 
         requete = requete.where(Employe.id.in_(hierarchie.perimetre_ids(db, utilisateur) or {-1}))
     resultats = []
-    for employe in db.scalars(requete.order_by(Employe.nom, Employe.prenom)):
+    for employe in db.scalars(requete.order_by(Employe.prenom, Employe.nom)):
         if sans_fiche_objectifs(employe):
             continue
         obj = db.scalar(select(FicheObjectifs).where(

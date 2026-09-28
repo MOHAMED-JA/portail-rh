@@ -50,7 +50,7 @@ def preparer(db: Session, responsable_id: int, remplacant_id: int) -> dict:
         Employe.validateur_id == responsable.id,
         Employe.id.not_in((responsable.id, remplacant.id)),
         Employe.statut != StatutEmploye.SORTI,
-    ).order_by(Employe.nom, Employe.prenom)))
+    ).order_by(Employe.prenom, Employe.nom)))
     structures = list(db.scalars(select(Departement).where(
         Departement.responsable_id == responsable.id
     ).order_by(Departement.nom)))

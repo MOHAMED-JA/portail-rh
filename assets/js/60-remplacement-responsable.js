@@ -7,7 +7,7 @@ function blocRemplacementResponsable(f) {
   if (!connecte() || estGestionnaire()) return "";
   const choix = f.remplacementResponsable || (f.remplacementResponsable = { responsable: "", remplacant: "" });
   const actifs = EMPLOYES.filter((e) => e.statut !== "sorti")
-    .slice().sort((a, b) => nomComplet(a).localeCompare(nomComplet(b), "fr"));
+    .slice().sort(compareNoms);
   const options = (selection, exclu = "") => actifs.filter((e) => e.matricule !== exclu).map((e) =>
     `<option value="${e.id}" ${String(e.id) === String(selection) ? "selected" : ""}>${echapper(nomComplet(e))} · ${echapper(e.matricule)} · ${echapper(e.poste || "Poste non renseigné")}</option>`).join("");
   const rapport = etat.remplacementResponsableRapport;

@@ -24,7 +24,7 @@ def avec_double_auth(db, employe):
 
 def test_sans_double_auth_la_demande_part_a_la_rh(client, db, entetes):
     r = client.post("/api/auth/oubli", json={"matricule": "100281"}).json()
-    assert r["canal"] == "rh"
+    assert r["canal"] == "generique"
     attente = client.get("/api/auth/oubli/en-attente", headers=entetes("ADMINRH")).json()
     assert [d["employe"]["matricule"] for d in attente] == ["100281"]
     rh = compte(db, "ADMINRH")
@@ -36,15 +36,26 @@ def test_sans_double_auth_la_demande_part_a_la_rh(client, db, entetes):
 
 def test_matricule_inconnu_ne_dit_rien(client, db):
     r = client.post("/api/auth/oubli", json={"matricule": "999999"})
-    assert r.status_code == 200 and r.json()["canal"] == "rh"
+    assert r.status_code == 200 and r.json()["canal"] == "generique"
     trace = db.query(DemandeReinitialisation).filter_by(matricule="999999").one()
     assert trace.employe_id is None and trace.statut == "echec"     # tracé, mais rien de divulgué
+
+
+def test_reponse_identique_quel_que_soit_le_compte(client, db):
+    """Inconnu, demande à la RH ou double authentification : la même réponse,
+    sans quoi l'écran confirmerait les matricules valides et leurs protections."""
+    avec_double_auth(db, compte(db, "100259"))
+    inconnu = client.post("/api/auth/oubli", json={"matricule": "999999"})
+    sans_protection = client.post("/api/auth/oubli", json={"matricule": "100281"})
+    protege = client.post("/api/auth/oubli", json={"matricule": "100259"})
+    assert inconnu.status_code == sans_protection.status_code == protege.status_code == 200
+    assert inconnu.json() == sans_protection.json() == protege.json()
 
 
 def test_reinitialisation_par_double_auth(client, db):
     employe = compte(db)
     secret, codes = avec_double_auth(db, employe)
-    assert client.post("/api/auth/oubli", json={"matricule": "100259"}).json()["canal"] == "totp"
+    assert client.post("/api/auth/oubli", json={"matricule": "100259"}).json()["double_auth_possible"] is True
 
     r = client.post("/api/auth/oubli/double-auth", json={
         "matricule": "100259", "code": totp.code(secret), "code_secours": codes[0], "nouveau": NOUVEAU})

@@ -1,15 +1,12 @@
 """Demandes de congé, d'autorisation et de mission + file de validation."""
 from __future__ import annotations
 
-import shutil
-import uuid
 from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
-from app.core.config import EXTENSIONS_AUTORISEES, UPLOAD_DIR
 from app.core.database import get_db
 from app.core.security import utilisateur_courant, valideur_ou_suppleant
 from app.models import (
@@ -32,6 +29,7 @@ from app.schemas import (
     SimulationConge,
 )
 from app.services import demandes as svc
+from app.services import televersements
 from app.services.calendrier import compter_jours_conge, compter_jours, feries_dans_periode
 
 router = APIRouter(prefix="/api/demandes", tags=["Demandes"])
@@ -146,7 +144,7 @@ def demander_conge(
         demi_journee=payload.demi_journee,
         nombre_jours=nombre,
         commentaire=payload.commentaire,
-        piece_jointe=payload.piece_jointe,
+        piece_jointe=televersements.exiger_auteur(db, payload.piece_jointe, utilisateur),
     )
     return detail(demande)
 
@@ -240,18 +238,11 @@ def demander_mission(
 
 
 @router.post("/piece-jointe", summary="Téléverser un justificatif")
-def televerser(fichier: UploadFile = File(...), utilisateur: Employe = Depends(utilisateur_courant)):
-    nom_fichier = fichier.filename or ""
-    extension = ("." + nom_fichier.rsplit(".", 1)[-1].lower()) if "." in nom_fichier else ""
-    if extension not in EXTENSIONS_AUTORISEES:
-        raise HTTPException(
-            status_code=422,
-            detail="Format non compatible : seuls les fichiers PDF, DOC et DOCX sont acceptés.",
-        )
-    nom = f"{uuid.uuid4().hex}{extension}"
-    with (UPLOAD_DIR / nom).open("wb") as cible:
-        shutil.copyfileobj(fichier.file, cible)
-    return {"chemin": f"/fichiers/{nom}", "nom_original": fichier.filename}
+def televerser(fichier: UploadFile = File(...), db: Session = Depends(get_db),
+               utilisateur: Employe = Depends(utilisateur_courant)):
+    chemin = televersements.enregistrer_piece(db, fichier, utilisateur)
+    db.commit()
+    return {"chemin": chemin, "nom_original": fichier.filename}
 
 
 # ------------------------------------------------------------------ Consultation
@@ -290,25 +281,7 @@ def file_validation(
     db: Session = Depends(get_db),
     utilisateur: Employe = Depends(valideur_ou_suppleant),
 ):
-    from app.services import hierarchie
-
-    requete = select(Demande)
-    if utilisateur.role in ROLES_RH:
-        pass  # l'admin RH voit toute l'entreprise
-    elif hierarchie.est_direction_generale(utilisateur) and not hierarchie.supervise_les_demandes(utilisateur):
-        # Directeur Général : consultation (historique de l'équipe), pas de file de décision.
-        requete = requete.where(Demande.validateur_id == utilisateur.id)
-    else:
-        from app.services import delegation
-
-        ids = _equipe_ids(db, utilisateur)
-        # Remplacement déclaré : la file du titulaire s'ajoute à la sienne.
-        titulaires = delegation.titulaires_de(db, utilisateur.id)
-        requete = requete.where(
-            or_(Demande.validateur_id == utilisateur.id,
-                Demande.employe_id.in_(ids or [-1]),
-                Demande.validateur_id.in_(titulaires or [-1]))
-        ).where(Demande.derogation_rh.is_(False))
+    requete = svc.requete_file_validation(db, utilisateur)
     if not inclure_traitees:
         requete = requete.where(Demande.statut == StatutDemande.EN_ATTENTE)
     if type_demande:

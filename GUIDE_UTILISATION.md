@@ -100,10 +100,21 @@ ou DOCX) et **transmettez**. Le supérieur approuve, puis les RH marquent la not
 ### Organigramme et équipe
 
 - **Organigramme** : arbre ou liste, recherche d'une personne, zoom, impression.
+  L'arbre s'ouvre centré sur la direction générale ; les pôles apparaissent sous
+  leur responsable et les unités sans titulaire en carte « Poste vacant ».
+  Déplier une branche garde la position de lecture ; les noms sont classés de A à Z.
 - En `VT0003`, le **tableau de bord de l'équipe** montre les absents du jour, les
   demandes en attente et les fiches à traiter.
 - **Calendrier d'équipe** : un jour où plus d'un quart de l'équipe est absent
   est signalé, avec des remplaçants possibles.
+
+### Assistant RH (avec le serveur)
+
+Le bouton **Assistant**, en haut de l'écran, répond à des questions en français :
+« quel est mon solde ? », « qui valide mes demandes ? », « je veux un congé du 12
+au 14 octobre »… Les réponses sont calculées sur les données du portail, dans le
+périmètre de chacun ; une demande est **pré-remplie**, jamais déposée à votre place.
+Un relais vers une IA peut être activé par l'administrateur (voir le README).
 
 ### Côté RH (`VT0002`)
 
@@ -113,6 +124,12 @@ ou DOCX) et **transmettez**. Le supérieur approuve, puis les RH marquent la not
 - **Paramètres RH** : horaires, tolérance de retard, types de congé, jours fériés
   mobiles, seuils de validation. Les changements s'appliquent immédiatement.
 - **Rapports** et **Bilan social** : indicateurs, graphiques, exports Excel et PDF.
+- **Prévisions RH** (avec le serveur) : présence prévue mois par mois pour chaque
+  pôle, départs connus et probables, effectif projeté et besoin de recrutement
+  face à un effectif cible. Tant que l'historique est court, des repères réglables
+  remplacent le constaté, et la page indique quelles données compléter.
+- **Avances et prêts** : avance sur salaire ou sur primes, prêt social ; plafonds et
+  durées se règlent dans l'onglet *Plafonds et taux*.
 - **Mes documents** : attestations PDF vérifiables par QR code.
 
 ## 4. Règles appliquées par défaut

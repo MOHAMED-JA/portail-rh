@@ -31,13 +31,32 @@ def code(secret: str, instant: float | None = None) -> str:
     return str(valeur % 10 ** CHIFFRES).zfill(CHIFFRES)
 
 
-def verifier(secret: str, saisi: str, instant: float | None = None) -> bool:
+def pas_reconnu(secret: str, saisi: str, instant: float | None = None) -> int | None:
+    """Pas de temps (compteur de 30 s) du code saisi, dans la tolérance ; None s'il est faux."""
     saisi = (saisi or "").replace(" ", "")
     if not (saisi.isdigit() and len(saisi) == CHIFFRES):
-        return False
+        return None
     maintenant = instant if instant is not None else time.time()
-    return any(hmac.compare_digest(code(secret, maintenant + d * PERIODE), saisi)
-               for d in range(-TOLERANCE, TOLERANCE + 1))
+    for d in range(-TOLERANCE, TOLERANCE + 1):
+        moment = maintenant + d * PERIODE
+        if hmac.compare_digest(code(secret, moment), saisi):
+            return int(moment // PERIODE)
+    return None
+
+
+def verifier(secret: str, saisi: str, instant: float | None = None) -> bool:
+    return pas_reconnu(secret, saisi, instant) is not None
+
+
+def consommer(employe, saisi: str, instant: float | None = None) -> bool:
+    """Vérifie le code d'un compte et le marque utilisé : ce code (ou un plus
+    ancien) est ensuite refusé, même encore affiché sur le téléphone. Un code
+    observé par-dessus l'épaule ne rouvre pas une session."""
+    pas = pas_reconnu(employe.totp_secret, saisi, instant)
+    if pas is None or (employe.totp_dernier_pas is not None and pas <= employe.totp_dernier_pas):
+        return False
+    employe.totp_dernier_pas = pas
+    return True
 
 
 def uri(secret: str, compte: str) -> str:

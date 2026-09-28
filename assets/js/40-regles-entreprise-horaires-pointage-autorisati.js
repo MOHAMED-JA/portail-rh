@@ -172,7 +172,8 @@ function vuePointeuse() {
           <button class="btn petit" id="cle-copier">${ico("copie")} Copier</button>
           <button class="btn petit danger" id="cle-regenerer">${ico("alerte")} Nouvelle clé</button>
         </div>
-        <span class="aide">À renseigner dans le connecteur (outils\\connecteur_pointeuse.py). Une nouvelle clé désactive l'ancienne.</span></div>
+        <span class="aide">À renseigner dans le connecteur (outils\\connecteur_pointeuse.py). Une nouvelle clé désactive l'ancienne.</span>
+        <span class="aide">${ico("horloge")} Pointeuse de Veltaris : <strong>Virdi UBio-X Pro</strong> (visage, empreinte, carte). Le connecteur lit l'<strong>export CSV</strong> de son logiciel (source « fichier ») ; la lecture directe sera ajoutée une fois ce logiciel identifié.</span></div>
       <div class="champ"><label for="badges">Correspondance badge → matricule (si les badges ne portent pas le matricule)</label>
         <textarea class="saisie mono" id="badges" style="min-height:110px" placeholder="1024;100259&#10;1025;100281">${echapper(badges)}</textarea>
         <span class="aide">Une ligne par badge : numéro;matricule.</span></div>

@@ -1,11 +1,25 @@
 /* ==========================================================================
-   51. AVANCES SUR SALAIRE ET PRÊTS SOCIAUX
+   51. AVANCES SUR SALAIRE, AVANCES SUR PRIMES ET PRÊTS SOCIAUX
    Demande du collaborateur, décision RH, échéancier → export paie.
    Confidentiel : intéressé et RH uniquement.
    ========================================================================== */
 const STATUTS_PRET = { demande: ["attente", "En attente"], accorde: ["info", "En remboursement"], refuse: ["rejetee", "Refusé"],
   solde: ["approuvee", "Remboursé"], annule: ["annulee", "Annulé"] };
 const dt = (v) => `${fmtNombre(v, 3)} DT`;
+// Limites d'un type : null = sans limite (avances) ; prêt social en salaires bruts.
+function limitesTypePret(t) {
+  const plafond = t.plafond_salaires ? `Plafond ${fmtNombre(t.plafond_salaires, 0)} salaires bruts mensuels`
+    : t.plafond ? `Plafond ${fmtNombre(t.plafond, 0)} DT` : "Sans plafond de montant";
+  const duree = t.mensualites_max ? `${t.mensualites_max} mensualité(s) au plus${t.mensualites_max % 12 === 0 ? ` (${t.mensualites_max / 12} ans)` : ""}`
+    : "sans limite de mensualités";
+  return `${plafond} · ${duree} · ${t.taux ? `${fmtNombre(t.taux, 2)} % par an` : "sans intérêts"}`;
+}
+function lignePlafondPret(p) {
+  const x = p.plafond;
+  if (!x || x.libelle === "sans plafond") return "";
+  return `<p style="font-size:12.5px;margin-bottom:8px"><strong>Plafond :</strong> ${echapper(x.libelle)}${x.calculable
+    ? ` = ${dt(x.montant)}` : ` — <span class="badge attente">non calculable</span> salaire de base non saisi (Masse salariale → Salaires) : décision RH au vu de la demande`}</p>`;
+}
 const moisLisible = (iso) => new Date(`${String(iso).slice(0, 7)}-01T00:00:00`).toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 
 function tableauEcheances(p) {
@@ -25,6 +39,7 @@ function cartePret(p, rh) {
       <span class="carte-sous">${rh ? `${echapper(p.employe.prenom + " " + p.employe.nom)} · ` : ""}${p.nb_mensualites} mensualité(s)${p.taux_annuel ? ` · ${fmtNombre(p.taux_annuel, 2)} %/an` : " · sans intérêts"} · demandé le ${fmtDate(String(p.demande_le).slice(0, 10))}</span></div>
       <span class="badge ${c}">${l}</span></div>
     ${p.motif ? `<p style="font-size:12.5px;color:var(--encre-2);margin-bottom:8px">« ${echapper(p.motif)} »</p>` : ""}
+    ${p.statut === "demande" ? lignePlafondPret(p) : ""}
     ${p.commentaire_rh ? `<p style="font-size:12.5px;margin-bottom:8px"><strong>RH :</strong> ${echapper(p.commentaire_rh)}</p>` : ""}
     ${p.echeances.length ? `<div class="grille" style="grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
         ${[["Mensualité", dt(p.mensualite || 0)], ["Déjà retenu", dt(p.rembourse)], ["Reste dû", dt(p.reste_du)]].map(([k, v]) =>
@@ -55,23 +70,24 @@ VUES["/prets"] = function () {
     corps = `<div class="grille" style="grid-template-columns:minmax(280px,380px) 1fr;gap:16px;align-items:start">
       <section class="sirh-section"><h4>Nouvelle demande</h4>
         <div class="champ"><label for="pr-type">Type</label><select class="saisie" id="pr-type">${actifs.map(([k, x]) => `<option value="${k}" ${f.type === k ? "selected" : ""}>${echapper(x.libelle)}</option>`).join("")}</select>
-          <span class="aide">Plafond ${fmtNombre(t.plafond, 0)} DT · ${t.mensualites_max} mensualité(s) au plus · ${t.taux ? `${fmtNombre(t.taux, 2)} % par an` : "sans intérêts"}</span></div>
-        <div class="ligne-champs"><div class="champ"><label for="pr-montant">Montant (DT)</label><input class="saisie num" type="number" min="1" step="0.001" max="${t.plafond}" id="pr-montant" value="${f.montant}"></div>
-          <div class="champ"><label for="pr-mensualites">Mensualités</label><input class="saisie num" type="number" min="1" max="${t.mensualites_max}" id="pr-mensualites" value="${f.mensualites}"></div></div>
+          <span class="aide">${limitesTypePret(t)}</span></div>
+        <div class="ligne-champs"><div class="champ"><label for="pr-montant">Montant (DT)</label><input class="saisie num" type="number" min="1" step="0.001" ${t.plafond ? `max="${t.plafond}"` : ""} id="pr-montant" value="${f.montant}"></div>
+          <div class="champ"><label for="pr-mensualites">Mensualités</label><input class="saisie num" type="number" min="1" ${t.mensualites_max ? `max="${t.mensualites_max}"` : ""} id="pr-mensualites" value="${f.mensualites}"></div></div>
         <div id="pr-simulation" class="aide" style="min-height:18px"></div>
         <div class="champ"><label for="pr-motif">Motif</label><textarea class="saisie" id="pr-motif" style="min-height:60px" placeholder="Rentrée scolaire, frais médicaux, logement…"></textarea></div>
         <button class="btn primaire" id="pr-demander">${ico("fleche")} Envoyer la demande à la RH</button>
         <span class="aide">${ico("bouclier")} Confidentiel : seule la RH voit votre demande. Les retenues sont prélevées sur salaire chaque mois.</span></section>
       <div style="display:flex;flex-direction:column;gap:12px">${d.mes.length ? d.mes.map((p) => cartePret(p, false)).join("") : etatVide("portefeuille", "Aucune demande", "Vos avances et prêts apparaîtront ici avec leur échéancier.")}</div></div>`;
   } else if (f.onglet === "parametres") {
-    corps = `<div class="tableau-boite"><table style="min-width:560px"><thead><tr><th>Type</th><th>Plafond (DT)</th><th>Mensualités max.</th><th>Taux annuel (%)</th><th>Proposé</th></tr></thead><tbody>
+    corps = `<div class="tableau-boite"><table style="min-width:680px"><thead><tr><th>Type</th><th>Plafond (DT)</th><th>Plafond (salaires bruts)</th><th>Mensualités max.</th><th>Taux annuel (%)</th><th>Proposé</th></tr></thead><tbody>
       ${Object.entries(d.types).map(([k, x]) => `<tr><td><strong>${echapper(x.libelle)}</strong></td>
-        <td><input class="saisie num" type="number" min="1" data-pp="${k}:plafond" value="${x.plafond}" style="width:120px"></td>
-        <td><input class="saisie num" type="number" min="1" max="120" data-pp="${k}:mensualites_max" value="${x.mensualites_max}" style="width:90px"></td>
+        <td><input class="saisie num" type="number" min="1" data-pp="${k}:plafond" value="${x.plafond ?? ""}" placeholder="Sans" style="width:120px"></td>
+        <td><input class="saisie num" type="number" min="1" max="60" step="0.5" data-pp="${k}:plafond_salaires" value="${x.plafond_salaires ?? ""}" placeholder="Sans" style="width:90px"></td>
+        <td><input class="saisie num" type="number" min="1" max="600" data-pp="${k}:mensualites_max" value="${x.mensualites_max ?? ""}" placeholder="Sans" style="width:90px"></td>
         <td><input class="saisie num" type="number" min="0" max="30" step="0.01" data-pp="${k}:taux" value="${x.taux}" style="width:90px"></td>
         <td><input type="checkbox" data-pp="${k}:actif" ${x.actif ? "checked" : ""} style="width:17px;height:17px"></td></tr>`).join("")}</tbody></table></div>
       <button class="btn primaire" id="pr-enregistrer-types" style="margin-top:10px">${ico("check")} Enregistrer</button>
-      <p class="aide" style="margin-top:6px">Valeurs par défaut à ajuster selon la politique de Veltaris. Un changement ne modifie pas les prêts déjà accordés.</p>`;
+      <p class="aide" style="margin-top:6px">Case vide = sans limite. Politique Veltaris : avances sans plafond ni limite de mensualités ; prêt social plafonné à 7 salaires bruts mensuels (salaire de base) et 84 mensualités (7 ans). Un changement ne modifie pas les prêts déjà accordés.</p>`;
   } else {
     const liste = f.onglet === "traiter" ? d.tous.filter((p) => p.statut === "demande") : d.tous;
     const encours = d.tous.filter((p) => p.statut === "accorde");
@@ -84,7 +100,7 @@ VUES["/prets"] = function () {
   }
   return `<section class="carte">
     <div class="carte-entete" style="flex-wrap:wrap;gap:10px"><div><h2>Avances et prêts</h2>
-      <p style="font-size:12.5px;color:var(--encre-3);margin-top:3px">Avance sur salaire ou prêt social — retenues mensuelles sur salaire.</p></div>
+      <p style="font-size:12.5px;color:var(--encre-3);margin-top:3px">Avance sur salaire, avance sur primes ou prêt social — retenues mensuelles sur salaire.</p></div>
       ${onglets.length ? `<div class="segment" id="onglets-prets">${onglets.map(([k, l]) => `<button data-onglet-pret="${k}" class="${f.onglet === k ? "actif" : ""}">${l}</button>`).join("")}</div>` : ""}</div>
     ${corps}</section>`;
 };
@@ -155,7 +171,7 @@ BRANCHEMENTS["/prets"] = function () {
     $$("[data-pp]").forEach((c) => {
       const [k, champ] = c.dataset.pp.split(":");
       corps[k] = corps[k] || {};
-      corps[k][champ] = c.type === "checkbox" ? c.checked : Number(c.value);
+      corps[k][champ] = c.type === "checkbox" ? c.checked : c.value === "" ? null : Number(c.value);
     });
     try { await API.appel("/api/prets/types", { methode: "PUT", corps }); toast("Paramètres enregistrés", "", "succes"); recharger(); }
     catch (souci) { toast("Refusé", souci.message, "danger"); }

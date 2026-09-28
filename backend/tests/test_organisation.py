@@ -123,3 +123,73 @@ def test_soldes_et_liste_limites_a_la_ligne(client, entetes, db):
 
 def test_structure_sans_nom_refusee(client, entetes):
     assert client.post("/api/administration/departements", headers=entetes("ADMINRH"), json={"code": "VIDE", "nom": "   "}).status_code == 422
+
+
+def test_plan_suppression_structures_vides_et_interim(db):
+    appliquer_plan(db, plan_test())
+    plan = PlanOrganisation.model_validate({
+        "reference": "Aplatissement",
+        "structures": [
+            {"code": "POLE", "nom": "Pôle", "responsable": "100130", "interim": True},
+            {"code": "CENTRALE", "nom": "Direction centrale", "parent": "POLE"},
+            {"code": "SANTE", "nom": "Santé", "parent": "CENTRALE", "responsable": "100259"}],
+        "affectations": []})
+    appliquer_plan(db, plan)
+    db.commit()
+    aplati = PlanOrganisation.model_validate({
+        "reference": "Aplatissement",
+        "structures": [
+            {"code": "POLE", "nom": "Pôle", "responsable": "100130", "interim": True},
+            {"code": "SANTE", "nom": "Santé", "parent": "POLE", "responsable": "100259"}],
+        "affectations": [],
+        "suppressions": ["CENTRALE"]})
+    bilan = appliquer_plan(db, aplati)
+    db.commit()
+    assert db.query(Departement).filter_by(code="CENTRALE").first() is None
+    pole = db.query(Departement).filter_by(code="POLE").one()
+    assert pole.interim is True
+    assert db.query(Departement).filter_by(code="SANTE").one().parent_id == pole.id
+    assert any(c["type"] == "suppression_structure" for c in bilan["changements"])
+    # Rejouer : aucun changement ; un ancien plan sans « interim » ne l'efface pas.
+    assert appliquer_plan(db, aplati)["changements"] == []
+    assert appliquer_plan(db, plan_test())["changements"] == []
+    assert db.query(Departement).filter_by(code="POLE").one().interim is True
+
+
+def test_plan_suppression_refusee_si_structure_occupee(db):
+    appliquer_plan(db, plan_test())
+    db.commit()
+    for suppression, message in (("POLE", "parente"), ("SANTE", "personnel")):
+        plan = PlanOrganisation.model_validate({"reference": "Refus", "structures": [], "affectations": [],
+                                                "suppressions": [suppression]})
+        with pytest.raises(ValueError, match=message):
+            appliquer_plan(db, plan)
+        db.rollback()
+    assert db.query(Departement).filter_by(code="SANTE").one()
+
+
+def test_api_interim_conserve_si_non_transmis(client, entetes):
+    h = entetes("ADMINRH")
+    d = client.post("/api/administration/departements", headers=h, json={"code": "INT", "nom": "Intérim", "interim": True}).json()
+    assert d["interim"] is True
+    r = client.put(f"/api/administration/departements/{d['id']}", headers=h, json={"code": "INT", "nom": "Intérim bis"})
+    assert r.json()["interim"] is True
+    r = client.put(f"/api/administration/departements/{d['id']}", headers=h, json={"code": "INT", "nom": "Intérim bis", "interim": False})
+    assert r.json()["interim"] is False
+
+
+def test_api_interim_affiche_et_retire_au_changement_de_responsable(client, entetes, db):
+    h = entetes("ADMINRH")
+    claire = db.query(Employe).filter_by(matricule="100130").one().id
+    julien = db.query(Employe).filter_by(matricule="100259").one().id
+    d = client.post("/api/administration/departements", headers=h,
+                    json={"code": "PRI", "nom": "Pôle", "responsable_id": claire, "interim": True}).json()
+    assert d["responsable"] == "Claire Morel (par intérim)"
+    r = client.put(f"/api/administration/departements/{d['id']}", headers=h,
+                   json={"code": "PRI", "nom": "Pôle", "responsable_id": julien}).json()
+    assert r["interim"] is False and r["responsable"] == "Julien Garnier"
+
+
+def test_listes_du_personnel_par_ordre_alphabetique(client, entetes):
+    noms = [f"{e['prenom']} {e['nom']}" for e in client.get("/api/administration/employes", headers=entetes("ADMINRH")).json()]
+    assert noms == sorted(noms, key=str.casefold)

@@ -25,7 +25,7 @@ feuillesOrganigramme = function (simples, { responsable, correspond, f }) {
       const memeStructure = dept === (responsable.dept || "");
       const trouve = liste.some(correspond);
       const ouvert = memeStructure || f.groupesTous || f.groupesDeplies.has(cle) || trouve;
-      liste.sort((a, b) => (a.nom + a.prenom).localeCompare(b.nom + b.prenom, "fr"));
+      liste.sort(compareNoms);
       return `<li><div class="org-carte org-structure ${trouve ? "trouve" : ""}" style="--n:var(--encre-3)" id="org-grp:${echapper(cle)}">
         ${memeStructure ? "" : `<div class="haut"><span class="ini">${ico("batiment")}</span><div style="min-width:0">
           <strong>${echapper(nomGroupe(dept))}</strong><span class="niv">Structure</span></div></div>`}

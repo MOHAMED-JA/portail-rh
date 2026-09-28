@@ -6,8 +6,6 @@ from __future__ import annotations
 
 import io
 import json
-import shutil
-import uuid
 from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
@@ -16,7 +14,6 @@ from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.core.config import EXTENSIONS_AUTORISEES, UPLOAD_DIR
 from app.core.database import get_db
 from app.core.security import admin_requis, administrateur_requis, utilisateur_courant
 from app.models import (
@@ -50,7 +47,7 @@ from app.models import (
     TypeDemande,
 )
 from app.models import ROLES_RH  # noqa: E402
-from app.services import parametres, sirh
+from app.services import parametres, sirh, televersements
 from app.services.calendrier import est_ouvre
 from app.services.demandes import administrateurs_rh, libelle_sous_type, solde_courant
 from app.services.documents import EnteteDocument, generer_excel
@@ -479,14 +476,7 @@ def deposer_document(document_id: int, fichier: UploadFile = File(...), db: Sess
     d = db.get(DemandeDocument, document_id)
     if not d:
         raise HTTPException(status_code=404, detail="Demande introuvable")
-    nom = fichier.filename or ""
-    extension = ("." + nom.rsplit(".", 1)[-1].lower()) if "." in nom else ""
-    if extension not in EXTENSIONS_AUTORISEES:
-        raise HTTPException(status_code=422, detail="Format non compatible : PDF, DOC ou DOCX uniquement.")
-    cible = f"{uuid.uuid4().hex}{extension}"
-    with (UPLOAD_DIR / cible).open("wb") as sortie:
-        shutil.copyfileobj(fichier.file, sortie)
-    d.fichier = f"/fichiers/{cible}"
+    d.fichier = televersements.enregistrer_piece(db, fichier, utilisateur)
     db.commit()
     return traiter_document(document_id, TraitementPayload(statut="prete"), db, utilisateur)
 
@@ -801,7 +791,7 @@ def export_paie(mois: str, db: Session = Depends(get_db), utilisateur: Employe =
     ouvres = [debut + timedelta(days=n) for n in range((fin - debut).days + 1) if est_ouvre(debut + timedelta(days=n))]
     lignes = []
     for e in db.scalars(select(Employe).where((Employe.statut != StatutEmploye.SORTI) | (Employe.date_sortie >= debut))
-                        .order_by(Employe.nom, Employe.prenom)):
+                        .order_by(Employe.prenom, Employe.nom)):
         jours = {"annuel": 0.0, "maladie": 0.0, "sans_solde": 0.0, "autres": 0.0, "mission": 0.0}
         for d in db.scalars(select(Demande).where(Demande.employe_id == e.id, Demande.statut == StatutDemande.APPROUVEE,
                                                   Demande.type_demande.in_([TypeDemande.CONGE, TypeDemande.MISSION]),

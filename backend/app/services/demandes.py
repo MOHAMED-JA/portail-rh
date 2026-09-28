@@ -5,7 +5,7 @@ import secrets
 from datetime import date, datetime
 
 from fastapi import HTTPException
-from sqlalchemy import select
+from sqlalchemy import Select, or_, select
 from sqlalchemy.orm import Session
 
 from app.models import (
@@ -137,6 +137,27 @@ def heures_autorisation_du_mois(db: Session, employe_id: int, jour: date) -> flo
         Demande.sous_type != PRIERE_VENDREDI,   # hors quota : autorisation permanente
         Demande.date_debut >= debut, Demande.date_debut < fin)).all()
     return round(sum(d.duree_heures or 0 for d in demandes), 2)
+
+
+def requete_file_validation(db: Session, utilisateur: Employe) -> Select:
+    """Demandes (tous statuts) que l'utilisateur peut trancher : toute
+    l'entreprise pour la RH, sa ligne hiérarchique et les files des valideurs
+    qu'il remplace pour un supérieur. Le DG ne voit que ce qui lui est adressé."""
+    from app.services import delegation, hierarchie
+
+    requete = select(Demande)
+    if utilisateur.role in ROLES_RH:
+        return requete
+    if hierarchie.est_direction_generale(utilisateur) and not hierarchie.supervise_les_demandes(utilisateur):
+        return requete.where(Demande.validateur_id == utilisateur.id)
+    ids = list(hierarchie.perimetre_ids(db, utilisateur))
+    # Remplacement déclaré : la file du titulaire s'ajoute à la sienne.
+    titulaires = delegation.titulaires_de(db, utilisateur.id)
+    return requete.where(
+        or_(Demande.validateur_id == utilisateur.id,
+            Demande.employe_id.in_(ids or [-1]),
+            Demande.validateur_id.in_(titulaires or [-1]))
+    ).where(Demande.derogation_rh.is_(False))
 
 
 def administrateurs_rh(db: Session, sauf: int | None = None) -> list[Employe]:

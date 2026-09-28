@@ -7,8 +7,6 @@ consulte sa propre situation."""
 from __future__ import annotations
 
 import json
-import shutil
-import uuid
 from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
@@ -16,12 +14,11 @@ from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.core.config import EXTENSIONS_AUTORISEES, UPLOAD_DIR
 from app.core.database import get_db
 from app.core.security import admin_requis, utilisateur_courant
 from app.models import ROLES_RH, Employe, Habilitation, HabilitationCollaborateur, JournalAudit, StatutEmploye
 from app.services import habilitations as svc
-from app.services import hierarchie
+from app.services import hierarchie, televersements
 from app.services.notifications import notifier
 
 router = APIRouter(prefix="/api/habilitations", tags=["Habilitations obligatoires"])
@@ -240,14 +237,7 @@ def justificatif(obtention_id: int, fichier: UploadFile = File(...), db: Session
     o = db.get(HabilitationCollaborateur, obtention_id)
     if not o:
         raise HTTPException(status_code=404, detail="Obtention introuvable.")
-    nom = fichier.filename or ""
-    extension = ("." + nom.rsplit(".", 1)[-1].lower()) if "." in nom else ""
-    if extension not in EXTENSIONS_AUTORISEES:
-        raise HTTPException(status_code=422, detail="Format non compatible : PDF, DOC ou DOCX uniquement.")
-    cible = f"{uuid.uuid4().hex}{extension}"
-    with (UPLOAD_DIR / cible).open("wb") as sortie:
-        shutil.copyfileobj(fichier.file, sortie)
-    o.justificatif = f"/fichiers/{cible}"
+    o.justificatif = televersements.enregistrer_piece(db, fichier, utilisateur)
     db.commit()
     return _obtention_json(o)
 

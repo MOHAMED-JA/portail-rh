@@ -22,6 +22,11 @@ if len(sys.argv) != 2:
     print(__doc__)
     raise SystemExit(1)
 
+# Colonnes ajoutées par une version plus récente que la base (serveur pas encore relancé).
+from app.core import migrations  # noqa: E402
+
+migrations.appliquer()
+
 with SessionLocal() as db:
     e = db.scalar(select(Employe).where(Employe.matricule == sys.argv[1].strip().upper()))
     if e is None:

@@ -30,13 +30,14 @@ def lister_confirmations(db: Session = Depends(get_db), utilisateur: Employe = D
     structures = list(db.scalars(select(Departement).order_by(Departement.nom)))
     confirmations = {ligne.structure_id: ligne for ligne in db.scalars(select(ConfirmationArchitecture))}
     actifs = list(db.scalars(select(Employe).where(Employe.statut != StatutEmploye.SORTI).order_by(
-        Employe.nom, Employe.prenom
+        Employe.prenom, Employe.nom
     )))
     return {
         "total": len(structures), "confirmees": len(confirmations),
         "candidats": [_employe(employe) for employe in actifs],
         "questions": [{"structure_id": structure.id, "code": structure.code, "structure": structure.nom,
                        "parent_id": structure.parent_id, "responsable_actuel": _employe(structure.responsable),
+                       "interim": bool(structure.interim),
                        "confirmee": structure.id in confirmations,
                        "confirmee_le": confirmations[structure.id].confirme_le.isoformat() if structure.id in confirmations else None}
                       for structure in structures],

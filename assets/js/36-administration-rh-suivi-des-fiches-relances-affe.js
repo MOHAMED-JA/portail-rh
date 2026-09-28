@@ -32,7 +32,7 @@ function suiviDemo() {
   });
   return Object.values(lignes).map((l) => ({ ...l, en_retard: l.objectifs_a_valider + l.evaluations_a_approuver,
     a_jour: l.objectifs_a_valider + l.evaluations_a_approuver === 0 }))
-    .sort((a, b) => b.en_retard - a.en_retard || a.responsable.nom.localeCompare(b.responsable.nom, "fr"));
+    .sort((a, b) => b.en_retard - a.en_retard || compareNoms(a.responsable, b.responsable));
 }
 const chargerSuivi = () => (connecte() ? API.appel("/api/fiches/suivi/responsables") : Promise.resolve(suiviDemo()));
 
@@ -161,8 +161,8 @@ function adminAffectations(f) {
     const q = a.recherche.toLowerCase();
     liste = liste.filter((e) => `${nomComplet(e)} ${e.matricule} ${e.poste || ""}`.toLowerCase().includes(q));
   }
-  liste.sort((x, y) => (x.nom + x.prenom).localeCompare(y.nom + y.prenom, "fr"));
-  const superieurs = EMPLOYES.filter((e) => e.statut !== "sorti").sort((x, y) => (x.nom + x.prenom).localeCompare(y.nom + y.prenom, "fr"));
+  liste.sort(compareNoms);
+  const superieurs = EMPLOYES.filter((e) => e.statut !== "sorti").sort(compareNoms);
   return `
   <div class="bandeau-info" style="margin-bottom:14px">${ico("organigramme")}<span>Affectez un ou plusieurs collaborateurs à un département, et changez au besoin leur profil ou leur supérieur hiérarchique.
     L'organigramme est mis à jour pour tous les utilisateurs, <strong>sans notification</strong>.</span></div>
@@ -223,7 +223,8 @@ const PALETTE_DEPT = ["#2B63C9", "#E07A5F", "#0E9F6E", "#D9A441", "#8B5CF6", "#3
 async function rechargerDepartements() {
   const departements = await API.appel("/api/administration/departements");
   DEPARTEMENTS.length = 0;
-  departements.forEach((d) => DEPARTEMENTS.push({ id: d.id, code: d.code, nom: d.nom, couleur: d.couleur }));
+  departements.forEach((d) => DEPARTEMENTS.push({ id: d.id, code: d.code, nom: d.nom, couleur: d.couleur,
+    parent_id: d.parent_id, responsable_id: d.responsable_id, responsable: d.responsable, interim: d.interim }));
 }
 
 function brancherAffectations(f) {

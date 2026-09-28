@@ -348,7 +348,7 @@ function ouvrirJourneeCalendrier(cle) {
   const absents = new Set(absences.map((d) => d.matricule));
   const structures_absentes = new Set(absences.map((d) => parMatricule[d.matricule]?.dept).filter(Boolean));
   const remplacants = equipe.filter((e) => !absents.has(e.matricule) && structures_absentes.has(e.dept))
-    .sort((a, b) => (a.niveau === "collaborateur") - (b.niveau === "collaborateur") || nomComplet(a).localeCompare(nomComplet(b)))
+    .sort((a, b) => (a.niveau === "collaborateur") - (b.niveau === "collaborateur") || compareNoms(a, b))
     .slice(0, 5);
 
   ouvrirCouche(`

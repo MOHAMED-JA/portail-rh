@@ -11,7 +11,8 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.security import (
-    creer_jeton_etape, creer_token, hash_password, lire_jeton_etape, utilisateur_courant, verify_password,
+    creer_jeton_etape, creer_token, hash_password, lire_jeton_etape, revoquer_sessions, utilisateur_courant,
+    verify_password,
 )
 from app.models import Connexion, Employe, JournalAudit, StatutEmploye
 from app.schemas import EmployeDetail, LoginPayload, TokenReponse
@@ -22,6 +23,7 @@ router = APIRouter(prefix="/api/auth", tags=["Authentification"])
 
 ESSAIS_MAX = 5
 BLOCAGE_MINUTES = 15
+MESSAGE_ECHEC = "Matricule ou mot de passe incorrect"
 
 
 def journaliser_connexion(db: Session, request: Request | None, matricule: str, employe: Employe | None,
@@ -52,27 +54,55 @@ def _echec(db: Session, request: Request | None, employe: Employe, motif: str, m
     raise HTTPException(status_code=401, detail=f"{message} — {restants} essai(s) restant(s) avant blocage.")
 
 
+def _message_blocage(reste: int) -> str:
+    return (f"Compte bloqué après {ESSAIS_MAX} tentatives échouées : réessayez dans {reste} minute(s) "
+            "ou utilisez « Mot de passe oublié » — la réinitialisation reste possible pendant le blocage.")
+
+
 def _verifier_blocage(db: Session, request: Request | None, employe: Employe) -> None:
     maintenant = datetime.utcnow()
     if employe.bloque_jusqu and employe.bloque_jusqu > maintenant:
         reste = int((employe.bloque_jusqu - maintenant).total_seconds() // 60) + 1
         journaliser_connexion(db, request, employe.matricule, employe, "bloque")
         db.commit()
-        raise HTTPException(status_code=423, detail=(
-            f"Compte bloqué après {ESSAIS_MAX} tentatives échouées : réessayez dans {reste} minute(s) "
-            "ou utilisez « Mot de passe oublié » — la réinitialisation reste possible pendant le blocage."))
+        raise HTTPException(status_code=423, detail=_message_blocage(reste))
+
+
+_HACHE_FICTIF = hash_password("aucun-compte-ne-porte-ce-mot-de-passe-0")
+
+
+def _echec_matricule_inconnu(db: Session, request: Request | None, matricule: str) -> None:
+    """Matricule inconnu : mêmes réponses qu'un compte existant (essais
+    restants, blocage de 15 minutes), sinon on devinerait les matricules
+    valides. Les échecs sont comptés dans l'historique des connexions."""
+    maintenant = datetime.utcnow()
+    echecs = list(db.scalars(select(Connexion.horodatage).where(
+        Connexion.matricule == matricule[:40], Connexion.employe_id.is_(None), Connexion.resultat == "inconnu",
+        Connexion.horodatage >= maintenant - timedelta(minutes=BLOCAGE_MINUTES),
+    ).order_by(Connexion.horodatage.desc())))
+    if len(echecs) >= ESSAIS_MAX:
+        reste = int((echecs[0] + timedelta(minutes=BLOCAGE_MINUTES) - maintenant).total_seconds() // 60) + 1
+        journaliser_connexion(db, request, matricule, None, "bloque")
+        db.commit()
+        raise HTTPException(status_code=423, detail=_message_blocage(reste))
+    journaliser_connexion(db, request, matricule, None, "inconnu")
+    db.commit()
+    if len(echecs) + 1 >= ESSAIS_MAX:
+        raise HTTPException(status_code=423, detail=f"Trop de tentatives : compte bloqué pendant {BLOCAGE_MINUTES} minutes.")
+    restants = ESSAIS_MAX - len(echecs) - 1
+    raise HTTPException(status_code=401, detail=f"{MESSAGE_ECHEC} — {restants} essai(s) restant(s) avant blocage.")
 
 
 def _authentifier(db: Session, matricule: str, mot_de_passe: str, request: Request | None = None) -> Employe:
     """Contrôle du mot de passe, avec blocage temporaire après 5 échecs."""
-    employe = db.scalar(select(Employe).where(Employe.matricule == matricule.strip().upper()))
+    matricule = matricule.strip().upper()
+    employe = db.scalar(select(Employe).where(Employe.matricule == matricule))
     if not employe:
-        journaliser_connexion(db, request, matricule, None, "inconnu")
-        db.commit()
-        raise HTTPException(status_code=401, detail="Matricule ou mot de passe incorrect")
+        verify_password(mot_de_passe, _HACHE_FICTIF)   # même durée de réponse qu'un compte existant
+        _echec_matricule_inconnu(db, request, matricule)
     _verifier_blocage(db, request, employe)
     if not verify_password(mot_de_passe, employe.mot_de_passe_hash):
-        _echec(db, request, employe, "mot_de_passe", "Matricule ou mot de passe incorrect")
+        _echec(db, request, employe, "mot_de_passe", MESSAGE_ECHEC)
     if employe.statut == StatutEmploye.SORTI:
         journaliser_connexion(db, request, employe.matricule, employe, "compte_inactif")
         db.commit()
@@ -143,9 +173,12 @@ def changer_mot_de_passe(
         raise HTTPException(status_code=422, detail="Le nouveau mot de passe doit être différent de l'actuel.")
     utilisateur.mot_de_passe_hash = hash_password(payload.nouveau)
     utilisateur.doit_changer_mdp = False
+    # Les autres sessions (autre poste, jeton dérobé) tombent ; celle-ci
+    # continue avec le jeton renvoyé, que l'interface substitue à l'ancien.
+    revoquer_sessions(utilisateur)
     db.add(JournalAudit(acteur_id=utilisateur.id, action="changement_mot_de_passe", cible=utilisateur.matricule))
     db.commit()
-    return {"statut": "ok"}
+    return {"statut": "ok", "access_token": creer_token(utilisateur)}
 
 
 # ------------------------------------------------------------------ Double authentification
@@ -166,14 +199,14 @@ def verifier_code(payload: VerificationPayload, request: Request, db: Session = 
         raise HTTPException(status_code=401, detail="Étape de connexion expirée : saisissez à nouveau votre mot de passe.")
     _verifier_blocage(db, request, employe)
     saisi = payload.code.strip()
-    if totp.verifier(employe.totp_secret, saisi):
+    if totp.consommer(employe, saisi):
         return _ouvrir_session(db, request, employe, double_auth=True)
     restants = totp.utiliser_code_secours(employe.codes_secours, saisi)
     if restants is not None:
         employe.codes_secours = restants
         db.add(JournalAudit(acteur_id=employe.id, action="code_secours_utilise", cible=employe.matricule))
         return _ouvrir_session(db, request, employe, double_auth=True)
-    _echec(db, request, employe, "code_2fa", "Code incorrect")
+    _echec(db, request, employe, "code_2fa", "Code incorrect ou déjà utilisé (attendez le code suivant)")
 
 
 @router.post("/2fa/initier", summary="Préparer l'activation : clé secrète et QR code")
@@ -182,6 +215,7 @@ def initier(db: Session = Depends(get_db), utilisateur: Employe = Depends(utilis
         raise HTTPException(status_code=409, detail="La double authentification est déjà active.")
     secret = totp.nouveau_secret()
     utilisateur.totp_secret = secret
+    utilisateur.totp_dernier_pas = None   # nouveau secret : l'historique des codes repart de zéro
     db.commit()
     return {"secret": secret, "uri": totp.uri(secret, utilisateur.matricule), "emetteur": totp.EMETTEUR}
 

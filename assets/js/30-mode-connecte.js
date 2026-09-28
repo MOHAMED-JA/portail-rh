@@ -152,7 +152,8 @@ async function chargerDonneesApi() {
   ]);
 
   DEPARTEMENTS.length = 0;
-  departements.forEach((d) => DEPARTEMENTS.push({ id: d.id, code: d.code, nom: d.nom, couleur: d.couleur }));
+  departements.forEach((d) => DEPARTEMENTS.push({ id: d.id, code: d.code, nom: d.nom, couleur: d.couleur,
+    parent_id: d.parent_id, responsable_id: d.responsable_id, responsable: d.responsable, interim: d.interim }));
 
   EMPLOYES.length = 0;
   Object.keys(parMatricule).forEach((cle) => delete parMatricule[cle]);

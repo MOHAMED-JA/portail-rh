@@ -9,12 +9,16 @@ const niveauDe = (e) => e.niveau || "collaborateur";
 
 function arbreHierarchique() {
   const { racines, enfants } = arbreOrganisation();
-  const tri = (a, b) => (RANG_NIVEAU[niveauDe(b)] - RANG_NIVEAU[niveauDe(a)])
-    || ((enfants[b.matricule] || []).length - (enfants[a.matricule] || []).length)
-    || (a.nom + a.prenom).localeCompare(b.nom + b.prenom, "fr");
+  const tri = (a, b) => (RANG_NIVEAU[niveauDe(b)] - RANG_NIVEAU[niveauDe(a)]) || compareNoms(a, b);
   Object.values(enfants).forEach((l) => l.sort(tri));
   racines.sort(tri);
   return { racines, enfants };
+}
+
+/* Branche d'un responsable déplié : sa carte puis ses subordonnés.
+   Point d'extension (module 78 : DGA seule sous le DG, autres rattachés à côté). */
+function brancheOrganigramme(e, carteHtml, items) {
+  return `<li>${carteHtml}<ul>${items.join("")}</ul></li>`;
 }
 
 /* Collaborateurs sans équipe sous un responsable : un ou plusieurs <li>.
@@ -84,7 +88,8 @@ VUES["/organigramme"] = function () {
     const simples = sous.filter((x) => !estResponsable(x));
     const items = responsables.map(branche);
     if (simples.length) items.push(...feuillesOrganigramme(simples, { responsable: e, mode: f.modeArbre, correspond, f }));
-    return `<li>${carte(e)}<ul>${items.join("")}</ul></li>`;
+    return brancheOrganigramme(e, carte(e), items, { responsables, simples, branche,
+      feuilles: (liste) => feuillesOrganigramme(liste, { responsable: e, mode: f.modeArbre, correspond, f }) });
   };
   const presents = [...new Set(EMPLOYES.map(niveauDe))];
   return `<div style="display:flex;flex-direction:column;gap:16px">

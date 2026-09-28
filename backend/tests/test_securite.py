@@ -33,7 +33,10 @@ def test_changement_de_mot_de_passe_debloque(client):
     h = {"Authorization": f"Bearer {connexion(client, 'NOUVEAU').json()['access_token']}"}
     r = client.post("/api/auth/mot-de-passe", headers=h, json={"actuel": MOT_DE_PASSE, "nouveau": "Automne2026"})
     assert r.status_code == 200
-    assert client.get("/api/demandes", headers=h).status_code == 200
+    # La session continue avec le jeton renouvelé ; l'ancien ne vaut plus (1.37.0).
+    renouvele = {"Authorization": f"Bearer {r.json()['access_token']}"}
+    assert client.get("/api/demandes", headers=renouvele).status_code == 200
+    assert client.get("/api/demandes", headers=h).status_code == 401
     assert connexion(client, "NOUVEAU", "Automne2026").status_code == 200
 
 

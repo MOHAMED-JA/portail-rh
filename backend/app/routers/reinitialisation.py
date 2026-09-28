@@ -30,7 +30,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.security import admin_requis, hash_password
+from app.core.security import admin_requis, hash_password, revoquer_sessions
 from app.models import (
     DemandeReinitialisation, Employe, JournalAudit, ROLES_RH, StatutEmploye,
 )
@@ -43,8 +43,16 @@ TENTATIVES_MAX = 10          # par matricule et par quart d'heure
 FENETRE_MINUTES = 15
 VALIDITE_LIEN_MINUTES = 30
 
-MESSAGE_GENERIQUE = ("Si ce matricule existe, la marche à suivre a été engagée. "
-                     "Sans nouvelle, contactez la Direction des ressources humaines.")
+# Réponse identique pour tous les matricules (inconnu, protégé par la double
+# authentification, lien par e-mail ou demande à la RH) : l'écran ne doit
+# révéler ni l'existence d'un compte, ni sa protection, ni son adresse.
+MESSAGE_GENERIQUE = (
+    "Demande enregistrée. Si ce matricule correspond à un compte actif, un lien de réinitialisation "
+    "part vers votre adresse professionnelle lorsque la messagerie est en service ; sinon, la Direction "
+    "des ressources humaines est prévenue et vous communiquera un mot de passe provisoire. "
+    "Compte protégé par la double authentification : reprenez la main tout de suite avec le code "
+    "de votre application et un code de secours.")
+REPONSE_GENERIQUE = {"canal": "generique", "double_auth_possible": True, "message": MESSAGE_GENERIQUE}
 
 
 # ------------------------------------------------------------------ Utilitaires
@@ -95,6 +103,7 @@ def _appliquer(db: Session, request: Request | None, employe: Employe, nouveau: 
     employe.doit_changer_mdp = False
     employe.echecs_connexion = 0
     employe.bloque_jusqu = None
+    revoquer_sessions(employe)   # une session ouverte par l'usurpateur éventuel tombe
     db.add(JournalAudit(acteur_id=employe.id, action="mot_de_passe_reinitialise", cible=employe.matricule,
                         detail=f"Libre-service, canal {canal}"))
     journaliser_connexion(db, request, employe.matricule, employe, "reinitialisation")
@@ -119,14 +128,13 @@ def demander(payload: DemandePayload, request: Request, db: Session = Depends(ge
         # Ni confirmation ni démenti : on ne renseigne pas sur les matricules valides.
         _tracer(db, request, matricule, None, "rh", "echec")
         db.commit()
-        return {"canal": "rh", "message": MESSAGE_GENERIQUE}
+        return REPONSE_GENERIQUE
 
     if employe.totp_active:
+        # Le collaborateur poursuit avec son application et un code de secours.
         _tracer(db, request, matricule, employe, "totp", "en_attente")
         db.commit()
-        return {"canal": "totp", "message": (
-            "Votre compte est protégé par la double authentification. Saisissez le code affiché par "
-            "votre application, puis l'un de vos codes de secours, et choisissez un nouveau mot de passe.")}
+        return REPONSE_GENERIQUE
 
     config = emails.configuration(db)
     if config.get("actif") and employe.email:
@@ -147,20 +155,14 @@ def demander(payload: DemandePayload, request: Request, db: Session = Depends(ge
             "Ignorez ce message et prévenez la Direction des ressources humaines : votre mot de passe "
             "actuel reste valable.</p>"))
         db.commit()
-        masque = employe.email[0] + "•••" + employe.email[employe.email.index("@"):]
-        return {"canal": "email", "message": (
-            f"Un lien de réinitialisation valable {VALIDITE_LIEN_MINUTES} minutes vient d'être envoyé "
-            f"à votre adresse professionnelle ({masque}).")}
+        return REPONSE_GENERIQUE
 
-    demande = _tracer(db, request, matricule, employe, "rh", "en_attente")
-    db.flush()
+    _tracer(db, request, matricule, employe, "rh", "en_attente")
     _prevenir_rh(db, employe, "Mot de passe oublié",
                  f"{employe.prenom} {employe.nom} ({employe.matricule}) ne parvient plus à se connecter et "
                  f"demande un nouveau mot de passe provisoire (Administration → Profils).", "action")
     db.commit()
-    return {"canal": "rh", "demande_id": demande.id, "message": (
-        "Votre demande a été transmise à la Direction des ressources humaines. Elle vous communiquera "
-        "un mot de passe provisoire, que vous changerez dès votre première connexion.")}
+    return REPONSE_GENERIQUE
 
 
 # ------------------------------------------------------------------ 2. Par double authentification
@@ -182,7 +184,7 @@ def par_double_auth(payload: TotpPayload, request: Request, db: Session = Depend
         _tracer(db, request, matricule, employe, "totp", "echec")
         db.commit()
         raise refus
-    if not totp.verifier(employe.totp_secret, payload.code.strip()):
+    if not totp.consommer(employe, payload.code.strip()):
         _tracer(db, request, matricule, employe, "totp", "echec")
         db.commit()
         raise refus

@@ -3,20 +3,19 @@ hiérarchique, remboursement par l'administration RH."""
 from __future__ import annotations
 
 import random
-import shutil
-import uuid
 from datetime import date, datetime
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.config import EXTENSIONS_AUTORISEES, UPLOAD_DIR
 from app.core.database import get_db
 from app.core.security import admin_requis, utilisateur_courant
 from app.models import Employe, JournalAudit, LigneFrais, NoteFrais, Role, StatutEmploye, StatutNoteFrais
 from app.models import ROLES_RH  # noqa: E402
+from app.services import televersements
 from app.services.notifications import notifier
 
 router = APIRouter(prefix="/api/frais", tags=["Notes de frais"])
@@ -131,15 +130,11 @@ def joindre(note_id: int, fichier: UploadFile = File(...), db: Session = Depends
     note = charger(db, note_id)
     if note.employe_id != utilisateur.id:
         raise HTTPException(status_code=403, detail="Seul l'auteur de la note peut y joindre un justificatif.")
-    nom = fichier.filename or ""
-    extension = ("." + nom.rsplit(".", 1)[-1].lower()) if "." in nom else ""
-    if extension not in EXTENSIONS_AUTORISEES:
-        raise HTTPException(status_code=422, detail="Format non compatible : seuls les fichiers PDF, DOC et DOCX sont acceptés.")
-    cible = f"{uuid.uuid4().hex}{extension}"
-    with (UPLOAD_DIR / cible).open("wb") as sortie:
-        shutil.copyfileobj(fichier.file, sortie)
+    chemin = televersements.enregistrer_piece(db, fichier, utilisateur)
+    # « | » et « :: » servent de séparateurs dans la colonne justificatifs.
+    nom = Path(fichier.filename or "justificatif").name.replace("|", " ").replace("::", " ")[:120]
     liste = [j for j in (note.justificatifs or "").split("|") if j]
-    liste.append(f"/fichiers/{cible}::{nom}")
+    liste.append(f"{chemin}::{nom}")
     note.justificatifs = "|".join(liste)
     db.commit()
     return detail(note)

@@ -272,7 +272,7 @@ def equipe(db: Session = Depends(get_db), utilisateur: Employe = Depends(utilisa
     if not ids:
         raise HTTPException(status_code=403, detail="Aucun collaborateur dans votre périmètre.")
     lignes, manques = [], {}
-    for e in db.scalars(select(Employe).where(Employe.id.in_(ids)).order_by(Employe.nom, Employe.prenom)):
+    for e in db.scalars(select(Employe).where(Employe.id.in_(ids)).order_by(Employe.prenom, Employe.nom)):
         p = _profil(db, e)
         for l in p["competences"]:
             if l["ecart"]:

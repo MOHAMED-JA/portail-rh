@@ -27,7 +27,7 @@ VUES["/generateur"] = function () {
   const registre = chargerEtat("genRegistre", () => API.appel(`/api/generateur/registre${f.recherche ? `?q=${encodeURIComponent(f.recherche)}` : ""}`));
   if (!Array.isArray(types)) return `<section class="carte">${squelette(260)}</section>`;
   const type = types.find((t) => t.type === f.type) || types[0];
-  const collegues = EMPLOYES.slice().sort((a, b) => a.nom.localeCompare(b.nom));
+  const collegues = EMPLOYES.slice().sort(compareNoms);
   const enAttente = Array.isArray(demandes) ? demandes.filter((d) => GEN_STATUTS_DEMANDE[d.statut]) : [];
 
   return `<section class="carte"><div class="carte-entete" style="flex-wrap:wrap;gap:10px"><div><h2>Émettre un document</h2>

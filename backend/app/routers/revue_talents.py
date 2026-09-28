@@ -74,7 +74,7 @@ def _mini(e: Employe) -> dict:
 def _concernes(db: Session) -> list[Employe]:
     """Tout le personnel actif, sauf le Directeur général (sans supérieur ni évaluation)."""
     return [e for e in db.scalars(select(Employe).where(Employe.statut != StatutEmploye.SORTI)
-                                  .order_by(Employe.nom, Employe.prenom)) if (e.niveau or "") != "dg"]
+                                  .order_by(Employe.prenom, Employe.nom)) if (e.niveau or "") != "dg"]
 
 
 @router.get("", summary="Grille performance × potentiel (RH ; Direction générale en lecture)")
@@ -117,7 +117,7 @@ def grille(annee: int | None = None, db: Session = Depends(get_db), utilisateur:
 def equipe(annee: int | None = None, db: Session = Depends(get_db), utilisateur: Employe = Depends(utilisateur_courant)):
     annee = annee or date.today().year
     directs = [e for e in db.scalars(select(Employe).where(Employe.validateur_id == utilisateur.id,
-                                                            Employe.statut != StatutEmploye.SORTI).order_by(Employe.nom))
+                                                            Employe.statut != StatutEmploye.SORTI).order_by(Employe.prenom, Employe.nom))
                if hierarchie.superieur_operationnel(e) is not None and e.id != utilisateur.id]
     revues = {r.employe_id: r for r in db.scalars(select(RevueTalent).where(RevueTalent.annee == annee))}
     return {"annee": annee, "niveaux": NIVEAUX, "collaborateurs": [

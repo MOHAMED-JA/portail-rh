@@ -25,6 +25,7 @@ from app.services import habilitations, remuneration
 from app.services.calendrier import compter_jours_conge
 from app.services.documents import EnteteDocument, fiche_cle_valeur, generer_pdf, paragraphe, tableau_donnees
 from app.services.generateur import dinars
+from app.routers.prets import TYPES_DEFAUT as TYPES_PRETS
 
 router = APIRouter(prefix="/api/bilan-individuel", tags=["Bilan social individuel"])
 
@@ -98,7 +99,7 @@ def construire(db: Session, e: Employe, annee: int, edite_par: str) -> bytes:
     prets = [p for p in prets if p.decide_le.year == annee]
     if prets:
         contenu += tableau_donnees(["Nature", "Accordé le", "Montant", "Mensualités", "Taux"],
-                                   [["Avance sur salaire" if p.type_pret == "avance" else "Prêt social", f"{p.decide_le:%d/%m/%Y}",
+                                   [[TYPES_PRETS.get(p.type_pret, {}).get("libelle", p.type_pret), f"{p.decide_le:%d/%m/%Y}",
                                      dinars(p.montant), str(p.nb_mensualites), f"{p.taux_annuel:g} %"] for p in prets],
                                    titre_section="Vos avances et prêts sociaux")
 

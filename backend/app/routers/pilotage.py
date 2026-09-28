@@ -95,7 +95,7 @@ def _employes(db: Session, utilisateur: Employe) -> list[Employe]:
     ids = hierarchie.perimetre_ids(db, utilisateur)
     if not ids:
         raise HTTPException(status_code=403, detail="Aucun collaborateur dans votre périmètre.")
-    return list(db.scalars(select(Employe).where(Employe.id.in_(ids)).order_by(Employe.nom, Employe.prenom)))
+    return list(db.scalars(select(Employe).where(Employe.id.in_(ids)).order_by(Employe.prenom, Employe.nom)))
 
 
 def _ligne(db: Session, e: Employe, debut: date, fin: date, pointages: list[Pointage], anomalies: list[Anomalie],

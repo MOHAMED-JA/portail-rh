@@ -67,10 +67,20 @@ const STATIQUES = [
   './assets/js/73-directeur-general-sans-fiche-objectifs.js',
   './assets/js/74-organigramme-regroupement-par-structure.js',
   './assets/js/75-graphiques-couleurs-lumineuses.js',
-  './assets/js/76-barre-etat-selon-theme.js'
+  './assets/js/76-barre-etat-selon-theme.js',
+  './assets/js/77-menu-garde-sa-position.js',
+  './assets/js/78-ordre-alphabetique-dga-et-consultation-fiche.js',
+  './assets/js/79-organigramme-poles-sous-leur-responsable.js',
+  './assets/js/80-organigramme-unites-vacantes.js',
+  './assets/js/81-organigramme-centre-sur-la-direction.js',
+  './assets/js/82-pieces-jointes-et-sessions-protegees.js',
+  './assets/js/83-assistant-rh.js',
+  './assets/js/84-previsions-rh.js'
 ];
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(STATIQUES)));
+  // « reload » : jamais la copie du cache HTTP, sinon une nouvelle version
+  // pourrait mettre en cache d'anciens modules.
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(STATIQUES.map((u) => new Request(u, { cache: "reload" })))));
   self.skipWaiting();
 });
 self.addEventListener("activate", (e) => {
@@ -82,7 +92,9 @@ self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET" || url.origin !== self.location.origin ||
       url.pathname.startsWith("/api/") || url.pathname.startsWith("/fichiers/")) return;
   const navigation = e.request.mode === "navigate";
-  e.respondWith(fetch(e.request).then((r) => {
+  // « no-cache » : revalidation auprès du serveur (304 si inchangé), jamais une
+  // copie périmée du cache HTTP après une mise à jour du portail.
+  e.respondWith(fetch(e.request.url, { cache: "no-cache", credentials: "same-origin" }).then((r) => {
     // Le serveur renvoie l'accueil pour toute URL inconnue. Ce HTML ne doit
     // jamais être exécuté comme un module JavaScript ou une feuille de style.
     const type = r.headers.get("content-type") || "";
