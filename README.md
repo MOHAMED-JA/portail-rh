@@ -36,19 +36,90 @@ installable).
 
 ## Démarrer
 
-**Prérequis** : Python 3.11 ou plus récent.
+Ce guide s'adresse à quelqu'un qui n'a jamais installé de logiciel de ce type.
+Comptez une dizaine de minutes la première fois. Le portail tourne **sur votre
+ordinateur** et s'utilise dans votre navigateur (Edge, Chrome, Firefox…) ;
+aucune donnée n'est envoyée sur Internet.
 
-### Windows
+### Ce qu'il faut installer : uniquement Python
 
-Double-cliquez sur `DEMARRER.bat`. Au premier lancement, il installe les
-composants dans `%LOCALAPPDATA%\Portail-RH\venv`, crée une base de
-démonstration puis ouvre http://127.0.0.1:8100.
+Le portail a besoin de **Python 3.11 ou plus récent** (gratuit). Rien d'autre
+n'est à installer à la main : au premier lancement, le portail télécharge
+lui-même ses composants (serveur web FastAPI et Uvicorn, base de données
+SQLAlchemy, création des PDF ReportLab, fichiers Excel openpyxl…, voir
+`backend/requirements.txt`). Une connexion Internet est donc nécessaire **au
+premier lancement seulement**.
+
+**Installer Python sous Windows :**
+
+1. Ouvrez https://www.python.org/downloads/ et cliquez sur le bouton jaune
+   **Download Python 3.x**.
+2. Ouvrez le fichier téléchargé.
+3. ⚠️ Sur le premier écran, **cochez la case « Add python.exe to PATH »** en
+   bas de la fenêtre. Sans elle, le portail ne trouvera pas Python.
+4. Cliquez sur **Install Now**, attendez la fin, puis sur **Close**.
+
+> Python est déjà installé ? Ouvrez l'invite de commandes (touche Windows,
+> tapez `cmd`, Entrée) et tapez `python --version` : il faut 3.11 ou plus.
+
+### Étape 1 — Télécharger le portail
+
+1. Sur la page du projet, https://github.com/MOHAMED-JA/portail-rh, cliquez
+   sur le bouton vert **< > Code**, au-dessus de la liste des fichiers.
+2. Cliquez sur **Download ZIP**.
+3. Le fichier **`portail-rh-main.zip`** arrive dans votre dossier
+   **Téléchargements**.
+
+### Étape 2 — Décompresser le fichier ZIP
+
+1. Ouvrez le dossier **Téléchargements**.
+2. Faites un **clic droit** sur `portail-rh-main.zip`, puis
+   **Extraire tout…**, puis **Extraire**.
+3. Vous obtenez un dossier **`portail-rh-main`**. Ouvrez-le : vous devez y voir
+   le fichier **`DEMARRER.bat`** et les dossiers `backend`, `assets`…
+
+> ⚠️ Ne lancez pas le portail depuis l'intérieur du ZIP (double-clic sur le ZIP
+> sans l'extraire) : il ne fonctionnerait pas. Vous pouvez déplacer le dossier
+> extrait où vous voulez, par exemple sur le Bureau.
+
+### Étape 3 — Lancer le portail (Windows)
+
+1. Dans le dossier `portail-rh-main`, **double-cliquez sur `DEMARRER.bat`**.
+2. Si Windows affiche « Windows a protégé votre ordinateur », cliquez sur
+   **Informations complémentaires**, puis **Exécuter quand même** (le fichier
+   vient d'Internet, d'où l'avertissement).
+3. Une fenêtre noire s'ouvre. **La première fois, patientez deux à trois
+   minutes** : elle installe les composants
+   (dans `%LOCALAPPDATA%\Portail-RH\venv`) et crée une base de démonstration.
+4. Votre navigateur s'ouvre ensuite tout seul sur **http://127.0.0.1:8100**,
+   la page de connexion du portail.
+
+> ⚠️ Une fenêtre nommée **« Portail RH - SERVEUR (ne pas fermer) »** reste
+> ouverte, réduite dans la barre des tâches : c'est elle qui fait tourner le
+> portail. **La fermer arrête le portail.**
+
+**Les fois suivantes**, double-cliquez simplement sur `DEMARRER.bat` : le
+portail démarre en quelques secondes, sans Internet.
+
+### Problèmes fréquents
+
+| Message ou symptôme | Solution |
+|---|---|
+| « Python 3.11 ou plus récent est introuvable » | Installez Python (voir plus haut) en cochant bien « Add python.exe to PATH », puis relancez `DEMARRER.bat`. |
+| « L'installation des composants a échoué » | Vérifiez la connexion Internet (ou le proxy de l'entreprise), puis relancez `DEMARRER.bat`. |
+| « Le serveur n'a pas répondu après 60 secondes » | Ouvrez la fenêtre « Portail RH - SERVEUR » dans la barre des tâches : le message d'erreur y est affiché. |
+| Le navigateur ne s'ouvre pas | Ouvrez-le vous-même et tapez l'adresse http://127.0.0.1:8100. |
+| Vous voulez seulement regarder | Utilisez la démonstration en ligne, sans rien installer : https://mohamed-ja.github.io/portail-rh/ |
 
 ### Linux, macOS ou Windows en ligne de commande
 
+Installez Python 3.11 ou plus récent (sous macOS : https://www.python.org/downloads/),
+décompressez le ZIP comme ci-dessus, ouvrez un terminal dans le dossier
+`portail-rh-main`, puis :
+
 ```bash
 cd backend
-python -m venv .venv-portail
+python3 -m venv .venv-portail
 source .venv-portail/bin/activate        # Windows : .venv-portail\Scripts\activate
 pip install -r requirements.txt
 python -m app.seed --reset               # base de démonstration
