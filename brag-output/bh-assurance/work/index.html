@@ -5,76 +5,114 @@
 <title>BH Assurance</title>
 <link rel="stylesheet" href="../../engine/engine.css">
 <style>
-.g-gold { background-image: linear-gradient(95deg, #f6dc95 0%, #d9ad52 55%, #b8862f 100%); }
-.g-blue { background-image: linear-gradient(95deg, #a9c4ff 0%, #6f97ff 60%, #8fd8ff 100%); }
-.gold { color: #e3b960; }
-.hair { position: absolute; height: 1.5px; background: linear-gradient(90deg, rgba(227,185,96,0), #e3b960, rgba(227,185,96,0)); }
-.word { font-size: 148px; font-weight: 680; letter-spacing: -0.05em; line-height: 1; }
+/* ===== Charte BH : rouge dynamique + bleu indigo (identité Groupe BH 2019).
+   Remplacer ces valeurs par les codes officiels de la charte dès qu'ils sont fournis. ===== */
+:root {
+  --indigo: #23286b;
+  --indigo-2: #343b94;
+  --indigo-3: #4a52b8;
+  --red: #e30a17;
+  --red-2: #ff3b45;
+  --ink: #141735;
+  --muted: #5d6384;
+  --paper: #f6f7fb;
+  --line: #e2e5f1;
+}
+html, body { background: var(--paper); }
+body { color: var(--ink); font-feature-settings: "tnum" 1; }
+#panel { position: absolute; inset: 0; background: radial-gradient(120% 80% at 80% 0%, #3a42a6 0%, var(--indigo) 45%, #161a4c 100%); }
+#panel::after { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.07) 1.4px, transparent 1.6px); background-size: 40px 40px; }
+#band { position: absolute; top: 0; bottom: 0; width: 96px; background: var(--red); box-shadow: 0 0 60px rgba(227,10,23,0.45); }
+.scene.dark { color: #fff; }
+.tag { color: var(--muted); font-weight: 600; letter-spacing: 0.24em; }
+.dark .tag { color: rgba(255,255,255,0.72); }
+.tag b { color: var(--red); }
+.dark .tag b { color: #ff6b73; }
+.h1 { color: var(--indigo); font-weight: 600; letter-spacing: -0.045em; }
+.h1 .hl { color: var(--red); }
+.dark .h1 { color: #fff; }
+.dark .h1 .hl { color: #ff6b73; }
+.lead { color: var(--muted); }
+.card { background: #fff; border: 1px solid var(--line); border-radius: 26px; box-shadow: 0 22px 60px rgba(35,40,107,0.10), 0 2px 6px rgba(35,40,107,0.05); }
+.dcard { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.16); border-radius: 26px; box-shadow: 0 24px 60px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.12); }
+.pill { color: var(--indigo); }
+.redbar { position: absolute; width: 10px; background: var(--red); border-radius: 2px; transform-origin: bottom; }
+/* wordmark (texte ; remplacé par assets/logo.png s'il existe) */
+.wm { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; }
+.wm .bh { font-size: 230px; font-weight: 700; letter-spacing: -0.06em; color: var(--indigo); }
+.wm .as { font-size: 46px; font-weight: 500; letter-spacing: 0.42em; margin-right: -0.42em; color: var(--red); margin-top: 6px; }
+.dark .wm .bh { color: #fff; }
+#logoimg { display: none; max-width: 640px; max-height: 360px; }
 /* timeline */
-.tl-line { position: absolute; left: 152px; top: 420px; width: 2px; background: linear-gradient(#e3b960, rgba(227,185,96,0.25)); transform-origin: top; }
+.tl-line { position: absolute; left: 152px; top: 420px; width: 3px; background: linear-gradient(var(--red), rgba(227,10,23,0.15)); transform-origin: top; border-radius: 2px; }
 .tl-item { position: absolute; left: 0; right: 90px; height: 160px; }
-.tl-dot { position: absolute; left: 143px; top: 22px; width: 20px; height: 20px; border-radius: 50%; background: #0b1226; border: 3px solid #e3b960; }
-.tl-year { position: absolute; left: 196px; top: 0; font-size: 58px; }
-.tl-text { position: absolute; left: 396px; right: 0; top: 8px; font-size: 26px; line-height: 1.36; color: #d5dbea; }
-.tl-text b { color: #fff; font-weight: 620; }
+.tl-dot { position: absolute; left: 142px; top: 22px; width: 23px; height: 23px; border-radius: 50%; background: #fff; border: 3px solid var(--red); }
+.tl-year { position: absolute; left: 196px; top: 0; font-size: 60px; font-weight: 650; color: var(--indigo); }
+.tl-text { position: absolute; left: 400px; right: 0; top: 8px; font-size: 26px; line-height: 1.38; color: var(--muted); }
+.tl-text b { color: var(--ink); font-weight: 620; }
 /* chart */
 .barc { position: absolute; bottom: 220px; width: 112px; }
-.barc .b { position: absolute; bottom: 0; left: 0; right: 0; border-radius: 14px 14px 4px 4px; background: linear-gradient(180deg, #5b84f0, #233a86); box-shadow: 0 0 40px rgba(91,132,240,0.25); transform-origin: bottom; }
-.barc.last .b { background: linear-gradient(180deg, #f2d184, #b8862f); box-shadow: 0 0 50px rgba(227,185,96,0.35); }
-.barc .v { position: absolute; left: -20px; right: -20px; text-align: center; font-size: 29px; font-weight: 640; }
-.barc .y { position: absolute; left: -10px; right: -10px; bottom: -48px; text-align: center; font-size: 24px; color: #a9b1c5; font-weight: 540; }
+.barc .b { position: absolute; bottom: 0; left: 0; right: 0; border-radius: 14px 14px 4px 4px; background: linear-gradient(180deg, var(--indigo-3), var(--indigo)); transform-origin: bottom; box-shadow: 0 16px 40px rgba(35,40,107,0.18); }
+.barc.last .b { background: linear-gradient(180deg, var(--red-2), var(--red)); box-shadow: 0 16px 44px rgba(227,10,23,0.3); }
+.barc .v { position: absolute; left: -20px; right: -20px; text-align: center; font-size: 29px; font-weight: 650; color: var(--indigo); }
+.barc.last .v { color: var(--red); }
+.barc .y { position: absolute; left: -10px; right: -10px; bottom: -48px; text-align: center; font-size: 24px; color: var(--muted); font-weight: 540; }
+.axis { position: absolute; left: 90px; width: 900px; top: 1130px; height: 2px; background: var(--line); }
 /* KPI */
 .kpis { position: absolute; left: 90px; width: 900px; top: 400px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-.kpi { padding: 28px 30px 26px; border-radius: 26px; min-height: 252px; }
-.kpi .n { font-size: 80px; line-height: 1; }
-.kpi .n .u { font-size: 34px; margin-left: 8px; }
+.kpi { padding: 28px 30px 26px; min-height: 252px; position: relative; overflow: hidden; }
+.kpi .n { font-size: 80px; line-height: 1; font-weight: 640; letter-spacing: -0.045em; }
+.kpi .n .u { font-size: 34px; margin-left: 8px; font-weight: 500; opacity: .75; }
+.kpi.hi .n { color: #ff6b73; }
 .kpi .l { font-size: 25px; font-weight: 620; margin-top: 18px; letter-spacing: -0.015em; }
-.kpi .s { font-size: 20px; color: #a9b1c5; margin-top: 7px; }
+.kpi .s { font-size: 20px; color: rgba(255,255,255,0.65); margin-top: 7px; }
+.kpi::before { content: ""; position: absolute; left: 0; top: 26px; bottom: 26px; width: 4px; background: var(--red); border-radius: 0 3px 3px 0; }
 /* offer */
-.col { position: absolute; top: 400px; width: 441px; padding: 28px 26px; border-radius: 28px; }
-.col h3 { font-size: 28px; font-weight: 650; letter-spacing: -0.02em; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; }
-.orow { display: flex; align-items: center; gap: 16px; padding: 15px 0; border-top: 1px solid rgba(255,255,255,0.08); font-size: 23px; font-weight: 520; }
+.col { position: absolute; top: 400px; width: 441px; padding: 28px 26px; }
+.col h3 { font-size: 27px; font-weight: 650; letter-spacing: -0.02em; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; color: var(--indigo); }
+.orow { display: flex; align-items: center; gap: 16px; padding: 15px 0; border-top: 1px solid var(--line); font-size: 23px; font-weight: 540; color: var(--ink); }
 .orow .ic { width: 44px; height: 44px; flex: none; border-radius: 13px; display: grid; place-items: center; }
 /* digital */
-.phone { position: absolute; left: 100px; top: 410px; width: 320px; height: 650px; border-radius: 48px; background: #0b1124; border: 2px solid rgba(255,255,255,0.18); box-shadow: 0 40px 100px rgba(0,0,0,0.6), inset 0 0 0 8px #050914; padding: 34px 22px; overflow: hidden; }
-.phone .notch { position: absolute; left: 50%; top: 16px; width: 90px; height: 22px; border-radius: 99px; background: #050914; transform: translateX(-50%); }
-.pcard { border-radius: 18px; padding: 16px; margin-top: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); font-size: 18px; color: #c9d0e2; display: flex; align-items: center; gap: 12px; }
-.pcard .ic { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; flex: none; }
-.drow { display: flex; gap: 18px; align-items: flex-start; padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.09); }
-.drow .ic { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; flex: none; background: rgba(227,185,96,0.14); color: #f0cd7c; }
-.drow .tt { font-size: 25px; font-weight: 630; letter-spacing: -0.015em; }
-.drow .dd { font-size: 20px; color: #a9b1c5; margin-top: 4px; }
+.phone { position: absolute; left: 100px; top: 410px; width: 320px; height: 650px; border-radius: 48px; background: var(--indigo); border: 2px solid #1a1e55; box-shadow: 0 40px 90px rgba(35,40,107,0.35), inset 0 0 0 8px #161a4c; padding: 34px 22px; overflow: hidden; color: #fff; }
+.phone .notch { position: absolute; left: 50%; top: 16px; width: 90px; height: 22px; border-radius: 99px; background: #161a4c; transform: translateX(-50%); }
+.pcard { border-radius: 18px; padding: 16px; margin-top: 12px; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.12); font-size: 18px; color: #e6e8f6; display: flex; align-items: center; gap: 12px; }
+.pcard .ic { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; flex: none; background: rgba(255,255,255,0.12); color: #fff; }
+.pcard.r .ic { background: var(--red); }
+.drow { display: flex; gap: 18px; align-items: flex-start; padding: 20px 0; border-top: 1px solid var(--line); }
+.drow .ic { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; flex: none; background: rgba(227,10,23,0.09); color: var(--red); }
+.drow .tt { font-size: 25px; font-weight: 640; letter-spacing: -0.015em; color: var(--indigo); }
+.drow .dd { font-size: 20px; color: var(--muted); margin-top: 4px; }
 .ticker { position: absolute; left: 0; right: 0; top: 1196px; height: 60px; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
-.ticker .tr { position: absolute; white-space: nowrap; font-size: 26px; color: #c9d0e2; font-weight: 520; top: 12px; }
-.ticker .tr i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #e3b960; margin: 0 22px; vertical-align: middle; transform: translateY(-3px); }
-.foot { font-size: 18px; color: #7f88a0; }
+.ticker .tr { position: absolute; white-space: nowrap; font-size: 26px; color: var(--indigo); font-weight: 560; top: 12px; }
+.ticker .tr i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: var(--red); margin: 0 22px; vertical-align: middle; transform: translateY(-3px) rotate(45deg); }
+.foot { font-size: 18px; color: var(--muted); }
+.dark .foot { color: rgba(255,255,255,0.55); }
 </style>
 </head>
 <body>
 <div id="stage">
 <canvas id="bg" width="1080" height="1350"></canvas>
+<div id="panel"></div>
 
 <!-- 1. OUVERTURE -->
 <section class="scene" id="open">
-  <div class="hair" id="op-line" style="top:552px;left:140px;width:800px"></div>
-  <div class="abs center tag" id="op-tag" style="top:498px">Compagnie d'assurance tunisienne</div>
-  <div class="abs center word" id="op-word" style="top:590px">
-    <span class="line"><span><span class="grad g-gold">BH</span> Assurance</span></span>
-  </div>
-  <div class="abs center lead" id="op-lead" style="top:790px;left:120px;right:120px;font-size:33px">Plus de trente ans au service des assurés, en vie comme en non-vie.</div>
-  <div class="abs center" style="top:960px;display:flex;justify-content:center;gap:14px">
-    <span class="pill glass" id="op-p1"><span data-icon="clock" data-size="24" data-color="#e3b960"></span>Depuis 1995</span>
-    <span class="pill glass" id="op-p2"><span data-icon="landmark" data-size="24" data-color="#e3b960"></span>Bourse de Tunis</span>
-    <span class="pill glass" id="op-p3"><span data-icon="building" data-size="24" data-color="#e3b960"></span>Groupe BH Bank</span>
+  <div class="redbar" id="op-bar" style="left:535px;top:250px;height:150px"></div>
+  <div class="abs center tag" id="op-tag" style="top:440px">Compagnie d'assurance tunisienne</div>
+  <div class="abs center" id="op-word" style="top:500px"><img id="logoimg" src="assets/logo.png"><span class="wm" id="wm1"><span class="line"><span class="bh">BH</span></span><span class="line"><span class="as">ASSURANCE</span></span></span></div>
+  <div class="abs center lead" id="op-lead" style="top:850px;left:120px;right:120px;font-size:32px">Plus de trente ans au service des assurés, en vie comme en non-vie.</div>
+  <div class="abs center" style="top:1000px;display:flex;justify-content:center;gap:14px">
+    <span class="pill card" id="op-p1"><span data-icon="clock" data-size="24" data-color="#e30a17"></span>Depuis 1995</span>
+    <span class="pill card" id="op-p2"><span data-icon="landmark" data-size="24" data-color="#e30a17"></span>Bourse de Tunis</span>
+    <span class="pill card" id="op-p3"><span data-icon="building" data-size="24" data-color="#e30a17"></span>Groupe BH Bank</span>
   </div>
 </section>
 
 <!-- 2. HISTOIRE -->
 <section class="scene" id="hist">
-  <div class="abs tag" id="hi-tag" style="left:90px;top:110px"><b class="grad g-gold">Historique</b> · 1995 — 2020</div>
+  <div class="abs tag" id="hi-tag" style="left:90px;top:110px"><b>Historique</b> · 1995 — 2020</div>
   <div class="abs h1" id="hi-h" style="left:90px;top:156px">
     <span class="line"><span>Une histoire</span></span>
-    <span class="line"><span class="grad g-gold">en cinq dates.</span></span>
+    <span class="line"><span class="hl">en cinq dates.</span></span>
   </div>
   <div class="tl-line" id="tl-line" style="height:800px"></div>
   <div id="tl"></div>
@@ -82,120 +120,121 @@
 
 <!-- 3. CROISSANCE -->
 <section class="scene" id="grow">
-  <div class="abs tag" id="gr-tag" style="left:90px;top:110px"><b class="grad g-gold">Chiffre d'affaires</b> · 2020 — 2025</div>
+  <div class="abs tag" id="gr-tag" style="left:90px;top:110px"><b>Chiffre d'affaires</b> · 2020 — 2025</div>
   <div class="abs h1" id="gr-h" style="left:90px;top:156px">
     <span class="line"><span>Une croissance</span></span>
-    <span class="line"><span class="grad g-gold">continue.</span></span>
+    <span class="line"><span class="hl">continue.</span></span>
   </div>
-  <div class="abs glass" id="gr-badge" style="right:90px;top:400px;padding:18px 26px;border-radius:22px;text-align:right">
-    <div class="num grad g-gold" style="font-size:64px;line-height:1" id="gr-pct">+64 %</div>
-    <div style="font-size:21px;color:#c9d0e2;margin-top:6px">entre 2020 et 2025</div>
+  <div class="abs card" id="gr-badge" style="right:90px;top:400px;padding:18px 26px;text-align:right">
+    <div class="num" style="font-size:64px;line-height:1;color:var(--red)" id="gr-pct">+64 %</div>
+    <div style="font-size:21px;color:var(--muted);margin-top:6px">entre 2020 et 2025</div>
   </div>
-  <svg class="abs" id="gr-svg" width="1080" height="1350" style="left:0;top:0;overflow:visible"><polyline id="gr-trend" fill="none" stroke="#e3b960" stroke-width="2.5" stroke-dasharray="6 8" stroke-linecap="round" opacity="0.8"/></svg>
+  <svg class="abs" width="1080" height="1350" style="left:0;top:0;overflow:visible"><polyline id="gr-trend" fill="none" stroke="#e30a17" stroke-width="2.5" stroke-dasharray="6 8" stroke-linecap="round"/></svg>
+  <div class="axis" id="gr-axis"></div>
   <div id="bars"></div>
   <div class="abs foot" id="gr-foot" style="left:90px;top:1222px">En millions de dinars (MD) · source : communiqués financiers de la société</div>
 </section>
 
-<!-- 4. CHIFFRES CLÉS -->
-<section class="scene" id="keys">
-  <div class="abs tag" id="ke-tag" style="left:90px;top:110px"><b class="grad g-gold">Chiffres clés</b></div>
+<!-- 4. CHIFFRES CLÉS (aplat indigo) -->
+<section class="scene dark" id="keys">
+  <div class="abs tag" id="ke-tag" style="left:90px;top:110px"><b>Chiffres clés</b></div>
   <div class="abs h1" id="ke-h" style="left:90px;top:156px">
     <span class="line"><span>Solide</span></span>
-    <span class="line"><span class="grad g-gold">et rentable.</span></span>
+    <span class="line"><span class="hl">et rentable.</span></span>
   </div>
   <div class="kpis" id="kpis"></div>
 </section>
 
-<!-- 5. S1 2026 -->
-<section class="scene" id="h26">
-  <div class="abs tag" id="h6-tag" style="left:90px;top:110px"><b class="grad g-gold">Premier semestre 2026</b></div>
+<!-- 5. S1 2026 (aplat indigo) -->
+<section class="scene dark" id="h26">
+  <div class="abs tag" id="h6-tag" style="left:90px;top:110px"><b>Premier semestre 2026</b></div>
   <div class="abs h1" id="h6-h" style="left:90px;top:156px">
     <span class="line"><span>Un nouvel</span></span>
-    <span class="line"><span class="grad g-gold">élan.</span></span>
+    <span class="line"><span class="hl">élan.</span></span>
   </div>
   <div class="abs center" id="h6-big" style="top:410px">
-    <div class="num grad g-gold" id="h6-pct" style="font-size:230px;line-height:1">+0 %</div>
-    <div class="lead" style="margin-top:8px;color:#e6e9f2;font-weight:560">de chiffre d'affaires sur un an</div>
-    <div class="label" style="margin-top:8px">140,1 MD au 30 juin 2026, contre 109,3 MD un an plus tôt</div>
+    <div class="num" id="h6-pct" style="font-size:230px;line-height:1;font-weight:650">+0 %</div>
+    <div class="lead" style="margin-top:8px;color:#fff;font-weight:560">de chiffre d'affaires sur un an</div>
+    <div style="margin-top:8px;font-size:24px;color:rgba(255,255,255,0.7)">140,1 MD au 30 juin 2026, contre 109,3 MD un an plus tôt</div>
   </div>
-  <div class="abs glass" id="h6-split" style="left:90px;width:900px;top:830px;padding:28px 32px">
-    <div style="display:flex;justify-content:space-between;font-size:24px;color:#d5dbea;margin-bottom:14px"><span><span class="dot" style="background:#e3b960"></span>Non-vie <b class="num" id="h6-nv">94,1</b> MD</span><span><span class="dot" style="background:#6f97ff"></span>Vie <b class="num" id="h6-v">46,0</b> MD</span></div>
-    <div style="position:relative;height:22px;border-radius:99px;background:rgba(255,255,255,0.07);overflow:hidden"><i id="h6-b1" style="position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#b8862f,#f2d184)"></i><i id="h6-b2" style="position:absolute;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#3d63d6,#8fb0ff)"></i></div>
+  <div class="abs dcard" id="h6-split" style="left:90px;width:900px;top:830px;padding:28px 32px">
+    <div style="display:flex;justify-content:space-between;font-size:24px;margin-bottom:14px"><span><span class="dot" style="background:#ff4d57"></span>Non-vie <b class="num" id="h6-nv">94,1</b> MD</span><span><span class="dot" style="background:#aab0ff"></span>Vie <b class="num" id="h6-v">46,0</b> MD</span></div>
+    <div style="position:relative;height:22px;border-radius:99px;background:rgba(255,255,255,0.1);overflow:hidden"><i id="h6-b1" style="position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#e30a17,#ff4d57)"></i><i id="h6-b2" style="position:absolute;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#7c84f0,#c5c9ff)"></i></div>
   </div>
-  <div class="abs glass" id="h6-rn" style="left:90px;width:900px;top:1010px;padding:26px 32px;display:flex;align-items:center;justify-content:space-between">
-    <div><div style="font-size:25px;font-weight:620">Résultat net semestriel</div><div class="label" style="font-size:20px;margin-top:4px">3,1 MD au premier semestre 2025</div></div>
-    <div style="text-align:right"><span class="num" id="h6-rnv" style="font-size:66px">4,9</span><span class="unit" style="font-size:30px;margin-left:8px">MD</span><div style="color:#86efac;font-size:22px;font-weight:620">+57 %</div></div>
+  <div class="abs dcard" id="h6-rn" style="left:90px;width:900px;top:1010px;padding:26px 32px;display:flex;align-items:center;justify-content:space-between">
+    <div><div style="font-size:25px;font-weight:620">Résultat net semestriel</div><div style="font-size:20px;margin-top:4px;color:rgba(255,255,255,0.65)">3,1 MD au premier semestre 2025</div></div>
+    <div style="text-align:right"><span class="num" id="h6-rnv" style="font-size:66px">4,9</span><span style="font-size:30px;margin-left:8px;opacity:.75">MD</span><div style="color:#ff8a91;font-size:22px;font-weight:640">+57 %</div></div>
   </div>
 </section>
 
 <!-- 6. OFFRE -->
 <section class="scene" id="offer">
-  <div class="abs tag" id="of-tag" style="left:90px;top:110px"><b class="grad g-gold">Produits et services</b></div>
+  <div class="abs tag" id="of-tag" style="left:90px;top:110px"><b>Produits et services</b></div>
   <div class="abs h1" id="of-h" style="left:90px;top:156px">
     <span class="line"><span>Une offre pour</span></span>
-    <span class="line"><span class="grad g-gold">chaque besoin.</span></span>
+    <span class="line"><span class="hl">chaque besoin.</span></span>
   </div>
-  <div class="col glass" id="of-c1" style="left:90px"></div>
-  <div class="col glass" id="of-c2" style="left:549px"></div>
+  <div class="col card" id="of-c1" style="left:90px"></div>
+  <div class="col card" id="of-c2" style="left:549px"></div>
   <div class="abs center lead" id="of-foot" style="top:1196px;left:90px;right:90px;font-size:25px">Étudiants, familles, salariés, chefs d'entreprise, retraités.</div>
 </section>
 
-<!-- 7. DIGITAL + PROXIMITÉ -->
+<!-- 7. DIGITAL -->
 <section class="scene" id="digi">
-  <div class="abs tag" id="di-tag" style="left:90px;top:110px"><b class="grad g-gold">Digital et proximité</b></div>
+  <div class="abs tag" id="di-tag" style="left:90px;top:110px"><b>Digital et proximité</b></div>
   <div class="abs h1" id="di-h" style="left:90px;top:156px">
     <span class="line"><span>Wininti, l'assurance</span></span>
-    <span class="line"><span class="grad g-gold">au bout des doigts.</span></span>
+    <span class="line"><span class="hl">au bout des doigts.</span></span>
   </div>
   <div class="phone" id="di-phone">
     <div class="notch"></div>
-    <div style="font-size:15px;color:#7f88a0;margin-top:16px">Wininti</div>
+    <div style="font-size:15px;color:rgba(255,255,255,0.6);margin-top:16px">Wininti</div>
     <div style="font-size:26px;font-weight:650;margin-top:4px;letter-spacing:-0.02em">Mes services</div>
-    <div class="pcard"><span class="ic" style="background:rgba(227,185,96,.16);color:#f0cd7c" data-icon="car" data-size="22"></span>Devis automobile</div>
-    <div class="pcard"><span class="ic" style="background:rgba(111,151,255,.16);color:#a9c4ff" data-icon="file" data-size="22"></span>Mes contrats</div>
-    <div class="pcard"><span class="ic" style="background:rgba(244,63,94,.14);color:#fda4af" data-icon="alert" data-size="22"></span>Mes sinistres</div>
-    <div class="pcard"><span class="ic" style="background:rgba(16,185,129,.14);color:#86efac" data-icon="heart" data-size="22"></span>Remboursements santé</div>
-    <div class="pcard"><span class="ic" style="background:rgba(168,85,247,.14);color:#d8b4fe" data-icon="lock" data-size="22"></span>Paiement sécurisé</div>
+    <div class="pcard r"><span class="ic" data-icon="car" data-size="22"></span>Devis automobile</div>
+    <div class="pcard"><span class="ic" data-icon="file" data-size="22"></span>Mes contrats</div>
+    <div class="pcard"><span class="ic" data-icon="alert" data-size="22"></span>Mes sinistres</div>
+    <div class="pcard"><span class="ic" data-icon="heart" data-size="22"></span>Remboursements santé</div>
+    <div class="pcard"><span class="ic" data-icon="lock" data-size="22"></span>Paiement sécurisé</div>
   </div>
   <div class="abs" id="di-list" style="left:470px;width:520px;top:410px">
     <div class="drow"><span class="ic" data-icon="spark" data-size="26"></span><div><div class="tt">Devis et souscription en ligne</div><div class="dd">Automobile, habitation, voyage</div></div></div>
     <div class="drow"><span class="ic" data-icon="alert" data-size="26"></span><div><div class="tt">Sinistres</div><div class="dd">Déclaration et suivi des dossiers</div></div></div>
     <div class="drow"><span class="ic" data-icon="heart" data-size="26"></span><div><div class="tt">Espace santé</div><div class="dd">Consultation des remboursements</div></div></div>
     <div class="drow"><span class="ic" data-icon="lock" data-size="26"></span><div><div class="tt">Paiement sécurisé</div><div class="dd">Règlement des échéances</div></div></div>
-    <div class="label" id="di-note" style="font-size:20px;margin-top:14px">Lancée en avril 2020 · web, Android et iOS</div>
+    <div id="di-note" style="font-size:20px;margin-top:14px;color:var(--muted)">Lancée en avril 2020 · web, Android et iOS</div>
   </div>
-  <div class="abs label" id="di-prox" style="left:90px;top:1140px;font-size:22px;color:#e3b960;font-weight:600;letter-spacing:.14em">UN RÉSEAU D'AGENCES DANS TOUT LE PAYS</div>
+  <div class="abs" id="di-prox" style="left:90px;top:1140px;font-size:22px;color:var(--red);font-weight:650;letter-spacing:.14em">UN RÉSEAU D'AGENCES DANS TOUT LE PAYS</div>
   <div class="ticker" id="di-tick"><div class="tr" id="di-tr"></div></div>
 </section>
 
-<!-- 8. OUTRO -->
-<section class="scene" id="outro">
-  <div class="abs center tag" id="ou-tag" style="top:230px">Actionnaires de référence</div>
-  <div class="abs center" style="top:280px;display:flex;justify-content:center;gap:14px">
-    <span class="pill glass" id="ou-p1" style="font-size:27px">Groupe BH Bank</span>
-    <span class="pill glass" id="ou-p2" style="font-size:27px">Poulina Group Holding</span>
+<!-- 8. OUTRO (aplat indigo) -->
+<section class="scene dark" id="outro">
+  <div class="abs center tag" id="ou-tag" style="top:190px">Actionnaires de référence</div>
+  <div class="abs center" style="top:240px;display:flex;justify-content:center;gap:14px">
+    <span class="pill dcard" id="ou-p1" style="font-size:27px;color:#fff">Groupe BH Bank</span>
+    <span class="pill dcard" id="ou-p2" style="font-size:27px;color:#fff">Poulina Group Holding</span>
   </div>
-  <div class="abs center label" id="ou-cap" style="top:384px">Cotée à la Bourse de Tunis (BHASS) · capital social de 13,3 MD</div>
-  <div class="hair" id="ou-line" style="top:520px;left:140px;width:800px"></div>
-  <div class="abs center word" id="ou-word" style="top:560px">
-    <span class="line"><span><span class="grad g-gold">BH</span> Assurance</span></span>
-  </div>
-  <div class="abs center lead" id="ou-amb" style="top:760px;left:110px;right:110px;font-size:31px;color:#e6e9f2">L'ambition : devenir l'assureur préféré des Tunisiennes et des Tunisiens.</div>
-  <div class="abs center" id="ou-url" style="top:930px"><span class="pill glass" style="font-size:30px;padding:18px 34px"><span data-icon="globe" data-size="26" data-color="#e3b960"></span>bh-assurance.com</span></div>
-  <div class="abs center foot" id="ou-foot" style="top:1215px;left:90px;right:90px;line-height:1.5">Chiffres issus des communiqués et états financiers publiés par la société (2019 — 2026).<br>Réalisation : Mohamed Aziz Jaouadi</div>
+  <div class="abs center" id="ou-cap" style="top:344px;font-size:24px;color:rgba(255,255,255,0.7)">Cotée à la Bourse de Tunis (BHASS) · capital social de 13,3 MD</div>
+  <div class="redbar" id="ou-bar" style="left:535px;top:420px;height:110px"></div>
+  <div class="abs center" id="ou-word" style="top:560px"><img id="logoimg2" src="assets/logo-blanc.png" style="display:none;max-width:600px;max-height:320px"><span class="wm" id="wm2"><span class="line"><span class="bh">BH</span></span><span class="line"><span class="as" style="color:#ff6b73">ASSURANCE</span></span></span></div>
+  <div class="abs center lead" id="ou-amb" style="top:900px;left:110px;right:110px;font-size:30px;color:#fff">L'ambition : devenir l'assureur préféré des Tunisiennes et des Tunisiens.</div>
+  <div class="abs center" id="ou-url" style="top:1050px"><span class="pill" style="font-size:30px;padding:18px 34px;background:#fff;color:var(--indigo);font-weight:620"><span data-icon="globe" data-size="26" data-color="#e30a17"></span>bh-assurance.com</span></div>
+  <div class="abs center foot" id="ou-foot" style="top:1225px;left:90px;right:90px;line-height:1.5">Chiffres issus des communiqués et états financiers publiés par la société (2019 — 2026).</div>
 </section>
 
-<canvas id="fx" width="1080" height="1350"></canvas>
+<div id="band"></div>
 </div>
 <script src="../../engine/engine.js"></script>
 <script>
-const { $, $$, p, eo, eio, lerp, clamp, fr, lineReveal, charReveal, wordReveal, rise, tilt, exitStyle, sceneOpacity, icon } = E;
+const { $, $$, p, eo, eio, lerp, clamp, fr, lineReveal, charReveal, wordReveal, rise, tilt, exitStyle, sceneOpacity } = E;
 const DUR = 77;
 const SC = { open: [0, 6.5], hist: [6.5, 21.5], grow: [21.5, 32.5], keys: [32.5, 44], h26: [44, 51.5], offer: [51.5, 62], digi: [62, 70], outro: [70, 99] };
-const NAVY = ['#1e3a8a', '#7a5a1c', '#0f4c81'];
-const PAL = { open: ['#1e3a8a', '#8a6420', '#0f3d70'], hist: NAVY, grow: ['#1d4ed8', '#7a5a1c', '#0f4c81'], keys: ['#1e3a8a', '#8a6420', '#134e4a'], h26: ['#8a6420', '#1e3a8a', '#0f4c81'], offer: ['#1e3a8a', '#7a5a1c', '#155e75'], digi: ['#1d4ed8', '#8a6420', '#0f4c81'], outro: ['#1e3a8a', '#8a6420', '#0f3d70'] };
+const DARK = { keys: 1, h26: 1, outro: 1 };
 
-// ---- build data-driven parts ----
+// official logo files, if provided, replace the text wordmark
+const useLogo = (img, wm) => { img.onload = () => { img.style.display = 'inline-block'; $(wm).style.display = 'none'; }; if (img.complete && img.naturalWidth) img.onload(); };
+useLogo($('#logoimg'), '#wm1'); useLogo($('#logoimg2'), '#wm2');
+
 const TL = [
   ['1995', "Création d'<b>Assurances SALIM</b> à l'initiative de la Banque de l'Habitat, spécialisée en assurance vie."],
   ['1997', 'Transformation en <b>compagnie multibranche</b>, vie et non-vie.'],
@@ -203,7 +242,7 @@ const TL = [
   ['2019', 'Assurances SALIM devient <b>BH Assurance</b> et rejoint l\'identité du Groupe BH.'],
   ['2020', 'Lancement de <b>Wininti</b>, première application mobile du marché tunisien de l\'assurance.'],
 ];
-$('#tl').innerHTML = TL.map(([y, txt], i) => `<div class="tl-item" style="top:${420 + i * 166}px"><span class="tl-dot"></span><span class="tl-year num grad g-gold">${y}</span><div class="tl-text">${txt}</div></div>`).join('');
+$('#tl').innerHTML = TL.map(([y, txt], i) => `<div class="tl-item" style="top:${420 + i * 166}px"><span class="tl-dot"></span><span class="tl-year num">${y}</span><div class="tl-text">${txt}</div></div>`).join('');
 
 const CA = [[2020, 127.6], [2021, 147.5], [2022, 161.6], [2023, 176.6], [2024, 199.6], [2025, 208.7]];
 const MAXH = 520, X0 = 90, BW = 112, GAP = (900 - 6 * BW) / 5;
@@ -217,75 +256,103 @@ const KP = [
   [82, 0, '%', 'Ratio combiné net', 'Exercice 2024'],
   [21, 0, '%', "Croissance de l'assurance vie", '88,7 MD de primes en 2024', false, '+'],
 ];
-$('#kpis').innerHTML = KP.map(([v, d, u, l, s, g, pre]) => `<div class="kpi glass"><div class="n num${g ? ' grad g-gold' : ''}"><span class="cnt" data-v="${v}" data-d="${d}" data-pre="${pre || ''}">0</span><span class="u unit">${u}</span></div><div class="l">${l}</div><div class="s">${s}</div></div>`).join('');
+$('#kpis').innerHTML = KP.map(([v, d, u, l, s, g, pre]) => `<div class="kpi dcard${g ? ' hi' : ''}"><div class="n num"><span class="cnt" data-v="${v}" data-d="${d}" data-pre="${pre || ''}">0</span><span class="u">${u}</span></div><div class="l">${l}</div><div class="s">${s}</div></div>`).join('');
 
 const OF1 = [['car', 'Automobile'], ['home', 'Habitation'], ['heart', 'Santé'], ['piggy', 'Épargne et retraite'], ['shield', 'Prévoyance décès'], ['plane', 'Voyage']];
 const OF2 = [['building', 'Multirisque professionnelle'], ['scale', 'Responsabilité civile'], ['zap', 'Incendie, risques industriels'], ['truck', 'Transport de marchandises'], ['crane', 'Tous risques chantier'], ['users', 'Santé et retraite collectives']];
 const col = (title, ic, rows, c, bg) => `<h3><span data-icon="${ic}" data-size="28" data-color="${c}"></span>${title}</h3>` + rows.map(([i, t]) => `<div class="orow"><span class="ic" style="background:${bg};color:${c}" data-icon="${i}" data-size="23"></span>${t}</div>`).join('');
-$('#of-c1').innerHTML = col('Particuliers', 'users', OF1, '#f0cd7c', 'rgba(227,185,96,.14)');
-$('#of-c2').innerHTML = col('Professionnels et entreprises', 'building', OF2, '#a9c4ff', 'rgba(111,151,255,.15)');
+$('#of-c1').innerHTML = col('Particuliers', 'users', OF1, '#e30a17', 'rgba(227,10,23,.08)');
+$('#of-c2').innerHTML = col('Professionnels et entreprises', 'building', OF2, '#23286b', 'rgba(35,40,107,.08)');
 
 const CITIES = ['Tunis', 'Ariana', 'La Soukra', 'Bizerte', 'Béja', 'Mejez El Bab', 'Nabeul', 'Hammamet', 'Sousse', 'Monastir', 'Sfax', 'Gabès', 'Médenine', 'Kasserine'];
 $('#di-tr').innerHTML = [...CITIES, ...CITIES, ...CITIES].map((c) => `${c}<i></i>`).join('');
 
+// ---- light background ----
+const bgc = $('#bg').getContext('2d');
+function drawBg(t) {
+  const W = 1080, H = 1350, c = bgc;
+  c.fillStyle = '#f6f7fb'; c.fillRect(0, 0, W, H);
+  [[0.1 + 0.05 * Math.sin(t * 0.2), 0.08, 620, 'rgba(52,59,148,0.10)'], [0.95, 0.55 + 0.05 * Math.sin(t * 0.25), 560, 'rgba(227,10,23,0.06)'], [0.3, 1.0, 700, 'rgba(52,59,148,0.07)']].forEach(([x, y, r, col]) => {
+    const g = c.createRadialGradient(x * W, y * H, 0, x * W, y * H, r); g.addColorStop(0, col); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.fillRect(0, 0, W, H);
+  });
+  const off = (t * 6) % 40; c.fillStyle = 'rgba(35,40,107,0.075)';
+  for (let y = -40 + off; y < H; y += 40) for (let x = 20; x < W; x += 40) c.fillRect(x, y, 1.8, 1.8);
+}
+// ---- red band wipe + indigo panel ----
+const BOUNDS = Object.values(SC).slice(1).map((w) => w[0]);
+const sceneAt = (t) => { let cur = 'open'; for (const [k, w] of Object.entries(SC)) if (t >= w[0]) cur = k; return cur; };
+function wipe(t) {
+  const band = $('#band'), panel = $('#panel');
+  let bx = null, bk = 0;
+  for (const b of BOUNDS) { const k = p(t, b - 0.45, 0.8); if (k > 0 && k < 1) { bx = lerp(-140, 1180, eio(k)); bk = b; } }
+  band.style.display = bx === null ? 'none' : 'block'; if (bx !== null) band.style.left = `${bx}px`;
+  // panel state left/right of the band
+  const before = DARK[sceneAt(bk - 0.01)], after = DARK[sceneAt(bk + 0.01)];
+  if (bx === null) { const d = DARK[sceneAt(t)]; panel.style.clipPath = d ? 'none' : 'inset(0 100% 0 0)'; return; }
+  const x = bx + 48;
+  if (before && after) panel.style.clipPath = 'none';
+  else if (!before && after) panel.style.clipPath = `inset(0 ${clamp(1080 - x, 0, 1080)}px 0 0)`;
+  else if (before && !after) panel.style.clipPath = `inset(0 0 0 ${clamp(x, 0, 1080)}px)`;
+  else panel.style.clipPath = 'inset(0 100% 0 0)';
+}
+
 // ---- scenes ----
 function open(t) {
-  const ln = $('#op-line'); const k = eio(p(t, 0.2, 1.0)); ln.style.transform = `scaleX(${k})`; ln.style.opacity = k;
-  charReveal($('#op-tag'), t, 0.45, 0.022);
-  lineReveal($('#op-word'), t, 0.8, 0.1, 1.0);
-  wordReveal($('#op-lead'), t, 1.8, 0.06, 0.6);
-  ['#op-p1', '#op-p2', '#op-p3'].forEach((id, i) => rise($(id), t, 2.9 + i * 0.14, 0.7, 24, 0.94));
-  // slow push-in on the wordmark
-  $('#op-word').style.transform = `scale(${1 + 0.03 * p(t, 0.8, 5.5)})`;
+  const bar = $('#op-bar'); bar.style.transform = `scaleY(${eio(p(t, 0.15, 0.9))})`;
+  charReveal($('#op-tag'), t, 0.5, 0.022);
+  lineReveal($('#op-word'), t, 0.85, 0.18, 1.0);
+  const lg = $('#logoimg'); const kl = eo(p(t, 0.85, 1.0)); lg.style.opacity = kl; lg.style.transform = `translateY(${(1 - kl) * 30}px)`;
+  wordReveal($('#op-lead'), t, 2.0, 0.06, 0.6);
+  ['#op-p1', '#op-p2', '#op-p3'].forEach((id, i) => rise($(id), t, 3.0 + i * 0.14, 0.7, 24, 0.94));
+  $('#op-word').style.transform = `scale(${1 + 0.025 * p(t, 0.85, 5.5)})`;
 }
 function hist(t) {
   const a = SC.hist[0];
   charReveal($('#hi-tag'), t, a + 0.1); lineReveal($('#hi-h'), t, a + 0.2, 0.1);
   const items = $$('.tl-item'); const st = (i) => a + 1.0 + i * 1.85;
-  const ln = $('#tl-line'); ln.style.transform = `scaleY(${eio(p(t, a + 0.9, 8.2))})`;
+  $('#tl-line').style.transform = `scaleY(${eio(p(t, a + 0.9, 8.2))})`;
   items.forEach((it, i) => {
     const k = eo(p(t, st(i), 0.8)); it.style.opacity = k; it.style.transform = `translateX(${(1 - k) * 40}px)`;
     const dot = $('.tl-dot', it); const active = t >= st(i) && (i === items.length - 1 || t < st(i + 1));
-    dot.style.background = t >= st(i) ? '#e3b960' : '#0b1226';
-    dot.style.boxShadow = active ? `0 0 0 ${8 + 4 * Math.sin(t * 4)}px rgba(227,185,96,0.18), 0 0 30px rgba(227,185,96,0.6)` : 'none';
+    dot.style.background = t >= st(i) ? '#e30a17' : '#fff';
+    dot.style.boxShadow = active ? `0 0 0 ${8 + 4 * Math.sin(t * 4)}px rgba(227,10,23,0.14)` : 'none';
   });
 }
 function grow(t) {
   const a = SC.grow[0];
   charReveal($('#gr-tag'), t, a + 0.1); lineReveal($('#gr-h'), t, a + 0.2, 0.1);
+  $('#gr-axis').style.transform = `scaleX(${eio(p(t, a + 0.6, 0.8))})`; $('#gr-axis').style.transformOrigin = 'left';
   const pts = [];
   $$('.barc').forEach((bc, i) => {
-    const s = a + 0.9 + i * 0.28; const k = eo(p(t, s, 0.9));
-    const b = $('.b', bc); b.style.transform = `scaleY(${k})`;
-    const h = CA[i][1] / 208.7 * MAXH;
-    const v = $('.v', bc); v.textContent = fr(CA[i][1] * k, 1); v.style.bottom = `${h * k + 12}px`; v.style.opacity = clamp(k * 2);
+    const s = a + 0.9 + i * 0.28, k = eo(p(t, s, 0.9));
+    $('.b', bc).style.transform = `scaleY(${k})`;
+    const h = CA[i][1] / 208.7 * MAXH, v = $('.v', bc);
+    v.textContent = fr(CA[i][1] * k, 1); v.style.bottom = `${h * k + 12}px`; v.style.opacity = clamp(k * 2);
     $('.y', bc).style.opacity = eo(p(t, a + 0.7 + i * 0.1, 0.5));
     pts.push([X0 + i * (BW + GAP) + BW / 2, 1350 - 220 - h - 78]);
   });
   const tr = $('#gr-trend'); tr.setAttribute('points', pts.map((q) => q.join(',')).join(' '));
-  const kt = eio(p(t, a + 3.0, 1.2)); tr.style.opacity = 0.8 * clamp(kt * 3);
-  tr.style.clipPath = `inset(0 ${100 - kt * 100}% 0 0)`;
+  const kt = eio(p(t, a + 3.0, 1.2)); tr.style.opacity = clamp(kt * 3); tr.style.clipPath = `inset(0 ${100 - kt * 100}% 0 0)`;
   rise($('#gr-badge'), t, a + 3.4, 0.7, 20, 0.9);
   $('#gr-pct').textContent = '+' + Math.round(64 * eo(p(t, a + 3.45, 1.0))) + ' %';
   $('#gr-foot').style.opacity = eo(p(t, a + 3.8, 0.6));
 }
 function keys(t) {
   const a = SC.keys[0];
-  charReveal($('#ke-tag'), t, a + 0.1); lineReveal($('#ke-h'), t, a + 0.2, 0.1);
+  charReveal($('#ke-tag'), t, a + 0.25); lineReveal($('#ke-h'), t, a + 0.35, 0.1);
   $$('.kpi').forEach((el, i) => {
-    const s = a + 0.8 + i * 0.16; const k = eo(p(t, s, 0.7));
+    const s = a + 0.9 + i * 0.16, k = eo(p(t, s, 0.7));
     el.style.opacity = k; el.style.transform = `translateY(${(1 - k) * 34}px)`;
-    const c = $('.cnt', el); const v = +c.dataset.v, d = +c.dataset.d;
-    c.textContent = c.dataset.pre + fr(v * eo(p(t, s + 0.1, 1.2)), d);
+    const c = $('.cnt', el); c.textContent = c.dataset.pre + fr(+c.dataset.v * eo(p(t, s + 0.1, 1.2)), +c.dataset.d);
   });
 }
 function h26(t) {
   const a = SC.h26[0];
-  charReveal($('#h6-tag'), t, a + 0.1); lineReveal($('#h6-h'), t, a + 0.2, 0.1);
+  charReveal($('#h6-tag'), t, a + 0.15); lineReveal($('#h6-h'), t, a + 0.25, 0.1);
   rise($('#h6-big'), t, a + 0.7, 0.7, 30, 0.94);
   $('#h6-pct').textContent = '+' + Math.round(28 * eo(p(t, a + 0.75, 1.1))) + ' %';
   rise($('#h6-split'), t, a + 1.6, 0.7, 30);
-  const kb = eio(p(t, a + 1.8, 0.9)); const sh = 94.1 / 140.1 * 100;
+  const kb = eio(p(t, a + 1.8, 0.9)), sh = 94.1 / 140.1 * 100;
   $('#h6-b1').style.width = `${sh * kb}%`; $('#h6-b2').style.left = `calc(${sh * kb}% + 5px)`; $('#h6-b2').style.width = `calc(${(100 - sh) * kb}% - 5px)`;
   $('#h6-nv').textContent = fr(94.1 * kb, 1); $('#h6-v').textContent = fr(46.0 * kb, 1);
   rise($('#h6-rn'), t, a + 2.3, 0.7, 30);
@@ -293,48 +360,45 @@ function h26(t) {
 }
 function offer(t) {
   const a = SC.offer[0];
-  charReveal($('#of-tag'), t, a + 0.1); lineReveal($('#of-h'), t, a + 0.2, 0.1);
+  charReveal($('#of-tag'), t, a + 0.25); lineReveal($('#of-h'), t, a + 0.35, 0.1);
   ['#of-c1', '#of-c2'].forEach((id, j) => {
-    const el = $(id); tilt(el, t, a + 0.7 + j * 0.2, 0.9, 80, 16);
-    $$('.orow', el).forEach((r, i) => { const k = eo(p(t, a + 1.2 + j * 0.2 + i * 0.12, 0.6)); r.style.opacity = k; r.style.transform = `translateX(${(1 - k) * 24}px)`; });
+    const el = $(id); tilt(el, t, a + 0.8 + j * 0.2, 0.9, 80, 14);
+    $$('.orow', el).forEach((r, i) => { const k = eo(p(t, a + 1.3 + j * 0.2 + i * 0.12, 0.6)); r.style.opacity = k; r.style.transform = `translateX(${(1 - k) * 24}px)`; });
   });
-  wordReveal($('#of-foot'), t, a + 2.8, 0.06, 0.6);
+  wordReveal($('#of-foot'), t, a + 2.9, 0.06, 0.6);
 }
 function digi(t) {
   const a = SC.digi[0];
   charReveal($('#di-tag'), t, a + 0.1); lineReveal($('#di-h'), t, a + 0.2, 0.1);
-  const ph = $('#di-phone'); const k = eo(p(t, a + 0.6, 1.0));
+  const ph = $('#di-phone'), k = eo(p(t, a + 0.6, 1.0));
   ph.style.opacity = k; ph.style.transform = `perspective(1400px) translateY(${(1 - k) * 90}px) rotateY(${(1 - k) * -25 + 6 * Math.sin(t * 0.6)}deg) rotateX(${2 * Math.sin(t * 0.8)}deg)`;
   $$('.pcard', ph).forEach((c, i) => { const kk = eo(p(t, a + 1.1 + i * 0.12, 0.6)); c.style.opacity = kk; c.style.transform = `translateY(${(1 - kk) * 16}px)`; });
   $$('#di-list .drow').forEach((r, i) => { const kk = eo(p(t, a + 1.0 + i * 0.16, 0.7)); r.style.opacity = kk; r.style.transform = `translateX(${(1 - kk) * 34}px)`; });
   rise($('#di-note'), t, a + 1.9, 0.6, 14);
   charReveal($('#di-prox'), t, a + 2.4, 0.018);
-  const tk = $('#di-tick'); tk.style.opacity = eo(p(t, a + 2.6, 0.7));
+  $('#di-tick').style.opacity = eo(p(t, a + 2.6, 0.7));
   $('#di-tr').style.transform = `translateX(${-((t - a) * 70) % 2000}px)`;
 }
 function outro(t) {
   const a = SC.outro[0];
-  charReveal($('#ou-tag'), t, a + 0.1, 0.02);
-  rise($('#ou-p1'), t, a + 0.4, 0.7, 20, 0.94); rise($('#ou-p2'), t, a + 0.54, 0.7, 20, 0.94);
-  rise($('#ou-cap'), t, a + 0.9, 0.6, 14);
-  const ln = $('#ou-line'); const k = eio(p(t, a + 1.5, 1.0)); ln.style.transform = `scaleX(${k})`; ln.style.opacity = k;
-  lineReveal($('#ou-word'), t, a + 1.7, 0.1, 1.0);
-  wordReveal($('#ou-amb'), t, a + 2.5, 0.05, 0.6);
-  rise($('#ou-url'), t, a + 3.3, 0.7, 18, 0.92);
-  $('#ou-foot').style.opacity = eo(p(t, a + 3.8, 0.8));
+  charReveal($('#ou-tag'), t, a + 0.25, 0.02);
+  rise($('#ou-p1'), t, a + 0.5, 0.7, 20, 0.94); rise($('#ou-p2'), t, a + 0.64, 0.7, 20, 0.94);
+  rise($('#ou-cap'), t, a + 1.0, 0.6, 14);
+  $('#ou-bar').style.transform = `scaleY(${eio(p(t, a + 1.4, 0.8))})`;
+  lineReveal($('#ou-word'), t, a + 1.7, 0.18, 1.0);
+  const lg = $('#logoimg2'), kl = eo(p(t, a + 1.7, 1.0)); lg.style.opacity = kl;
+  wordReveal($('#ou-amb'), t, a + 2.6, 0.05, 0.6);
+  rise($('#ou-url'), t, a + 3.4, 0.7, 18, 0.92);
+  $('#ou-foot').style.opacity = eo(p(t, a + 3.9, 0.8));
 }
 const R = { open, hist, grow, keys, h26, offer, digi, outro };
-const drawBg = E.makeBg($('#bg'), { stars: 30, base: ['#040814', '#08102a'] });
-const sweep = E.makeSweep($('#fx'), '246,220,150');
-const BOUNDS = Object.values(SC).slice(1).map((w) => w[0]);
 E.boot(function (t) {
-  drawBg(t, E.palAt(t, SC, PAL), 0.95);
+  drawBg(t); wipe(t);
   for (const [id, win] of Object.entries(SC)) {
     const el = $('#' + id), o = sceneOpacity(t, win);
     el.style.opacity = o; el.style.visibility = o > 0 ? 'visible' : 'hidden';
     if (o > 0) { R[id](t); exitStyle(el, t, win[1]); }
   }
-  sweep(t, BOUNDS);
 });
 window.DUR = DUR;
 </script>
