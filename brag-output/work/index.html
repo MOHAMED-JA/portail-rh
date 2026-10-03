@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Trois simulateurs</title>
+<style>
+@font-face { font-family: Geist; src: url(assets/geist-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: Geist; src: url(assets/geist-latin-ext-wght-normal.woff2) format("woff2"); font-weight: 100 900; unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; background: #04050c; overflow: hidden; }
+body { font-family: Geist, system-ui, sans-serif; color: #f4f6fb; -webkit-font-smoothing: antialiased; font-feature-settings: "tnum" 1; }
+#stage { position: relative; width: 1080px; height: 1350px; overflow: hidden; }
+#bg { position: absolute; inset: 0; }
+.scene { position: absolute; inset: 0; opacity: 0; }
+.abs { position: absolute; }
+.center { left: 0; right: 0; text-align: center; }
+/* kinetic type */
+.line { display: block; overflow: hidden; padding: 0.04em 0 0.12em; margin-bottom: -0.1em; }
+.line > span { display: inline-block; will-change: transform; }
+.ch { display: inline-block; white-space: pre; }
+.tag { font-size: 23px; font-weight: 600; letter-spacing: 0.22em; color: #c9cfe0; }
+.tag b { font-weight: 700; }
+.h1 { font-size: 86px; font-weight: 680; letter-spacing: -0.045em; line-height: 1.02; }
+.grad { background-clip: text; -webkit-background-clip: text; color: transparent; }
+.g-credit { background-image: linear-gradient(95deg, #a78bfa 0%, #ec4899 55%, #fb923c 100%); }
+.g-vie { background-image: linear-gradient(95deg, #818cf8 0%, #c084fc 50%, #34d399 100%); }
+.g-auto { background-image: linear-gradient(95deg, #93c5fd 0%, #4f7cff 60%, #a5b4fc 100%); }
+.g-all { background-image: linear-gradient(95deg, #c4b5fd 0%, #f0abfc 35%, #6ee7b7 70%, #93c5fd 100%); }
+.glass { background: linear-gradient(160deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03)); border: 1px solid rgba(255,255,255,0.16); border-radius: 28px; box-shadow: 0 30px 80px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.12); backdrop-filter: blur(18px); }
+.shot { border-radius: 26px; overflow: hidden; border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 40px 90px rgba(0,0,0,0.55), 0 0 0 8px rgba(255,255,255,0.04); }
+.shot img { display: block; width: 100%; }
+.muted { color: #9aa3b8; }
+.num { font-weight: 650; letter-spacing: -0.045em; font-variant-numeric: tabular-nums; }
+.unit { font-weight: 600; color: #b8c0d4; letter-spacing: -0.01em; }
+.label { font-size: 26px; font-weight: 500; color: #aab2c6; letter-spacing: -0.005em; }
+.pill { display: inline-flex; align-items: center; gap: 12px; padding: 14px 24px; border-radius: 999px; font-size: 26px; font-weight: 550; }
+/* hook */
+.hrow { position: absolute; left: 0; right: 0; text-align: center; }
+.hrow .num { font-size: 104px; line-height: 1; }
+.hrow .unit { font-size: 40px; margin-left: 10px; }
+.hrow .label { margin-top: 12px; }
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 12px; vertical-align: middle; transform: translateY(-2px); }
+/* credit */
+#cr-input { left: 90px; width: 900px; top: 448px; height: 112px; display: flex; align-items: center; padding: 0 16px 0 34px; border-radius: 30px; }
+#cr-input .txt { flex: 1; font-size: 36px; font-weight: 500; letter-spacing: -0.01em; white-space: nowrap; color: #f4f2ff; }
+#cr-caret { display: inline-block; width: 3px; height: 40px; background: #f0abfc; vertical-align: middle; margin-left: 3px; transform: translateY(-3px); }
+#cr-btn { height: 80px; padding: 0 34px; border-radius: 22px; background: linear-gradient(100deg, #7c3aed, #c026d3); display: flex; align-items: center; gap: 12px; font-size: 30px; font-weight: 650; box-shadow: 0 10px 40px rgba(192,38,211,0.45); position: relative; }
+#cr-ripple { position: absolute; left: 50%; top: 50%; width: 20px; height: 20px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.8); transform: translate(-50%,-50%); opacity: 0; }
+#cr-res { left: 0; right: 0; top: 600px; text-align: center; }
+#cr-res .num { font-size: 150px; line-height: 1; }
+#cr-res .unit { font-size: 48px; margin-left: 14px; }
+.bar { position: relative; height: 18px; border-radius: 99px; background: rgba(255,255,255,0.08); overflow: hidden; }
+.bar > i { position: absolute; top: 0; bottom: 0; border-radius: 99px; }
+/* vie */
+.vrow { display: flex; align-items: center; gap: 22px; }
+.vrow .k { width: 120px; font-size: 26px; color: #aab2c6; font-weight: 550; }
+.vrow .bar { flex: 1; height: 30px; }
+.vrow .v { width: 230px; text-align: right; font-size: 38px; }
+/* auto */
+#au-card { left: 95px; width: 890px; top: 420px; height: 760px; border-radius: 34px; background: #0e1424; border: 1px solid rgba(255,255,255,0.12); padding: 46px 50px; box-shadow: 0 50px 120px rgba(0,0,0,0.6), 0 0 120px rgba(47,91,234,0.25); overflow: hidden; }
+#au-card .top { display: flex; justify-content: space-between; align-items: center; }
+#au-card .badge { font-size: 22px; padding: 10px 18px; border-radius: 99px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); }
+#au-card .badge i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #12b886; margin-right: 10px; }
+#au-num { font-size: 140px; line-height: 1; margin-top: 26px; }
+.chips { position: relative; display: flex; gap: 14px; margin-top: 30px; }
+.chip { position: relative; z-index: 1; font-size: 24px; font-weight: 600; padding: 14px 24px; border-radius: 99px; border: 1px solid rgba(255,255,255,0.14); color: #a3adc2; }
+#au-sel { position: absolute; top: 0; height: 100%; border-radius: 99px; background: #2f5bea; box-shadow: 0 8px 30px rgba(47,91,234,0.6); }
+.arow { display: flex; justify-content: space-between; align-items: center; padding: 24px 0; border-top: 1px solid rgba(255,255,255,0.10); font-size: 30px; }
+.arow .k { color: #a3adc2; }
+.arow .v { font-weight: 650; font-variant-numeric: tabular-nums; }
+#au-sweep { position: absolute; top: -50%; bottom: -50%; width: 180px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.10), transparent); transform: rotate(18deg); }
+/* outro */
+.ico { position: absolute; width: 168px; height: 168px; border-radius: 40px; overflow: hidden; box-shadow: 0 24px 70px rgba(0,0,0,0.55); }
+.ico img { width: 100%; height: 100%; display: block; }
+.iname { position: absolute; width: 260px; text-align: center; font-size: 25px; font-weight: 600; color: #c9cfe0; }
+#flash { position: absolute; inset: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1080" height="1350"></canvas>
+
+  <!-- 1. HOOK -->
+  <section class="scene" id="s1">
+    <div class="abs center tag" id="s1-tag" style="top:150px">SIMULATEURS FINANCIERS · TUNISIE</div>
+    <div class="hrow" id="h1r" style="top:255px">
+      <div><span class="num grad g-credit" data-target="1 349,589">1 349,589</span><span class="unit">TND</span></div>
+      <div class="label"><span class="dot" style="background:#c026d3"></span>par mois · crédit de 150 000 TND sur 20 ans</div>
+    </div>
+    <div class="hrow" id="h2r" style="top:470px">
+      <div><span class="num grad g-vie" data-target="2 280">2 280</span><span class="unit">TND</span></div>
+      <div class="label"><span class="dot" style="background:#10b981"></span>d'impôt en moins par an · assurance vie</div>
+    </div>
+    <div class="hrow" id="h3r" style="top:685px">
+      <div><span class="num grad g-auto" data-target="760.753">760.753</span><span class="unit">DT</span></div>
+      <div class="label"><span class="dot" style="background:#2f5bea"></span>prime TTC · assurance auto 5 CV</div>
+    </div>
+    <div class="abs center h1" id="s1-h" style="top:960px">
+      <span class="line"><span>Trois simulateurs.</span></span>
+      <span class="line"><span class="grad g-all">Zéro approximation.</span></span>
+    </div>
+  </section>
+
+  <!-- 2. CRÉDIT -->
+  <section class="scene" id="s2">
+    <div class="abs tag" id="s2-tag" style="left:90px;top:120px"><b class="grad g-credit">01</b> · SIMULATEUR DE CRÉDIT</div>
+    <div class="abs h1" id="s2-h" style="left:90px;top:170px">
+      <span class="line"><span>Votre crédit,</span></span>
+      <span class="line"><span class="grad g-credit">au millime près.</span></span>
+    </div>
+    <div class="abs glass" id="cr-input">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#e9d5ff" stroke-width="1.8" style="margin-right:20px;flex:none"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
+      <div class="txt"><span id="cr-typed"></span><span id="cr-caret"></span></div>
+      <div id="cr-btn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg>Remplir<span id="cr-ripple"></span></div>
+    </div>
+    <div class="abs" id="cr-res">
+      <div class="label" style="font-size:28px;letter-spacing:.02em">Mensualité</div>
+      <div style="margin-top:8px"><span class="num" id="cr-num">0,000</span><span class="unit">TND</span></div>
+      <div class="label" id="cr-sub" style="margin-top:14px">240 échéances · TEG 9,00 % · coût total 323 901,329 TND</div>
+    </div>
+    <div class="abs" id="cr-bar" style="left:90px;width:900px;top:930px">
+      <div style="display:flex;justify-content:space-between;font-size:24px;color:#c9cfe0;margin-bottom:14px">
+        <span><span class="dot" style="background:#8b5cf6"></span>Capital 46,3 %</span><span><span class="dot" style="background:#ec4899"></span>Intérêts 53,7 %</span>
+      </div>
+      <div class="bar"><i id="cr-b1" style="left:0;background:linear-gradient(90deg,#7c3aed,#a78bfa)"></i><i id="cr-b2" style="background:linear-gradient(90deg,#ec4899,#f97316)"></i></div>
+    </div>
+    <div class="abs shot" id="cr-shot" style="left:90px;width:900px;top:1035px"><img src="assets/cr-donuts.png"></div>
+  </section>
+
+  <!-- 3. ASSURANCE VIE -->
+  <section class="scene" id="s3">
+    <div class="abs tag" id="s3-tag" style="left:90px;top:120px"><b class="grad g-vie">02</b> · ASSURANCE VIE &amp; CEA</div>
+    <div class="abs h1" id="s3-h" style="left:90px;top:170px;font-size:76px">
+      <span class="line"><span>Combien d'impôt</span></span>
+      <span class="line"><span class="grad g-vie">pouvez-vous économiser ?</span></span>
+    </div>
+    <div class="abs" style="left:90px;top:410px;display:flex;gap:16px">
+      <div class="pill glass" id="v-c1">Revenu <b>60 000 TND</b></div>
+      <div class="pill glass" id="v-c2">Assurance vie <b>500 TND / mois</b></div>
+    </div>
+    <div class="abs glass" id="v-bars" style="left:90px;width:900px;top:530px;padding:34px 36px 30px">
+      <div class="label" style="margin-bottom:22px;color:#e6e9f2;font-weight:600">Impôt annuel</div>
+      <div class="vrow"><div class="k">Avant</div><div class="bar"><i id="v-b1" style="left:0;background:linear-gradient(90deg,#f43f5e,#fb923c)"></i></div><div class="v num" id="v-n1">16 190</div></div>
+      <div class="vrow" style="margin-top:20px"><div class="k">Après</div><div class="bar" style="overflow:visible"><i id="v-b2" style="left:0;background:linear-gradient(90deg,#6366f1,#c026d3)"></i><span id="v-floor" style="position:absolute;left:45%;top:-8px;bottom:-8px;width:3px;background:#fff;border-radius:2px"></span></div><div class="v num" id="v-n2">16 190</div></div>
+      <div style="position:relative;height:30px;margin-top:8px"><span id="v-floorl" style="position:absolute;left:calc(142px + (100% - 394px) * .45);transform:translateX(-50%);font-size:20px;color:#c9cfe0;white-space:nowrap">plancher légal 45 %</span></div>
+    </div>
+    <div class="abs center" id="v-save" style="top:815px">
+      <div class="label" style="color:#a7f3d0">Économie d'impôt</div>
+      <div style="margin-top:4px"><span class="num" id="v-num" style="font-size:132px;color:#6ee7b7;text-shadow:0 0 60px rgba(16,185,129,.45)">0</span><span class="unit" style="font-size:44px;margin-left:12px">TND / an</span></div>
+    </div>
+    <div class="abs shot" id="v-shot1" style="left:90px;width:440px;top:1070px"><img src="assets/vie-eco.png"></div>
+    <div class="abs shot" id="v-shot2" style="left:550px;width:440px;top:1070px"><img src="assets/vie-taux.png"></div>
+  </section>
+
+  <!-- 4. AUTO -->
+  <section class="scene" id="s4">
+    <div class="abs tag" id="s4-tag" style="left:90px;top:120px"><b class="grad g-auto">03</b> · ASSURANCE AUTOMOBILE</div>
+    <div class="abs h1" id="s4-h" style="left:90px;top:170px">
+      <span class="line"><span>Une prime, détaillée</span></span>
+      <span class="line"><span class="grad g-auto">ligne par ligne.</span></span>
+    </div>
+    <div class="abs" id="au-card">
+      <div id="au-sweep"></div>
+      <div class="top"><span style="font-size:28px;color:#a3adc2">Prime totale TTC</span><span class="badge"><i></i>Exemple à essayer</span></div>
+      <div><span class="num" id="au-num">736.813</span><span class="unit" style="font-size:40px;margin-left:12px;color:#a3adc2">DT</span><span id="au-delta" style="display:inline-block;margin-left:22px;font-size:26px;font-weight:650;color:#4ade80;background:rgba(18,128,92,.18);border:1px solid rgba(74,222,128,.3);padding:8px 16px;border-radius:99px;vertical-align:middle">+23.940 DT</span></div>
+      <div style="font-size:25px;color:#a3adc2;margin-top:18px"><span id="au-cv">4 CV</span> · Classe 1 · Valeur 53,480 DT · Formule basique</div>
+      <div class="chips" id="au-chips"><span id="au-sel"></span><span class="chip">4 CV</span><span class="chip">5 CV</span><span class="chip">7 CV</span><span class="chip">11 CV</span></div>
+      <div style="margin-top:34px" id="au-rows">
+        <div class="arow"><span class="k">RC-RTI</span><span class="v" data-v="112.220">112.220</span></div>
+        <div class="arow"><span class="k">Incendie</span><span class="v" data-v="198.318">198.318</span></div>
+        <div class="arow"><span class="k">Vol</span><span class="v" data-v="174.958">174.958</span></div>
+        <div class="arow"><span class="k">+ 6 autres garanties, frais et taxes</span><span></span></div>
+      </div>
+    </div>
+    <div class="abs center label" id="au-cap" style="top:1220px">Barème RC par puissance fiscale · TUA · offre imprimable</div>
+  </section>
+
+  <!-- 5. OUTRO -->
+  <section class="scene" id="s5">
+    <div class="ico" id="i1"><img src="assets/ico-credit.png"></div>
+    <div class="ico" id="i2"><img src="assets/ico-vie.png"></div>
+    <div class="ico" id="i3"><img src="assets/ico-auto.png"></div>
+    <div class="iname" id="n1">Crédit</div>
+    <div class="iname" id="n2">Assurance vie</div>
+    <div class="iname" id="n3">Assurance auto</div>
+    <div class="abs center h1" id="s5-h" style="top:690px;font-size:92px">
+      <span class="line"><span class="grad g-credit">Gratuits.</span></span>
+      <span class="line"><span class="grad g-vie">Installables.</span></span>
+      <span class="line"><span class="grad g-auto">Hors ligne.</span></span>
+    </div>
+    <div class="abs center" id="s5-by" style="top:1075px;font-size:30px;color:#c9cfe0">Développés par <b style="color:#fff">Mohamed Aziz Jaouadi</b></div>
+    <div class="abs center" id="s5-url" style="top:1150px"><span class="pill glass" style="font-size:30px;padding:18px 34px">mohamed-ja.github.io</span></div>
+  </section>
+
+  <canvas id="flash" width="1080" height="1350"></canvas>
+</div>
+
+<script>
+const W = 1080, H = 1350, DUR = 24.5;
+const $ = (s) => document.querySelector(s);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const p = (t, a, d) => clamp((t - a) / d);
+const eo = (x) => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);           // easeOutExpo
+const eio = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const lerp = (a, b, k) => a + (b - a) * k;
+const hash = (n) => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
+
+// French number format: narrow no-break space thousands, comma decimals
+function fr(v, d) { const s = v.toFixed(d).split('.'); return s[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + (d ? ',' + s[1] : ''); }
+function dt(v) { const s = v.toFixed(3).split('.'); return s[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + s[1]; }
+
+// Kinetic type: split lines already wrapped in .line > span (mask reveal)
+function lineReveal(root, t, start, stagger = 0.09, dur = 0.7) {
+  root.querySelectorAll('.line > span').forEach((s, i) => {
+    const k = eo(p(t, start + i * stagger, dur));
+    s.style.transform = `translateY(${(1 - k) * 112}%)`;
+  });
+}
+// Character stagger
+function splitChars(el) {
+  const html = el.innerHTML; el.setAttribute('aria-label', el.textContent);
+  const tmp = document.createElement('div'); tmp.innerHTML = html; el.innerHTML = '';
+  const out = [];
+  const walk = (node, parent) => {
+    node.childNodes.forEach((n) => {
+      if (n.nodeType === 3) { for (const c of n.textContent) { const s = document.createElement('span'); s.className = 'ch' + (parent.classList && parent.classList.contains('grad') ? ' ' + parent.className : ''); s.textContent = c; s.setAttribute('aria-hidden', 'true'); parent.appendChild(s); out.push(s); } }
+      else { const c = n.cloneNode(false); parent.appendChild(c); walk(n, c); }
+    });
+  };
+  walk(tmp, el); return out;
+}
+function charReveal(chars, t, start, stagger = 0.025, dur = 0.5) {
+  chars.forEach((c, i) => {
+    const k = eo(p(t, start + i * stagger, dur));
+    c.style.opacity = k; c.style.transform = `translateY(${(1 - k) * 18}px)`; c.style.filter = `blur(${(1 - k) * 8}px)`;
+  });
+}
+const tags = {}; ['s1-tag', 's2-tag', 's3-tag', 's4-tag'].forEach((id) => tags[id] = splitChars($('#' + id)));
+
+// scene windows [in, out]
+const SC = { s1: [0, 4.0], s2: [4.0, 9.5], s3: [9.5, 15.0], s4: [15.0, 20.0], s5: [20.0, 99] };
+function sceneOpacity(t, [a, b]) {
+  const fin = a === 0 ? 1 : p(t, a, 0.25);
+  const fout = 1 - p(t, b - 0.32, 0.32);
+  return clamp(Math.min(fin, fout));
+}
+// exit motion (old content lifts and blurs out)
+function exitStyle(el, t, b) { const k = eio(p(t, b - 0.4, 0.4)); el.style.transform = `translateY(${-60 * k}px) scale(${1 - 0.04 * k})`; el.style.filter = k > 0 ? `blur(${10 * k}px)` : 'none'; }
+
+// ---------- background ----------
+const bg = $('#bg').getContext('2d');
+const PAL = {
+  s1: ['#7c3aed', '#10b981', '#2f5bea'],
+  s2: ['#7c3aed', '#ec4899', '#f97316'],
+  s3: ['#4f46e5', '#c026d3', '#10b981'],
+  s4: ['#2f5bea', '#1d4ed8', '#38bdf8'],
+  s5: ['#7c3aed', '#10b981', '#2f5bea'],
+};
+const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+function palAt(t) {
+  const keys = ['s1', 's2', 's3', 's4', 's5'];
+  let cur = 's1', nxt = null, k = 0;
+  for (const s of keys) if (t >= SC[s][0]) cur = s;
+  const idx = keys.indexOf(cur);
+  if (idx < 4) { const b = SC[cur][1]; k = eio(p(t, b - 0.5, 0.9)); nxt = keys[idx + 1]; }
+  return PAL[cur].map((c, i) => { const a = hex(c), bb = hex(nxt ? PAL[nxt][i] : c); return a.map((v, j) => Math.round(lerp(v, bb[j], k))); });
+}
+const stars = Array.from({ length: 110 }, (_, i) => ({ x: hash(i) * W, y: hash(i + 99) * H, r: 0.6 + hash(i + 7) * 1.8, s: 6 + hash(i + 3) * 26, ph: hash(i + 5) * 6.28 }));
+function drawBg(t) {
+  const c = bg; c.globalCompositeOperation = 'source-over';
+  c.fillStyle = '#04050c'; c.fillRect(0, 0, W, H);
+  const pal = palAt(t);
+  c.globalCompositeOperation = 'lighter';
+  const blobs = [
+    [0.18 + 0.08 * Math.sin(t * 0.35), 0.16 + 0.05 * Math.cos(t * 0.3), 640, 0.42],
+    [0.86 + 0.06 * Math.cos(t * 0.28), 0.42 + 0.07 * Math.sin(t * 0.33), 600, 0.34],
+    [0.40 + 0.10 * Math.sin(t * 0.22 + 2), 0.92 + 0.04 * Math.cos(t * 0.4), 700, 0.36],
+  ];
+  blobs.forEach(([x, y, r, a], i) => {
+    const [R, G, B] = pal[i];
+    const g = c.createRadialGradient(x * W, y * H, 0, x * W, y * H, r);
+    g.addColorStop(0, `rgba(${R},${G},${B},${a})`); g.addColorStop(0.55, `rgba(${R},${G},${B},${a * 0.25})`); g.addColorStop(1, `rgba(${R},${G},${B},0)`);
+    c.fillStyle = g; c.fillRect(0, 0, W, H);
+  });
+  c.globalCompositeOperation = 'source-over';
+  // perspective grid floor
+  const hy = 860, vx = 540; const [R, G, B] = pal[0];
+  c.save(); c.beginPath(); c.rect(0, hy, W, H - hy); c.clip();
+  c.lineWidth = 1.2;
+  for (let i = -14; i <= 14; i++) {
+    const xb = vx + i * 150;
+    const g = c.createLinearGradient(0, hy, 0, H); g.addColorStop(0, `rgba(${R},${G},${B},0)`); g.addColorStop(1, `rgba(${R},${G},${B},0.22)`);
+    c.strokeStyle = g; c.beginPath(); c.moveTo(vx, hy); c.lineTo(xb * 1 + (xb - vx) * 2.2, H); c.stroke();
+  }
+  const scroll = (t * 0.55) % 1;
+  for (let j = 0; j < 12; j++) {
+    const z = (j + 1 - scroll) / 12; const y = hy + (H - hy) * Math.pow(z, 2.2);
+    c.strokeStyle = `rgba(${R},${G},${B},${0.2 * Math.pow(z, 1.4)})`; c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke();
+  }
+  c.restore();
+  // horizon glow
+  const hg = c.createLinearGradient(0, hy - 60, 0, hy + 60);
+  hg.addColorStop(0, 'rgba(255,255,255,0)'); hg.addColorStop(0.5, `rgba(${pal[1][0]},${pal[1][1]},${pal[1][2]},0.10)`); hg.addColorStop(1, 'rgba(255,255,255,0)');
+  c.fillStyle = hg; c.fillRect(0, hy - 60, W, 120);
+  // particles
+  stars.forEach((s) => {
+    const y = ((s.y - t * s.s) % H + H) % H; const a = 0.25 + 0.45 * (0.5 + 0.5 * Math.sin(t * 2 + s.ph));
+    c.fillStyle = `rgba(220,228,255,${a})`; c.beginPath(); c.arc(s.x, y, s.r, 0, 6.283); c.fill();
+  });
+  // vignette
+  const v = c.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H * 0.78);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.6)');
+  c.fillStyle = v; c.fillRect(0, 0, W, H);
+}
+// transition light sweep
+const fl = $('#flash').getContext('2d');
+function drawFlash(t) {
+  fl.clearRect(0, 0, W, H);
+  [4.0, 9.5, 15.0, 20.0].forEach((b) => {
+    const k = p(t, b - 0.35, 0.6); if (k <= 0 || k >= 1) return;
+    const y = lerp(-80, H + 80, eio(k)); const a = Math.sin(k * Math.PI);
+    const g = fl.createLinearGradient(0, y - 140, 0, y + 140);
+    g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, `rgba(235,225,255,${0.22 * a})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+    fl.fillStyle = g; fl.fillRect(0, y - 140, W, 280);
+    fl.fillStyle = `rgba(255,255,255,${0.75 * a})`; fl.fillRect(0, y - 1, W, 2);
+  });
+}
+
+// ---------- scene renderers ----------
+function rise(el, t, a, d = 0.7, dy = 50, s0 = 1) { const k = eo(p(t, a, d)); el.style.opacity = k; el.style.transform = `translateY(${(1 - k) * dy}px) scale(${lerp(s0, 1, k)})`; return k; }
+
+const hookNums = [...document.querySelectorAll('#s1 .num')];
+function scramble(el, t, start, dur, i0) {
+  const target = el.dataset.target; let out = '';
+  const n = target.length;
+  for (let i = 0; i < n; i++) {
+    const ch = target[i]; const lock = start + dur * (i / n);
+    if (!/\d/.test(ch) || t >= lock) out += ch;
+    else out += Math.floor(hash(Math.floor(t * 30) * 13 + i + i0) * 10);
+  }
+  el.textContent = out;
+}
+function s1(t) {
+  charReveal(tags['s1-tag'], t, 0.05, 0.018, 0.5);
+  [['#h1r', 0.15], ['#h2r', 0.55], ['#h3r', 0.95]].forEach(([id, a], i) => {
+    const el = $(id); const k = eo(p(t, a, 0.6));
+    el.style.opacity = k; el.style.transform = `translateY(${(1 - k) * 40}px)`; el.style.filter = `blur(${(1 - k) * 12}px)`;
+    scramble(hookNums[i], t, a + 0.05, 0.7, i * 50);
+  });
+  lineReveal($('#s1-h'), t, 1.75, 0.12, 0.75);
+}
+
+const typed = '150 000 sur 20 ans à 9 %';
+function s2(t) {
+  charReveal(tags['s2-tag'], t, 4.1, 0.02, 0.5);
+  lineReveal($('#s2-h'), t, 4.2, 0.1, 0.75);
+  rise($('#cr-input'), t, 4.45, 0.7, 40, 0.96);
+  const n = Math.floor(clamp((t - 4.85) / 0.85) * typed.length);
+  $('#cr-typed').textContent = typed.slice(0, n);
+  $('#cr-caret').style.opacity = (t < 5.75 ? (Math.floor(t * 3.4) % 2 ? 1 : 0.15) : 0);
+  // button press
+  const pr = p(t, 5.75, 0.25); const btn = $('#cr-btn');
+  btn.style.transform = `scale(${1 - 0.07 * Math.sin(pr * Math.PI)})`;
+  const rp = p(t, 5.8, 0.6); const rip = $('#cr-ripple');
+  rip.style.opacity = rp > 0 && rp < 1 ? 1 - rp : 0; rip.style.width = rip.style.height = `${20 + rp * 260}px`;
+  // result
+  const res = $('#cr-res'); const kr = eo(p(t, 5.85, 0.5));
+  res.style.opacity = kr; res.style.transform = `translateY(${(1 - kr) * 30}px)`;
+  const kc = eo(p(t, 5.9, 1.0));
+  $('#cr-num').textContent = fr(1349.589 * kc, 3);
+  $('#cr-num').style.textShadow = `0 0 ${40 + 40 * (1 - p(t, 6.6, 0.8))}px rgba(236,72,153,0.45)`;
+  const ks = eo(p(t, 6.6, 0.6)); $('#cr-sub').style.opacity = ks;
+  // cost bar
+  rise($('#cr-bar'), t, 6.7, 0.6, 24);
+  const kb = eio(p(t, 6.85, 0.8));
+  $('#cr-b1').style.width = `${46.3 * kb}%`;
+  $('#cr-b2').style.left = `calc(${46.3 * kb}% + 6px)`; $('#cr-b2').style.width = `calc(${53.7 * kb}% - 6px)`;
+  // real UI panel, 3D rise
+  const sh = $('#cr-shot'); const kk = eo(p(t, 7.2, 0.9));
+  sh.style.opacity = kk; sh.style.transform = `perspective(1400px) translateY(${(1 - kk) * 120}px) rotateX(${(1 - kk) * 28 + 4}deg)`;
+}
+
+function s3(t) {
+  charReveal(tags['s3-tag'], t, 9.6, 0.02, 0.5);
+  lineReveal($('#s3-h'), t, 9.7, 0.1, 0.75);
+  rise($('#v-c1'), t, 10.15, 0.6, 30, 0.9); rise($('#v-c2'), t, 10.3, 0.6, 30, 0.9);
+  rise($('#v-bars'), t, 10.45, 0.7, 40);
+  const k1 = eio(p(t, 10.6, 0.6)); $('#v-b1').style.width = `${100 * k1}%`; $('#v-b2').style.width = `${100 * k1 * lerp(1, 0.859, eio(p(t, 11.3, 0.9)))}%`;
+  $('#v-n1').textContent = fr(16190 * k1, 0);
+  const kd = eio(p(t, 11.3, 0.9)); $('#v-n2').textContent = fr(16190 * k1 - 2280 * kd, 0);
+  const kf = eo(p(t, 11.2, 0.5)); $('#v-floor').style.opacity = kf; $('#v-floorl').style.opacity = kf;
+  const sv = $('#v-save'); const ks = eo(p(t, 11.5, 0.6)); sv.style.opacity = ks; sv.style.transform = `translateY(${(1 - ks) * 30}px)`;
+  $('#v-num').textContent = '−' + fr(2280 * eo(p(t, 11.55, 1.0)), 0);
+  [['#v-shot1', 12.2], ['#v-shot2', 12.35]].forEach(([id, a]) => { const el = $(id); const k = eo(p(t, a, 0.9)); el.style.opacity = k; el.style.transform = `perspective(1400px) translateY(${(1 - k) * 110}px) rotateX(${(1 - k) * 30 + 4}deg)`; });
+}
+
+const chips = [...document.querySelectorAll('#au-chips .chip')];
+const rows = [...document.querySelectorAll('#au-rows .arow')];
+function s4(t) {
+  charReveal(tags['s4-tag'], t, 15.1, 0.02, 0.5);
+  lineReveal($('#s4-h'), t, 15.2, 0.1, 0.75);
+  const card = $('#au-card'); const kc = eo(p(t, 15.45, 0.9));
+  card.style.opacity = kc;
+  card.style.transform = `perspective(1600px) translateY(${(1 - kc) * 140}px) rotateX(${(1 - kc) * 22 + 2.5 * Math.sin(t * 0.8)}deg) rotateY(${3 * Math.sin(t * 0.6 + 1)}deg)`;
+  // chip selection slides 4 CV -> 5 CV
+  const ch0 = chips[0], ch1 = chips[1];
+  const ks = eio(p(t, 16.0, 0.45)); const sel = $('#au-sel');
+  sel.style.left = `${lerp(ch0.offsetLeft, ch1.offsetLeft, ks)}px`; sel.style.width = `${lerp(ch0.offsetWidth, ch1.offsetWidth, ks)}px`;
+  chips.forEach((c, i) => c.style.color = (i === 0 && ks < .5) || (i === 1 && ks >= .5) ? '#fff' : '#a3adc2');
+  const kn = eo(p(t, 16.1, 0.9)); $('#au-num').textContent = dt(lerp(736.813, 760.753, kn));
+  $('#au-cv').textContent = ks >= .5 ? '5 CV' : '4 CV';
+  const kd = eo(p(t, 16.15, 0.5)); const d = $('#au-delta'); d.style.opacity = kd; d.style.transform = `translateY(${(1 - kd) * 14}px)`;
+  rows.forEach((r, i) => {
+    const a = 16.55 + i * 0.16; const k = eo(p(t, a, 0.6));
+    r.style.opacity = k; r.style.transform = `translateX(${(1 - k) * 60}px)`;
+    const v = r.querySelector('[data-v]'); if (v) v.textContent = dt(parseFloat(v.dataset.v) * eo(p(t, a, 0.8)));
+  });
+  $('#au-sweep').style.left = `${lerp(-300, 1200, eio(p(t, 18.0, 1.1)))}px`;
+  rise($('#au-cap'), t, 17.6, 0.6, 20);
+}
+
+function s5(t) {
+  const ids = ['#i1', '#i2', '#i3'], names = ['#n1', '#n2', '#n3'];
+  ids.forEach((id, i) => {
+    const el = $(id); const k = eo(p(t, 20.05 + i * 0.12, 1.1));
+    const ang = (i / 3) * 6.283 + (1 - k) * 2.2; const rad = (1 - k) * 380;
+    const fx = 540 + (i - 1) * 260, fy = 400;
+    const x = lerp(540, fx, k) + Math.cos(ang) * rad - 84, y = lerp(560, fy, k) + Math.sin(ang) * rad * 0.5 - 84 + 6 * Math.sin(t * 1.6 + i);
+    el.style.left = `${x}px`; el.style.top = `${y}px`; el.style.opacity = clamp(k * 1.6);
+    el.style.transform = `scale(${lerp(0.4, 1, k)}) rotate(${(1 - k) * -40}deg)`;
+    el.style.boxShadow = `0 24px 70px rgba(0,0,0,.55), 0 0 ${40 + 20 * Math.sin(t * 2 + i)}px ${['rgba(192,38,211,.5)', 'rgba(16,185,129,.45)', 'rgba(47,91,234,.55)'][i]}`;
+    const n = $(names[i]); const kn = eo(p(t, 20.7 + i * 0.1, 0.6)); n.style.left = `${fx - 130}px`; n.style.top = `${fy + 105}px`; n.style.opacity = kn; n.style.transform = `translateY(${(1 - kn) * 14}px)`;
+  });
+  lineReveal($('#s5-h'), t, 20.85, 0.16, 0.8);
+  rise($('#s5-by'), t, 21.9, 0.7, 20); rise($('#s5-url'), t, 22.15, 0.7, 20, 0.9);
+}
+
+const R = { s1, s2, s3, s4, s5 };
+window.render = function (t) {
+  drawBg(t);
+  for (const [id, win] of Object.entries(SC)) {
+    const el = $('#' + id); const o = sceneOpacity(t, win);
+    el.style.opacity = o; el.style.visibility = o > 0 ? 'visible' : 'hidden';
+    if (o > 0) { R[id](t); exitStyle(el, t, win[1]); }
+  }
+  drawFlash(t);
+};
+window.DUR = DUR;
+Promise.all([document.fonts.ready, ...[...document.images].map((i) => i.complete ? 1 : new Promise((r) => { i.onload = i.onerror = r; }))])
+  .then(() => document.fonts.load('650 40px Geist')).then(() => {
+    const q = new URLSearchParams(location.search).get('t');
+    render(q !== null ? parseFloat(q) : 0);
+    window.__ready = true;
+  });
+</script>
+</body>
+</html>

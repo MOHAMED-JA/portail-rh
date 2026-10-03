@@ -1,0 +1,11 @@
+1 349,589 TND par mois pour un crédit de 150 000 TND sur 20 ans. 2 280 TND d'impôt en moins par an grâce à l'assurance vie. 760.753 DT de prime auto, détaillée garantie par garantie.
+
+Trois simulateurs que j'ai développés pour la Tunisie : gratuits, installables sur téléphone et utilisables hors ligne.
+
+🔹 Simulateur de crédit (mensualité, TEG, tableau d'amortissement, en français et en arabe) : https://mohamed-ja.github.io/simulateur-credit/
+🔹 Simulateur assurance vie & CEA (économie d'impôt IRPP, montant optimal, projection du capital) : https://mohamed-ja.github.io/simulateur-assurance-vie/
+🔹 Simulateur assurance automobile (prime nette, TUA, frais, offre imprimable, constat et barème FTUSA) : https://mohamed-ja.github.io/simulateur-Assurance-Automobile/
+
+Vos retours m'intéressent : quel simulateur devrais-je construire ensuite ?
+
+#Tunisie #Assurance #Crédit #Fintech #AssuranceVie #DéveloppementWeb

@@ -1,0 +1,9 @@
+work/frames/
+work/stills/
+work/shots/
+work/*.wav
+work/*.png
+work/*.jpg
+work/cs-*
+work/shot*.mjs
+work/cv.mjs
