@@ -1,0 +1,16 @@
+Mes trois simulateurs, réunis en une minute.
+
+Après les avoir présentés un par un, voici une courte vidéo qui les rassemble : crédit, assurance vie & CEA, assurance automobile. Gratuits, installables sur téléphone et utilisables hors ligne.
+
+🔹 Simulateur de crédit
+https://mohamed-ja.github.io/simulateur-credit/
+
+🔹 Simulateur assurance vie & CEA
+https://mohamed-ja.github.io/simulateur-assurance-vie/
+
+🔹 Simulateur assurance automobile
+https://mohamed-ja.github.io/simulateur-Assurance-Automobile/
+
+Vos retours restent les bienvenus pour continuer à les améliorer.
+
+#Tunisie #Assurance #Crédit #Fintech #Insurtech
