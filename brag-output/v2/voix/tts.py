@@ -5,7 +5,7 @@ from kokoro_onnx import Kokoro
 M = '/home/user/tts/'
 k = Kokoro(M + 'kokoro-v1.0.onnx', M + 'voices-v1.0.bin')
 lines = json.load(open(sys.argv[1])); base = float(sys.argv[2]) if len(sys.argv) > 2 else 0.92
-SR = 24000; out = np.zeros(int(51 * SR), dtype=np.float32)
+SR = 24000; out = np.zeros(int(72 * SR), dtype=np.float32)
 for i, ln in enumerate(lines):
     win = ln['end'] - ln['at']; speed = base
     while True:
@@ -16,4 +16,4 @@ for i, ln in enumerate(lines):
     print(f"{i}: {d:5.2f}s / fenêtre {win:5.2f}s  vitesse {speed}  {'TROP LONG' if d > win else 'ok'}")
     sf.write(f'line{i}.wav', s, sr)
     a = int(ln['at'] * SR); out[a:a + len(s)] += s[: len(out) - a]
-sf.write('voix.wav', out[: int(49.5 * SR)], SR)
+sf.write('voix.wav', out[: int(float(sys.argv[3]) * SR)], SR)

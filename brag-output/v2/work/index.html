@@ -149,12 +149,16 @@
     <span class="line"><span class="grad g-vie">Installables.</span></span>
     <span class="line"><span class="grad g-auto">Hors ligne.</span></span>
   </div>
-  <div class="abs center" style="top:640px">
+  <div class="abs center" style="top:596px">
     <div class="approw glass" id="ou-r1"><img src="assets/ico-credit.png"><div><div class="n">Crédit</div><div class="s">mohamed-ja.github.io/simulateur-credit</div></div></div>
     <div class="approw glass" id="ou-r2"><img src="assets/ico-vie.png"><div><div class="n">Assurance vie &amp; CEA</div><div class="s">mohamed-ja.github.io/simulateur-assurance-vie</div></div></div>
     <div class="approw glass" id="ou-r3"><img src="assets/ico-auto.png"><div><div class="n">Assurance automobile</div><div class="s">mohamed-ja.github.io/simulateur-Assurance-Automobile</div></div></div>
   </div>
-  <div class="abs center" id="ou-by" style="top:1090px;font-size:28px;color:#c9d0e2">Conçus et développés par <b style="color:#fff">Mohamed Aziz Jaouadi</b></div>
+  <div class="abs center" id="ou-by" style="top:1004px;font-size:26px;color:#c9d0e2">Conçus et développés par <b style="color:#fff">Mohamed Aziz Jaouadi</b></div>
+  <div class="abs glass" id="ou-disc" style="left:90px;right:90px;top:1070px;padding:22px 28px;display:flex;gap:16px;align-items:flex-start;border-radius:22px">
+    <span data-icon="alert" data-size="26" data-color="#fbbf24" style="flex:none;margin-top:2px"></span>
+    <div style="font-size:21px;line-height:1.42;color:#d7dcea">Simulateurs fournis <b style="color:#fff">à titre informatif et indicatif</b>, pour aider à comparer. En assurance vie, CEA et automobile, l'offre réelle est celle d'une <b style="color:#fff">compagnie d'assurance agréée</b> de la place.</div>
+  </div>
 </section>
 
 <canvas id="fx" width="1080" height="1350"></canvas>
@@ -162,7 +166,7 @@
 <script src="../../engine/engine.js"></script>
 <script>
 const { $, $$, p, eo, eio, lerp, clamp, fr, dt, lineReveal, charReveal, rise, tilt, fade, exitStyle, sceneOpacity } = E;
-const DUR = 49.5;
+const DUR = 61.5;
 const SC = { intro: [0, 4.5], credit: [4.5, 17.5], vie: [17.5, 30.5], auto: [30.5, 43.5], outro: [43.5, 99] };
 const PAL = { intro: ['#6d28d9', '#0f766e', '#1d4ed8'], credit: ['#6d28d9', '#be185d', '#c2410c'], vie: ['#4338ca', '#a21caf', '#047857'], auto: ['#1d4ed8', '#1e3a8a', '#0369a1'], outro: ['#6d28d9', '#047857', '#1d4ed8'] };
 const SPLIT = 5.6; // phase A (demo) -> phase B (features)
@@ -195,6 +199,7 @@ const PH = { credit: '#cr-B', vie: '#vi-B', auto: '#au-B' };
 for (const [k, f] of Object.entries(FEAT)) {
   const root = $(PH[k]);
   root.innerHTML = f.shots.map((s, i) => `<div class="viewport vp${i}"><img src="${s[0]}"><span class="vlabel">${s[1]}</span></div>`).join('') +
+    (k === 'credit' ? '' : `<div class="abs center disc" style="top:1252px;left:90px;right:90px;font-size:19px;color:#a9b1c5">Résultats indicatifs · l'offre réelle est celle d'une compagnie d'assurance agréée</div>`) +
     `<div class="grid6" style="top:800px">${f.items.map(([ic, tt, dd]) => `<div class="tile glass"><div class="ic" style="background:${f.bg};color:${f.col}" data-icon="${ic}" data-size="28"></div><div><div class="tt">${tt}</div><div class="dd">${dd}</div></div></div>`).join('')}</div>`;
 }
 function phaseB(k, t, a) {
@@ -210,6 +215,7 @@ function phaseB(k, t, a) {
     const img = $('img', vp); const ih = img.naturalHeight * (900 / img.naturalWidth);
     img.style.transform = `translateY(${-Math.max(0, ih - 390) * eio(p(t, s + 0.4, e === 99 ? 3.6 : 3.3)) * 0.6}px)`;
   });
+  const dsc = $('.disc', root); if (dsc) dsc.style.opacity = eo(p(t, b0 + 1.2, 0.8));
   $$('.tile', root).forEach((tl, i) => {
     const kk = eo(p(t, b0 + 0.35 + i * 0.1, 0.7));
     tl.style.opacity = kk; tl.style.transform = `translateY(${(1 - kk) * 30}px)`;
@@ -283,6 +289,7 @@ function outro(t) {
   lineReveal($('#ou-h'), t, a + 0.2, 0.14, 0.8);
   ['#ou-r1', '#ou-r2', '#ou-r3'].forEach((id, i) => rise($(id), t, a + 1.0 + i * 0.15, 0.7, 30));
   rise($('#ou-by'), t, a + 1.7, 0.7, 18);
+  rise($('#ou-disc'), t, a + 3.0, 0.8, 24);
 }
 const R = { intro, credit, vie, auto, outro };
 const drawBg = E.makeBg($('#bg'), { stars: 36 });
