@@ -17,7 +17,7 @@ CONTENU ET TON
 - Message universel : ne cibler aucun pays en particulier ; parler d'entreprises et d'équipes en général.
 - Montrer le bénéfice pour chaque profil : le collaborateur (demander un congé en quelques secondes), le manager (valider, suivre son équipe), les RH (piloter, anticiper).
 - Utiliser uniquement les données fictives de la démonstration (société « Veltaris ») ; chaque chiffre, nom et écran doit correspondre à ce que l'application affiche réellement.
-- Mettre en avant les atouts réels : interface en français, fonctionne sur ordinateur et téléphone, démonstration utilisable sans rien installer, données hébergées chez l'entreprise. [Mentionner la licence et la gratuité seulement après l'avoir vérifiée dans le fichier LICENSE.]
+- Mettre en avant les atouts réels : interface en français, fonctionne sur ordinateur et téléphone, démonstration utilisable sans rien installer, données hébergées chez l'entreprise. Le portail est gratuit et open source (licence MIT).
 - Fin : logo de l'application, « Portail RH », « Application conçue par Mohamed Aziz Jaouadi », et « Démonstration en ligne : lien dans la publication, au-dessus » (le lien est dans le texte du post, donc au-dessus de la vidéo, jamais en dessous).
 
 DESIGN ET ANIMATIONS
