@@ -11,7 +11,7 @@ https://mohamed-ja.github.io/simulateur-assurance-vie/
 🔹 Simulateur assurance automobile
 https://mohamed-ja.github.io/simulateur-Assurance-Automobile/
 
-Ces simulateurs sont fournis à titre informatif et indicatif, pour aider à comparer : en assurance vie, CEA et automobile, l'offre réelle est celle d'une compagnie d'assurance agréée de la place.
+Ces simulateurs sont fournis à titre informatif et indicatif, pour aider à comparer. L'offre réelle est celle d'une compagnie d'assurance agréée pour l'assurance vie et l'automobile, et celle d'une banque ou d'un intermédiaire en bourse pour le CEA.
 
 Vos retours restent les bienvenus pour continuer à les améliorer.
 

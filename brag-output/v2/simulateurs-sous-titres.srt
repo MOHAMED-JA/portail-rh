@@ -15,5 +15,5 @@ Avec l'assurance vie et le CEA, découvrez combien d'impôt vous pouvez économi
 En assurance automobile, la prime est détaillée garantie par garantie. L'offre s'imprime avec la signature du client, et le constat amiable se prépare en quelques clics.
 
 5
-00:00:44,000 --> 00:00:59,680
-Gratuits, installables et hors ligne, ces simulateurs sont fournis à titre informatif et indicatif, pour vous aider à comparer. En assurance vie, CEA et automobile, l'offre réelle reste celle d'une compagnie d'assurance agréée de la place. Les liens sont juste en dessous.
+00:00:44,000 --> 00:01:01,621
+Gratuits, installables et hors ligne, ces simulateurs sont fournis à titre informatif et indicatif, pour vous aider à comparer. L'offre réelle reste celle d'une compagnie d'assurance agréée pour l'assurance vie et l'automobile, et celle d'une banque ou d'un intermédiaire en bourse pour le CEA. Les liens sont juste en dessous.

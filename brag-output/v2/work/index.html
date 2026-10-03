@@ -157,7 +157,7 @@
   <div class="abs center" id="ou-by" style="top:1004px;font-size:26px;color:#c9d0e2">Conçus et développés par <b style="color:#fff">Mohamed Aziz Jaouadi</b></div>
   <div class="abs glass" id="ou-disc" style="left:90px;right:90px;top:1070px;padding:22px 28px;display:flex;gap:16px;align-items:flex-start;border-radius:22px">
     <span data-icon="alert" data-size="26" data-color="#fbbf24" style="flex:none;margin-top:2px"></span>
-    <div style="font-size:21px;line-height:1.42;color:#d7dcea">Simulateurs fournis <b style="color:#fff">à titre informatif et indicatif</b>, pour aider à comparer. En assurance vie, CEA et automobile, l'offre réelle est celle d'une <b style="color:#fff">compagnie d'assurance agréée</b> de la place.</div>
+    <div style="font-size:21px;line-height:1.42;color:#d7dcea">Simulateurs fournis <b style="color:#fff">à titre informatif et indicatif</b>, pour aider à comparer. L'offre réelle est celle d'une <b style="color:#fff">compagnie d'assurance agréée</b> pour l'assurance vie et l'automobile, et celle d'une <b style="color:#fff">banque ou d'un intermédiaire en bourse</b> pour le CEA.</div>
   </div>
 </section>
 
@@ -166,7 +166,7 @@
 <script src="../../engine/engine.js"></script>
 <script>
 const { $, $$, p, eo, eio, lerp, clamp, fr, dt, lineReveal, charReveal, rise, tilt, fade, exitStyle, sceneOpacity } = E;
-const DUR = 61.5;
+const DUR = 63.5;
 const SC = { intro: [0, 4.5], credit: [4.5, 17.5], vie: [17.5, 30.5], auto: [30.5, 43.5], outro: [43.5, 99] };
 const PAL = { intro: ['#6d28d9', '#0f766e', '#1d4ed8'], credit: ['#6d28d9', '#be185d', '#c2410c'], vie: ['#4338ca', '#a21caf', '#047857'], auto: ['#1d4ed8', '#1e3a8a', '#0369a1'], outro: ['#6d28d9', '#047857', '#1d4ed8'] };
 const SPLIT = 5.6; // phase A (demo) -> phase B (features)
@@ -199,7 +199,7 @@ const PH = { credit: '#cr-B', vie: '#vi-B', auto: '#au-B' };
 for (const [k, f] of Object.entries(FEAT)) {
   const root = $(PH[k]);
   root.innerHTML = f.shots.map((s, i) => `<div class="viewport vp${i}"><img src="${s[0]}"><span class="vlabel">${s[1]}</span></div>`).join('') +
-    (k === 'credit' ? '' : `<div class="abs center disc" style="top:1252px;left:90px;right:90px;font-size:19px;color:#a9b1c5">Résultats indicatifs · l'offre réelle est celle d'une compagnie d'assurance agréée</div>`) +
+    (k === 'credit' ? '' : `<div class="abs center disc" style="top:1252px;left:40px;right:40px;font-size:18.5px;color:#a9b1c5">${k === 'vie' ? "Indicatif · offre réelle : assureur agréé (assurance vie), banque ou intermédiaire en bourse (CEA)" : "Résultats indicatifs · l'offre réelle est celle d'une compagnie d'assurance agréée"}</div>`) +
     `<div class="grid6" style="top:800px">${f.items.map(([ic, tt, dd]) => `<div class="tile glass"><div class="ic" style="background:${f.bg};color:${f.col}" data-icon="${ic}" data-size="28"></div><div><div class="tt">${tt}</div><div class="dd">${dd}</div></div></div>`).join('')}</div>`;
 }
 function phaseB(k, t, a) {
