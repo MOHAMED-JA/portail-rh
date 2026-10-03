@@ -9,3 +9,4 @@ work/shot*.mjs
 work/cv.mjs
 work/probe*.mjs
 work/render.log
+voix/*.wav

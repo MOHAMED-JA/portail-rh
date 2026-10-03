@@ -72,7 +72,7 @@ kh = np.sin(2 * np.pi * np.cumsum(42 + 80 * np.exp(-tt * 30)) / SR) * np.exp(-tt
 dc = 1 - 0.4 * np.exp(-np.arange(int(0.5 * SR)) / SR * 8)
 d0, d1 = cfg['drums_from'], cfg['drums_to']
 t0 = d0
-while t0 < d1 - 1e-6:
+while t0 < d1 - 1e-6 and not cfg.get('no_drums'):
     beat_i = int(round((t0 - d0) / BEAT))
     if beat_i % 2 == 0:
         place(kick, kh, t0); i = int(t0 * SR); j = min(N, i + len(dc)); duck[i:j] = np.minimum(duck[i:j], dc[:j - i])
@@ -127,7 +127,8 @@ def reverb(x, secs=2.6):
     ir = lp(rng.standard_normal(len(tr)) * np.exp(-tr * 2.8), 5500)
     w = fftconvolve(x, ir)[:len(x)]; return w / (np.max(np.abs(w)) + 1e-9) * np.max(np.abs(x))
 
-bus = pad * 0.30 * duck + bass * 0.36 * duck + kick * 0.42 + perc * 0.10 + fx * 0.6
+fxg = cfg.get('fx_gain', 0.6); bassg = cfg.get('bass_gain', 0.36)
+bus = pad * 0.30 * duck + bass * bassg * duck + kick * 0.42 + perc * 0.10 + fx * fxg
 rv = reverb(pad * 0.25 + (arpL + arpR) * 0.12 + fx * 0.3) * 0.32
 L_ = bus + arpL * 0.17 + rv; R_ = bus + arpR * 0.17 + rv
 fade = np.interp(T, [0, 0.08, DUR - 1.8, DUR], [0, 1, 1, 0])
