@@ -1,0 +1,5 @@
+work/frames/
+work/st*/
+work/*.jpg
+work/cs-*
+work/render.log
