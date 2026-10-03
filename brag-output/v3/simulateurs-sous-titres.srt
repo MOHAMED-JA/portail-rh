@@ -1,6 +1,6 @@
 1
-00:00:00,500 --> 00:00:03,423
-Trois simulateurs financiers, conçus pour la Tunisie.
+00:00:00,500 --> 00:00:03,529
+Trois simulateurs financiers, conçus pour les Tunisiens.
 
 2
 00:00:05,000 --> 00:00:16,499
