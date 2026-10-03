@@ -1,0 +1,3 @@
+#!/bin/bash
+# usage: sheet.sh out.jpg cols img...
+out=$1; cols=$2; shift 2; ffmpeg -loglevel error -y $(for f in "$@"; do echo -i $f; done) -filter_complex "$(i=0; for f in "$@"; do echo -n "[$i]scale=360:-1[s$i];"; i=$((i+1)); done; for j in $(seq 0 $((i-1))); do echo -n "[s$j]"; done; echo "xstack=inputs=$i:layout=$(for j in $(seq 0 $((i-1))); do c=$((j%cols)); r=$((j/cols)); echo -n "$((c*360))_$((r*450))|"; done | sed 's/|$//')")" $out

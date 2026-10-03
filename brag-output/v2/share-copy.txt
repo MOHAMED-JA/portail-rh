@@ -1,0 +1,14 @@
+Trois simulateurs financiers conçus pour la Tunisie, gratuits, installables sur téléphone et utilisables hors ligne.
+
+🔹 Simulateur de crédit — taux fixe ou TMM + marge, TEG, tableau d'amortissement, capacité d'emprunt, comparaison d'offres, stress test du TMM, rapport client PDF et Excel, en français et en arabe.
+https://mohamed-ja.github.io/simulateur-credit/
+
+🔹 Assurance vie & CEA — économie d'impôt (IRPP), montant optimal jusqu'au plancher légal, projection du capital, simulation Monte-Carlo, tests de résistance, rachat anticipé, mode conseiller.
+https://mohamed-ja.github.io/simulateur-assurance-vie/
+
+🔹 Assurance automobile — 12 garanties, barème par puissance fiscale et bonus-malus, prime nette, TUA et frais par garantie, offre imprimable avec signature, suivi des devis, constat amiable et barème FTUSA.
+https://mohamed-ja.github.io/simulateur-Assurance-Automobile/
+
+Banques, courtiers, agents généraux : vos retours m'aident à les améliorer.
+
+#Tunisie #Assurance #Crédit #Fintech #Insurtech #AssuranceVie

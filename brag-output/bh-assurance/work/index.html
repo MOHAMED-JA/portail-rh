@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>BH Assurance</title>
+<link rel="stylesheet" href="../../engine/engine.css">
+<style>
+.g-gold { background-image: linear-gradient(95deg, #f6dc95 0%, #d9ad52 55%, #b8862f 100%); }
+.g-blue { background-image: linear-gradient(95deg, #a9c4ff 0%, #6f97ff 60%, #8fd8ff 100%); }
+.gold { color: #e3b960; }
+.hair { position: absolute; height: 1.5px; background: linear-gradient(90deg, rgba(227,185,96,0), #e3b960, rgba(227,185,96,0)); }
+.word { font-size: 148px; font-weight: 680; letter-spacing: -0.05em; line-height: 1; }
+/* timeline */
+.tl-line { position: absolute; left: 152px; top: 420px; width: 2px; background: linear-gradient(#e3b960, rgba(227,185,96,0.25)); transform-origin: top; }
+.tl-item { position: absolute; left: 0; right: 90px; height: 160px; }
+.tl-dot { position: absolute; left: 143px; top: 22px; width: 20px; height: 20px; border-radius: 50%; background: #0b1226; border: 3px solid #e3b960; }
+.tl-year { position: absolute; left: 196px; top: 0; font-size: 58px; }
+.tl-text { position: absolute; left: 396px; right: 0; top: 8px; font-size: 26px; line-height: 1.36; color: #d5dbea; }
+.tl-text b { color: #fff; font-weight: 620; }
+/* chart */
+.barc { position: absolute; bottom: 220px; width: 112px; }
+.barc .b { position: absolute; bottom: 0; left: 0; right: 0; border-radius: 14px 14px 4px 4px; background: linear-gradient(180deg, #5b84f0, #233a86); box-shadow: 0 0 40px rgba(91,132,240,0.25); transform-origin: bottom; }
+.barc.last .b { background: linear-gradient(180deg, #f2d184, #b8862f); box-shadow: 0 0 50px rgba(227,185,96,0.35); }
+.barc .v { position: absolute; left: -20px; right: -20px; text-align: center; font-size: 29px; font-weight: 640; }
+.barc .y { position: absolute; left: -10px; right: -10px; bottom: -48px; text-align: center; font-size: 24px; color: #a9b1c5; font-weight: 540; }
+/* KPI */
+.kpis { position: absolute; left: 90px; width: 900px; top: 400px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.kpi { padding: 28px 30px 26px; border-radius: 26px; min-height: 252px; }
+.kpi .n { font-size: 80px; line-height: 1; }
+.kpi .n .u { font-size: 34px; margin-left: 8px; }
+.kpi .l { font-size: 25px; font-weight: 620; margin-top: 18px; letter-spacing: -0.015em; }
+.kpi .s { font-size: 20px; color: #a9b1c5; margin-top: 7px; }
+/* offer */
+.col { position: absolute; top: 400px; width: 441px; padding: 28px 26px; border-radius: 28px; }
+.col h3 { font-size: 28px; font-weight: 650; letter-spacing: -0.02em; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; }
+.orow { display: flex; align-items: center; gap: 16px; padding: 15px 0; border-top: 1px solid rgba(255,255,255,0.08); font-size: 23px; font-weight: 520; }
+.orow .ic { width: 44px; height: 44px; flex: none; border-radius: 13px; display: grid; place-items: center; }
+/* digital */
+.phone { position: absolute; left: 100px; top: 410px; width: 320px; height: 650px; border-radius: 48px; background: #0b1124; border: 2px solid rgba(255,255,255,0.18); box-shadow: 0 40px 100px rgba(0,0,0,0.6), inset 0 0 0 8px #050914; padding: 34px 22px; overflow: hidden; }
+.phone .notch { position: absolute; left: 50%; top: 16px; width: 90px; height: 22px; border-radius: 99px; background: #050914; transform: translateX(-50%); }
+.pcard { border-radius: 18px; padding: 16px; margin-top: 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); font-size: 18px; color: #c9d0e2; display: flex; align-items: center; gap: 12px; }
+.pcard .ic { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; flex: none; }
+.drow { display: flex; gap: 18px; align-items: flex-start; padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.09); }
+.drow .ic { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; flex: none; background: rgba(227,185,96,0.14); color: #f0cd7c; }
+.drow .tt { font-size: 25px; font-weight: 630; letter-spacing: -0.015em; }
+.drow .dd { font-size: 20px; color: #a9b1c5; margin-top: 4px; }
+.ticker { position: absolute; left: 0; right: 0; top: 1196px; height: 60px; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.ticker .tr { position: absolute; white-space: nowrap; font-size: 26px; color: #c9d0e2; font-weight: 520; top: 12px; }
+.ticker .tr i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #e3b960; margin: 0 22px; vertical-align: middle; transform: translateY(-3px); }
+.foot { font-size: 18px; color: #7f88a0; }
+</style>
+</head>
+<body>
+<div id="stage">
+<canvas id="bg" width="1080" height="1350"></canvas>
+
+<!-- 1. OUVERTURE -->
+<section class="scene" id="open">
+  <div class="hair" id="op-line" style="top:552px;left:140px;width:800px"></div>
+  <div class="abs center tag" id="op-tag" style="top:498px">Compagnie d'assurance tunisienne</div>
+  <div class="abs center word" id="op-word" style="top:590px">
+    <span class="line"><span><span class="grad g-gold">BH</span> Assurance</span></span>
+  </div>
+  <div class="abs center lead" id="op-lead" style="top:790px;left:120px;right:120px;font-size:33px">Plus de trente ans au service des assurés, en vie comme en non-vie.</div>
+  <div class="abs center" style="top:960px;display:flex;justify-content:center;gap:14px">
+    <span class="pill glass" id="op-p1"><span data-icon="clock" data-size="24" data-color="#e3b960"></span>Depuis 1995</span>
+    <span class="pill glass" id="op-p2"><span data-icon="landmark" data-size="24" data-color="#e3b960"></span>Bourse de Tunis</span>
+    <span class="pill glass" id="op-p3"><span data-icon="building" data-size="24" data-color="#e3b960"></span>Groupe BH Bank</span>
+  </div>
+</section>
+
+<!-- 2. HISTOIRE -->
+<section class="scene" id="hist">
+  <div class="abs tag" id="hi-tag" style="left:90px;top:110px"><b class="grad g-gold">Historique</b> · 1995 — 2020</div>
+  <div class="abs h1" id="hi-h" style="left:90px;top:156px">
+    <span class="line"><span>Une histoire</span></span>
+    <span class="line"><span class="grad g-gold">en cinq dates.</span></span>
+  </div>
+  <div class="tl-line" id="tl-line" style="height:800px"></div>
+  <div id="tl"></div>
+</section>
+
+<!-- 3. CROISSANCE -->
+<section class="scene" id="grow">
+  <div class="abs tag" id="gr-tag" style="left:90px;top:110px"><b class="grad g-gold">Chiffre d'affaires</b> · 2020 — 2025</div>
+  <div class="abs h1" id="gr-h" style="left:90px;top:156px">
+    <span class="line"><span>Une croissance</span></span>
+    <span class="line"><span class="grad g-gold">continue.</span></span>
+  </div>
+  <div class="abs glass" id="gr-badge" style="right:90px;top:400px;padding:18px 26px;border-radius:22px;text-align:right">
+    <div class="num grad g-gold" style="font-size:64px;line-height:1" id="gr-pct">+64 %</div>
+    <div style="font-size:21px;color:#c9d0e2;margin-top:6px">entre 2020 et 2025</div>
+  </div>
+  <svg class="abs" id="gr-svg" width="1080" height="1350" style="left:0;top:0;overflow:visible"><polyline id="gr-trend" fill="none" stroke="#e3b960" stroke-width="2.5" stroke-dasharray="6 8" stroke-linecap="round" opacity="0.8"/></svg>
+  <div id="bars"></div>
+  <div class="abs foot" id="gr-foot" style="left:90px;top:1222px">En millions de dinars (MD) · source : communiqués financiers de la société</div>
+</section>
+
+<!-- 4. CHIFFRES CLÉS -->
+<section class="scene" id="keys">
+  <div class="abs tag" id="ke-tag" style="left:90px;top:110px"><b class="grad g-gold">Chiffres clés</b></div>
+  <div class="abs h1" id="ke-h" style="left:90px;top:156px">
+    <span class="line"><span>Solide</span></span>
+    <span class="line"><span class="grad g-gold">et rentable.</span></span>
+  </div>
+  <div class="kpis" id="kpis"></div>
+</section>
+
+<!-- 5. S1 2026 -->
+<section class="scene" id="h26">
+  <div class="abs tag" id="h6-tag" style="left:90px;top:110px"><b class="grad g-gold">Premier semestre 2026</b></div>
+  <div class="abs h1" id="h6-h" style="left:90px;top:156px">
+    <span class="line"><span>Un nouvel</span></span>
+    <span class="line"><span class="grad g-gold">élan.</span></span>
+  </div>
+  <div class="abs center" id="h6-big" style="top:410px">
+    <div class="num grad g-gold" id="h6-pct" style="font-size:230px;line-height:1">+0 %</div>
+    <div class="lead" style="margin-top:8px;color:#e6e9f2;font-weight:560">de chiffre d'affaires sur un an</div>
+    <div class="label" style="margin-top:8px">140,1 MD au 30 juin 2026, contre 109,3 MD un an plus tôt</div>
+  </div>
+  <div class="abs glass" id="h6-split" style="left:90px;width:900px;top:830px;padding:28px 32px">
+    <div style="display:flex;justify-content:space-between;font-size:24px;color:#d5dbea;margin-bottom:14px"><span><span class="dot" style="background:#e3b960"></span>Non-vie <b class="num" id="h6-nv">94,1</b> MD</span><span><span class="dot" style="background:#6f97ff"></span>Vie <b class="num" id="h6-v">46,0</b> MD</span></div>
+    <div style="position:relative;height:22px;border-radius:99px;background:rgba(255,255,255,0.07);overflow:hidden"><i id="h6-b1" style="position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#b8862f,#f2d184)"></i><i id="h6-b2" style="position:absolute;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,#3d63d6,#8fb0ff)"></i></div>
+  </div>
+  <div class="abs glass" id="h6-rn" style="left:90px;width:900px;top:1010px;padding:26px 32px;display:flex;align-items:center;justify-content:space-between">
+    <div><div style="font-size:25px;font-weight:620">Résultat net semestriel</div><div class="label" style="font-size:20px;margin-top:4px">3,1 MD au premier semestre 2025</div></div>
+    <div style="text-align:right"><span class="num" id="h6-rnv" style="font-size:66px">4,9</span><span class="unit" style="font-size:30px;margin-left:8px">MD</span><div style="color:#86efac;font-size:22px;font-weight:620">+57 %</div></div>
+  </div>
+</section>
+
+<!-- 6. OFFRE -->
+<section class="scene" id="offer">
+  <div class="abs tag" id="of-tag" style="left:90px;top:110px"><b class="grad g-gold">Produits et services</b></div>
+  <div class="abs h1" id="of-h" style="left:90px;top:156px">
+    <span class="line"><span>Une offre pour</span></span>
+    <span class="line"><span class="grad g-gold">chaque besoin.</span></span>
+  </div>
+  <div class="col glass" id="of-c1" style="left:90px"></div>
+  <div class="col glass" id="of-c2" style="left:549px"></div>
+  <div class="abs center lead" id="of-foot" style="top:1196px;left:90px;right:90px;font-size:25px">Étudiants, familles, salariés, chefs d'entreprise, retraités.</div>
+</section>
+
+<!-- 7. DIGITAL + PROXIMITÉ -->
+<section class="scene" id="digi">
+  <div class="abs tag" id="di-tag" style="left:90px;top:110px"><b class="grad g-gold">Digital et proximité</b></div>
+  <div class="abs h1" id="di-h" style="left:90px;top:156px">
+    <span class="line"><span>Wininti, l'assurance</span></span>
+    <span class="line"><span class="grad g-gold">au bout des doigts.</span></span>
+  </div>
+  <div class="phone" id="di-phone">
+    <div class="notch"></div>
+    <div style="font-size:15px;color:#7f88a0;margin-top:16px">Wininti</div>
+    <div style="font-size:26px;font-weight:650;margin-top:4px;letter-spacing:-0.02em">Mes services</div>
+    <div class="pcard"><span class="ic" style="background:rgba(227,185,96,.16);color:#f0cd7c" data-icon="car" data-size="22"></span>Devis automobile</div>
+    <div class="pcard"><span class="ic" style="background:rgba(111,151,255,.16);color:#a9c4ff" data-icon="file" data-size="22"></span>Mes contrats</div>
+    <div class="pcard"><span class="ic" style="background:rgba(244,63,94,.14);color:#fda4af" data-icon="alert" data-size="22"></span>Mes sinistres</div>
+    <div class="pcard"><span class="ic" style="background:rgba(16,185,129,.14);color:#86efac" data-icon="heart" data-size="22"></span>Remboursements santé</div>
+    <div class="pcard"><span class="ic" style="background:rgba(168,85,247,.14);color:#d8b4fe" data-icon="lock" data-size="22"></span>Paiement sécurisé</div>
+  </div>
+  <div class="abs" id="di-list" style="left:470px;width:520px;top:410px">
+    <div class="drow"><span class="ic" data-icon="spark" data-size="26"></span><div><div class="tt">Devis et souscription en ligne</div><div class="dd">Automobile, habitation, voyage</div></div></div>
+    <div class="drow"><span class="ic" data-icon="alert" data-size="26"></span><div><div class="tt">Sinistres</div><div class="dd">Déclaration et suivi des dossiers</div></div></div>
+    <div class="drow"><span class="ic" data-icon="heart" data-size="26"></span><div><div class="tt">Espace santé</div><div class="dd">Consultation des remboursements</div></div></div>
+    <div class="drow"><span class="ic" data-icon="lock" data-size="26"></span><div><div class="tt">Paiement sécurisé</div><div class="dd">Règlement des échéances</div></div></div>
+    <div class="label" id="di-note" style="font-size:20px;margin-top:14px">Lancée en avril 2020 · web, Android et iOS</div>
+  </div>
+  <div class="abs label" id="di-prox" style="left:90px;top:1140px;font-size:22px;color:#e3b960;font-weight:600;letter-spacing:.14em">UN RÉSEAU D'AGENCES DANS TOUT LE PAYS</div>
+  <div class="ticker" id="di-tick"><div class="tr" id="di-tr"></div></div>
+</section>
+
+<!-- 8. OUTRO -->
+<section class="scene" id="outro">
+  <div class="abs center tag" id="ou-tag" style="top:230px">Actionnaires de référence</div>
+  <div class="abs center" style="top:280px;display:flex;justify-content:center;gap:14px">
+    <span class="pill glass" id="ou-p1" style="font-size:27px">Groupe BH Bank</span>
+    <span class="pill glass" id="ou-p2" style="font-size:27px">Poulina Group Holding</span>
+  </div>
+  <div class="abs center label" id="ou-cap" style="top:384px">Cotée à la Bourse de Tunis (BHASS) · capital social de 13,3 MD</div>
+  <div class="hair" id="ou-line" style="top:520px;left:140px;width:800px"></div>
+  <div class="abs center word" id="ou-word" style="top:560px">
+    <span class="line"><span><span class="grad g-gold">BH</span> Assurance</span></span>
+  </div>
+  <div class="abs center lead" id="ou-amb" style="top:760px;left:110px;right:110px;font-size:31px;color:#e6e9f2">L'ambition : devenir l'assureur préféré des Tunisiennes et des Tunisiens.</div>
+  <div class="abs center" id="ou-url" style="top:930px"><span class="pill glass" style="font-size:30px;padding:18px 34px"><span data-icon="globe" data-size="26" data-color="#e3b960"></span>bh-assurance.com</span></div>
+  <div class="abs center foot" id="ou-foot" style="top:1215px;left:90px;right:90px;line-height:1.5">Chiffres issus des communiqués et états financiers publiés par la société (2019 — 2026).<br>Réalisation : Mohamed Aziz Jaouadi</div>
+</section>
+
+<canvas id="fx" width="1080" height="1350"></canvas>
+</div>
+<script src="../../engine/engine.js"></script>
+<script>
+const { $, $$, p, eo, eio, lerp, clamp, fr, lineReveal, charReveal, wordReveal, rise, tilt, exitStyle, sceneOpacity, icon } = E;
+const DUR = 77;
+const SC = { open: [0, 6.5], hist: [6.5, 21.5], grow: [21.5, 32.5], keys: [32.5, 44], h26: [44, 51.5], offer: [51.5, 62], digi: [62, 70], outro: [70, 99] };
+const NAVY = ['#1e3a8a', '#7a5a1c', '#0f4c81'];
+const PAL = { open: ['#1e3a8a', '#8a6420', '#0f3d70'], hist: NAVY, grow: ['#1d4ed8', '#7a5a1c', '#0f4c81'], keys: ['#1e3a8a', '#8a6420', '#134e4a'], h26: ['#8a6420', '#1e3a8a', '#0f4c81'], offer: ['#1e3a8a', '#7a5a1c', '#155e75'], digi: ['#1d4ed8', '#8a6420', '#0f4c81'], outro: ['#1e3a8a', '#8a6420', '#0f3d70'] };
+
+// ---- build data-driven parts ----
+const TL = [
+  ['1995', "Création d'<b>Assurances SALIM</b> à l'initiative de la Banque de l'Habitat, spécialisée en assurance vie."],
+  ['1997', 'Transformation en <b>compagnie multibranche</b>, vie et non-vie.'],
+  ['2010', 'Introduction au <b>marché principal de la Bourse de Tunis</b>, le 19 mars.'],
+  ['2019', 'Assurances SALIM devient <b>BH Assurance</b> et rejoint l\'identité du Groupe BH.'],
+  ['2020', 'Lancement de <b>Wininti</b>, première application mobile du marché tunisien de l\'assurance.'],
+];
+$('#tl').innerHTML = TL.map(([y, txt], i) => `<div class="tl-item" style="top:${420 + i * 166}px"><span class="tl-dot"></span><span class="tl-year num grad g-gold">${y}</span><div class="tl-text">${txt}</div></div>`).join('');
+
+const CA = [[2020, 127.6], [2021, 147.5], [2022, 161.6], [2023, 176.6], [2024, 199.6], [2025, 208.7]];
+const MAXH = 520, X0 = 90, BW = 112, GAP = (900 - 6 * BW) / 5;
+$('#bars').innerHTML = CA.map(([y, v], i) => `<div class="barc${i === 5 ? ' last' : ''}" style="left:${X0 + i * (BW + GAP)}px;height:${MAXH}px"><div class="b" style="height:${v / 208.7 * MAXH}px"></div><div class="v num">${fr(v, 1)}</div><div class="y">${y}</div></div>`).join('');
+
+const KP = [
+  [208.7, 1, 'MD', "Chiffre d'affaires 2025", '+4,5 % sur un an', true],
+  [11.1, 1, 'MD', 'Résultat net 2025', '11,0 MD en 2024'],
+  [1.6, 3, 'DT', 'Dividende par action', 'Exercice 2025, contre 1,500 DT', true],
+  [365.9, 1, 'MD', 'Portefeuille de placements', 'Fin 2024, +16 % sur un an'],
+  [82, 0, '%', 'Ratio combiné net', 'Exercice 2024'],
+  [21, 0, '%', "Croissance de l'assurance vie", '88,7 MD de primes en 2024', false, '+'],
+];
+$('#kpis').innerHTML = KP.map(([v, d, u, l, s, g, pre]) => `<div class="kpi glass"><div class="n num${g ? ' grad g-gold' : ''}"><span class="cnt" data-v="${v}" data-d="${d}" data-pre="${pre || ''}">0</span><span class="u unit">${u}</span></div><div class="l">${l}</div><div class="s">${s}</div></div>`).join('');
+
+const OF1 = [['car', 'Automobile'], ['home', 'Habitation'], ['heart', 'Santé'], ['piggy', 'Épargne et retraite'], ['shield', 'Prévoyance décès'], ['plane', 'Voyage']];
+const OF2 = [['building', 'Multirisque professionnelle'], ['scale', 'Responsabilité civile'], ['zap', 'Incendie, risques industriels'], ['truck', 'Transport de marchandises'], ['crane', 'Tous risques chantier'], ['users', 'Santé et retraite collectives']];
+const col = (title, ic, rows, c, bg) => `<h3><span data-icon="${ic}" data-size="28" data-color="${c}"></span>${title}</h3>` + rows.map(([i, t]) => `<div class="orow"><span class="ic" style="background:${bg};color:${c}" data-icon="${i}" data-size="23"></span>${t}</div>`).join('');
+$('#of-c1').innerHTML = col('Particuliers', 'users', OF1, '#f0cd7c', 'rgba(227,185,96,.14)');
+$('#of-c2').innerHTML = col('Professionnels et entreprises', 'building', OF2, '#a9c4ff', 'rgba(111,151,255,.15)');
+
+const CITIES = ['Tunis', 'Ariana', 'La Soukra', 'Bizerte', 'Béja', 'Mejez El Bab', 'Nabeul', 'Hammamet', 'Sousse', 'Monastir', 'Sfax', 'Gabès', 'Médenine', 'Kasserine'];
+$('#di-tr').innerHTML = [...CITIES, ...CITIES, ...CITIES].map((c) => `${c}<i></i>`).join('');
+
+// ---- scenes ----
+function open(t) {
+  const ln = $('#op-line'); const k = eio(p(t, 0.2, 1.0)); ln.style.transform = `scaleX(${k})`; ln.style.opacity = k;
+  charReveal($('#op-tag'), t, 0.45, 0.022);
+  lineReveal($('#op-word'), t, 0.8, 0.1, 1.0);
+  wordReveal($('#op-lead'), t, 1.8, 0.06, 0.6);
+  ['#op-p1', '#op-p2', '#op-p3'].forEach((id, i) => rise($(id), t, 2.9 + i * 0.14, 0.7, 24, 0.94));
+  // slow push-in on the wordmark
+  $('#op-word').style.transform = `scale(${1 + 0.03 * p(t, 0.8, 5.5)})`;
+}
+function hist(t) {
+  const a = SC.hist[0];
+  charReveal($('#hi-tag'), t, a + 0.1); lineReveal($('#hi-h'), t, a + 0.2, 0.1);
+  const items = $$('.tl-item'); const st = (i) => a + 1.0 + i * 1.85;
+  const ln = $('#tl-line'); ln.style.transform = `scaleY(${eio(p(t, a + 0.9, 8.2))})`;
+  items.forEach((it, i) => {
+    const k = eo(p(t, st(i), 0.8)); it.style.opacity = k; it.style.transform = `translateX(${(1 - k) * 40}px)`;
+    const dot = $('.tl-dot', it); const active = t >= st(i) && (i === items.length - 1 || t < st(i + 1));
+    dot.style.background = t >= st(i) ? '#e3b960' : '#0b1226';
+    dot.style.boxShadow = active ? `0 0 0 ${8 + 4 * Math.sin(t * 4)}px rgba(227,185,96,0.18), 0 0 30px rgba(227,185,96,0.6)` : 'none';
+  });
+}
+function grow(t) {
+  const a = SC.grow[0];
+  charReveal($('#gr-tag'), t, a + 0.1); lineReveal($('#gr-h'), t, a + 0.2, 0.1);
+  const pts = [];
+  $$('.barc').forEach((bc, i) => {
+    const s = a + 0.9 + i * 0.28; const k = eo(p(t, s, 0.9));
+    const b = $('.b', bc); b.style.transform = `scaleY(${k})`;
+    const h = CA[i][1] / 208.7 * MAXH;
+    const v = $('.v', bc); v.textContent = fr(CA[i][1] * k, 1); v.style.bottom = `${h * k + 12}px`; v.style.opacity = clamp(k * 2);
+    $('.y', bc).style.opacity = eo(p(t, a + 0.7 + i * 0.1, 0.5));
+    pts.push([X0 + i * (BW + GAP) + BW / 2, 1350 - 220 - h - 78]);
+  });
+  const tr = $('#gr-trend'); tr.setAttribute('points', pts.map((q) => q.join(',')).join(' '));
+  const kt = eio(p(t, a + 3.0, 1.2)); tr.style.opacity = 0.8 * clamp(kt * 3);
+  tr.style.clipPath = `inset(0 ${100 - kt * 100}% 0 0)`;
+  rise($('#gr-badge'), t, a + 3.4, 0.7, 20, 0.9);
+  $('#gr-pct').textContent = '+' + Math.round(64 * eo(p(t, a + 3.45, 1.0))) + ' %';
+  $('#gr-foot').style.opacity = eo(p(t, a + 3.8, 0.6));
+}
+function keys(t) {
+  const a = SC.keys[0];
+  charReveal($('#ke-tag'), t, a + 0.1); lineReveal($('#ke-h'), t, a + 0.2, 0.1);
+  $$('.kpi').forEach((el, i) => {
+    const s = a + 0.8 + i * 0.16; const k = eo(p(t, s, 0.7));
+    el.style.opacity = k; el.style.transform = `translateY(${(1 - k) * 34}px)`;
+    const c = $('.cnt', el); const v = +c.dataset.v, d = +c.dataset.d;
+    c.textContent = c.dataset.pre + fr(v * eo(p(t, s + 0.1, 1.2)), d);
+  });
+}
+function h26(t) {
+  const a = SC.h26[0];
+  charReveal($('#h6-tag'), t, a + 0.1); lineReveal($('#h6-h'), t, a + 0.2, 0.1);
+  rise($('#h6-big'), t, a + 0.7, 0.7, 30, 0.94);
+  $('#h6-pct').textContent = '+' + Math.round(28 * eo(p(t, a + 0.75, 1.1))) + ' %';
+  rise($('#h6-split'), t, a + 1.6, 0.7, 30);
+  const kb = eio(p(t, a + 1.8, 0.9)); const sh = 94.1 / 140.1 * 100;
+  $('#h6-b1').style.width = `${sh * kb}%`; $('#h6-b2').style.left = `calc(${sh * kb}% + 5px)`; $('#h6-b2').style.width = `calc(${(100 - sh) * kb}% - 5px)`;
+  $('#h6-nv').textContent = fr(94.1 * kb, 1); $('#h6-v').textContent = fr(46.0 * kb, 1);
+  rise($('#h6-rn'), t, a + 2.3, 0.7, 30);
+  $('#h6-rnv').textContent = fr(4.9 * eo(p(t, a + 2.4, 1.0)), 1);
+}
+function offer(t) {
+  const a = SC.offer[0];
+  charReveal($('#of-tag'), t, a + 0.1); lineReveal($('#of-h'), t, a + 0.2, 0.1);
+  ['#of-c1', '#of-c2'].forEach((id, j) => {
+    const el = $(id); tilt(el, t, a + 0.7 + j * 0.2, 0.9, 80, 16);
+    $$('.orow', el).forEach((r, i) => { const k = eo(p(t, a + 1.2 + j * 0.2 + i * 0.12, 0.6)); r.style.opacity = k; r.style.transform = `translateX(${(1 - k) * 24}px)`; });
+  });
+  wordReveal($('#of-foot'), t, a + 2.8, 0.06, 0.6);
+}
+function digi(t) {
+  const a = SC.digi[0];
+  charReveal($('#di-tag'), t, a + 0.1); lineReveal($('#di-h'), t, a + 0.2, 0.1);
+  const ph = $('#di-phone'); const k = eo(p(t, a + 0.6, 1.0));
+  ph.style.opacity = k; ph.style.transform = `perspective(1400px) translateY(${(1 - k) * 90}px) rotateY(${(1 - k) * -25 + 6 * Math.sin(t * 0.6)}deg) rotateX(${2 * Math.sin(t * 0.8)}deg)`;
+  $$('.pcard', ph).forEach((c, i) => { const kk = eo(p(t, a + 1.1 + i * 0.12, 0.6)); c.style.opacity = kk; c.style.transform = `translateY(${(1 - kk) * 16}px)`; });
+  $$('#di-list .drow').forEach((r, i) => { const kk = eo(p(t, a + 1.0 + i * 0.16, 0.7)); r.style.opacity = kk; r.style.transform = `translateX(${(1 - kk) * 34}px)`; });
+  rise($('#di-note'), t, a + 1.9, 0.6, 14);
+  charReveal($('#di-prox'), t, a + 2.4, 0.018);
+  const tk = $('#di-tick'); tk.style.opacity = eo(p(t, a + 2.6, 0.7));
+  $('#di-tr').style.transform = `translateX(${-((t - a) * 70) % 2000}px)`;
+}
+function outro(t) {
+  const a = SC.outro[0];
+  charReveal($('#ou-tag'), t, a + 0.1, 0.02);
+  rise($('#ou-p1'), t, a + 0.4, 0.7, 20, 0.94); rise($('#ou-p2'), t, a + 0.54, 0.7, 20, 0.94);
+  rise($('#ou-cap'), t, a + 0.9, 0.6, 14);
+  const ln = $('#ou-line'); const k = eio(p(t, a + 1.5, 1.0)); ln.style.transform = `scaleX(${k})`; ln.style.opacity = k;
+  lineReveal($('#ou-word'), t, a + 1.7, 0.1, 1.0);
+  wordReveal($('#ou-amb'), t, a + 2.5, 0.05, 0.6);
+  rise($('#ou-url'), t, a + 3.3, 0.7, 18, 0.92);
+  $('#ou-foot').style.opacity = eo(p(t, a + 3.8, 0.8));
+}
+const R = { open, hist, grow, keys, h26, offer, digi, outro };
+const drawBg = E.makeBg($('#bg'), { stars: 30, base: ['#040814', '#08102a'] });
+const sweep = E.makeSweep($('#fx'), '246,220,150');
+const BOUNDS = Object.values(SC).slice(1).map((w) => w[0]);
+E.boot(function (t) {
+  drawBg(t, E.palAt(t, SC, PAL), 0.95);
+  for (const [id, win] of Object.entries(SC)) {
+    const el = $('#' + id), o = sceneOpacity(t, win);
+    el.style.opacity = o; el.style.visibility = o > 0 ? 'visible' : 'hidden';
+    if (o > 0) { R[id](t); exitStyle(el, t, win[1]); }
+  }
+  sweep(t, BOUNDS);
+});
+window.DUR = DUR;
+</script>
+</body>
+</html>
