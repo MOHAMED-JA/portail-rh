@@ -11,3 +11,7 @@ work/probe*.mjs
 work/render.log
 voix/*.wav
 voix-tounsi/*.wav
+work/frames-t/
+work/stills-t/
+voix-tounsi/eleven/*.mp3
+voix-tounsi/eleven/*.wav
