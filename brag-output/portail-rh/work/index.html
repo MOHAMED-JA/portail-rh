@@ -88,7 +88,7 @@ body { font-family: Inter, system-ui, sans-serif; color: var(--marine); -webkit-
 .wd { display: inline-block; }
 .acc { background-size: 260% 100%; background-image: linear-gradient(95deg, #0C3160 0%, #1559D6 30%, #8FD0FF 46%, #1559D6 60%, #1E8BFF 100%); background-position: 100% 0; }
 .rsvg { position: absolute; overflow: visible; pointer-events: none; }
-.rsvg rect { fill: rgba(30, 111, 240, .07); stroke: #1E6FF0; stroke-width: 3; filter: drop-shadow(0 0 7px rgba(30, 111, 240, .75)) drop-shadow(0 0 18px rgba(30, 111, 240, .35)); }
+.rsvg rect { fill: rgba(30, 111, 240, .07); stroke: #1E6FF0; stroke-width: 3; filter: drop-shadow(0 0 5px rgba(30, 111, 240, .45)); }
 .sheen { position: absolute; inset: -20% -60%; pointer-events: none; z-index: 8; opacity: 0;
   background: linear-gradient(105deg, rgba(255,255,255,0) 42%, rgba(255,255,255,.55) 49%, rgba(200,225,255,.35) 52%, rgba(255,255,255,0) 58%); }
 #flash { position: absolute; inset: 0; pointer-events: none; z-index: 20; opacity: 0; background: radial-gradient(ellipse 60% 45% at 50% 52%, rgba(255,255,255,1) 0%, rgba(214,232,255,.75) 35%, rgba(214,232,255,0) 75%); }
@@ -96,7 +96,7 @@ body { font-family: Inter, system-ui, sans-serif; color: var(--marine); -webkit-
   background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(120,190,255,.95) 14%, rgba(30,111,240,.55) 30%, rgba(30,111,240,.12) 55%, rgba(30,111,240,0) 70%); opacity: 0; }
 .shock { position: absolute; left: 540px; top: 234px; border-radius: 50%; border: 3px solid rgba(30,111,240,.7); box-shadow: 0 0 30px rgba(30,111,240,.45), inset 0 0 30px rgba(30,111,240,.3); opacity: 0; pointer-events: none; }
 #ostreak { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; pointer-events: none; overflow: visible; }
-#ostreak path { fill: none; stroke: #4FA3FF; stroke-width: 4; stroke-linecap: round; filter: drop-shadow(0 0 6px rgba(80,160,255,.95)) drop-shadow(0 0 20px rgba(30,111,240,.6)); }
+#ostreak path { fill: none; stroke: #4FA3FF; stroke-width: 2.5; stroke-linecap: round; filter: drop-shadow(0 0 4px rgba(80,160,255,.7)); }
 </style>
 </head>
 <body>
@@ -324,7 +324,7 @@ const PHONE = [ // fx, fy = point de l'écran (px CSS) placé en (sx, sy) sur la
 
 // ---------------- rendu ----------------
 const bg = $('#bg').getContext('2d');
-const BOK = Array.from({ length: 16 }, (_, i) => ({ x: E.hash(i) * 1080, y: E.hash(i + 40) * 1350, r: 40 + E.hash(i + 7) * 110, v: 6 + E.hash(i + 3) * 16, a: .05 + E.hash(i + 9) * .08, ph: E.hash(i + 5) * 6.3 }));
+const BOK = Array.from({ length: 16 }, (_, i) => ({ x: E.hash(i) * 1080, y: E.hash(i + 40) * 1350, r: 40 + E.hash(i + 7) * 110, v: 6 + E.hash(i + 3) * 16, a: .03 + E.hash(i + 9) * .05, ph: E.hash(i + 5) * 6.3 }));
 function drawBokeh(t) { BOK.forEach(b => { const y = ((b.y - t * b.v) % 1500 + 1500) % 1500 - 75, x = b.x + Math.sin(t * .3 + b.ph) * 30;
   const g = bg.createRadialGradient(x, y, 0, x, y, b.r); g.addColorStop(0, `rgba(120,175,255,${b.a})`); g.addColorStop(.7, `rgba(120,175,255,${b.a * .5})`); g.addColorStop(1, 'rgba(120,175,255,0)');
   bg.fillStyle = g; bg.beginPath(); bg.arc(x, y, b.r, 0, 6.283); bg.fill(); }); }
@@ -369,8 +369,8 @@ const WD = .5; // durée d'une coupe
 function whip(t) {
   for (const w of WHIPS) { const k = (t - (w.t - WD / 2)) / WD; if (k > 0 && k < 1) {
     const ein = x => x * x * x, eout = x => 1 - Math.pow(1 - x, 3);
-    const off = k < .5 ? -ein(k * 2) * 560 : (1 - eout((k - .5) * 2)) * 560;
-    return { dx: w.d === 'h' ? off : 0, dy: w.d === 'v' ? off * .8 : 0, bl: Math.sin(k * Math.PI) * 46, d: w.d, fl: Math.pow(Math.sin(k * Math.PI), 3), sw: Math.sin(k * Math.PI) * (k < .5 ? 1 : -1) }; } }
+    const off = k < .5 ? -ein(k * 2) * 380 : (1 - eout((k - .5) * 2)) * 380;
+    return { dx: w.d === 'h' ? off : 0, dy: w.d === 'v' ? off * .8 : 0, bl: Math.sin(k * Math.PI) * 26, d: w.d, fl: Math.pow(Math.sin(k * Math.PI), 3), sw: Math.sin(k * Math.PI) * (k < .5 ? 1 : -1) }; } }
   return null;
 }
 const mbg = document.getElementById('mbg');
@@ -383,17 +383,17 @@ function render(t) {
   const si = $('#s-intro'); si.style.visibility = t < S.intro[1] + .05 ? 'visible' : 'hidden';
   if (t < S.intro[1] + .05) {
     const ob = $('#orb'); const ok = Math.min(eo(p(t, 0, .45)), 1 - eio(p(t, .7, 1.4)));
-    ob.style.opacity = ok; ob.style.transform = `scale(${lerp(.15, 1, eo(p(t, 0, .7))) * (1 + .06 * Math.sin(t * 9))})`;
-    [['#sh1', .45], ['#sh2', .62]].forEach(([id, a]) => { const q = p(t, a, 1.3); const e = $(id); const r = lerp(80, 1100, eo(q));
-      e.style.width = e.style.height = r + 'px'; e.style.marginLeft = e.style.marginTop = -r / 2 + 'px'; e.style.opacity = q > 0 && q < 1 ? (1 - q) * .9 : 0; e.style.borderWidth = lerp(6, 1, q) + 'px'; });
+    ob.style.opacity = ok * .7; ob.style.transform = `scale(${lerp(.15, 1, eo(p(t, 0, .7))) * (1 + .06 * Math.sin(t * 9))})`;
+    [['#sh1', .45]].forEach(([id, a]) => { const q = p(t, a, 1.3); const e = $(id); const r = lerp(80, 1100, eo(q));
+      e.style.width = e.style.height = r + 'px'; e.style.marginLeft = e.style.marginTop = -r / 2 + 'px'; e.style.opacity = q > 0 && q < 1 ? (1 - q) * .45 : 0; e.style.borderWidth = lerp(3, 1, q) + 'px'; });
     const lk = eo(p(t, .45, .9)); const lg = $('#ilogo'); lg.style.opacity = lk;
-    lg.style.transform = `translateY(${(1 - lk) * 30}px) scale(${lerp(.55, 1, lk)})`; lg.style.filter = lk < 1 ? `blur(${(1 - lk) * 18}px) brightness(${1 + (1 - lk) * .8})` : 'none';
-    lg.style.boxShadow = `0 30px 60px -24px rgba(7,34,65,.5), 0 0 ${lerp(120, 30, eo(p(t, .5, 1.6)))}px rgba(30,111,240,${lerp(.85, .25, eo(p(t, .5, 1.6)))})`;
+    lg.style.transform = `translateY(${(1 - lk) * 30}px) scale(${lerp(.55, 1, lk)})`; lg.style.filter = lk < 1 ? `blur(${(1 - lk) * 14}px)` : 'none';
+    lg.style.boxShadow = `0 30px 60px -24px rgba(7,34,65,.5), 0 0 ${lerp(80, 24, eo(p(t, .5, 1.6)))}px rgba(30,111,240,${lerp(.5, .18, eo(p(t, .5, 1.6)))})`;
     E.charReveal($('#ititle'), t, .85, .045, .6); $('.acc', $('#ititle')).style.backgroundPosition = `${lerp(100, 0, eio(p(t, 1.4, 1.4)))}% 0`;
     E.wordReveal($('#isub'), t, 1.4, .04, .6);
     [['#ic2', 2.0, 0, 0], ['#ic1', 2.25, -6, -1], ['#ic3', 2.45, 6, 1]].forEach(([s, a, rz, side]) => {
       const k = eo(p(t, a, 1.1)); const el = $(s); el.style.opacity = Math.min(1, k * 1.6);
-      el.style.transform = `perspective(1600px) translateX(${(1 - k) * side * 380}px) translateY(${(1 - k) * 420 + Math.sin(t * .8 + a) * 7}px) rotateX(${(1 - k) * 50 + 9}deg) rotateY(${(1 - k) * side * -35 + Math.sin(t * .5 + a) * 3}deg) rotateZ(${rz * k}deg) scale(${lerp(.7, 1, k)})`;
+      el.style.transform = `perspective(1600px) translateX(${(1 - k) * side * 160}px) translateY(${(1 - k) * 240 + Math.sin(t * .8 + a) * 4}px) rotateX(${(1 - k) * 26 + 9}deg) rotateY(${(1 - k) * side * -14 + Math.sin(t * .5 + a) * 1.5}deg) rotateZ(${rz * k}deg) scale(${lerp(.7, 1, k)})`;
     });
     const out = eio(p(t, S.intro[1] - .55, .55)); si.style.opacity = 1 - out; si.style.filter = out > 0 ? `blur(${14 * out}px)` : 'none'; si.style.transform = `scale(${1 + .12 * out})`;
   }
@@ -405,14 +405,14 @@ function render(t) {
   if (wv) {
     win.style.opacity = Math.min(wIn, 1 - wOut);
     const wp = whip(t); const sw = wp ? wp.sw : 0;
-    const rx = (1 - wIn) * 16 + 1.6 + 1.3 * Math.sin(t * .29) + (wp && wp.d === 'v' ? sw * 5 : 0), ry = 2.6 * Math.sin(t * .23 + 1) + (wp && wp.d === 'h' ? -sw * 7 : 0);
+    const rx = (1 - wIn) * 14 + 1.2 + .8 * Math.sin(t * .29) + (wp && wp.d === 'v' ? sw * 2 : 0), ry = 1.8 * Math.sin(t * .23 + 1) + (wp && wp.d === 'h' ? -sw * 2.5 : 0);
     win.style.transform = `perspective(2000px) translateY(${(1 - wIn) * 140 + wOut * 40 + Math.sin(t * .37) * 4}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(${(1 - .05 * wOut) * (1 - .012 * Math.abs(sw))})`;
     const cw = $('#camwrap'); cw.style.transform = wp ? `translate(${wp.dx}px, ${wp.dy}px)` : 'none';
     if (wp && wp.bl > .5) { mbg.setAttribute('stdDeviation', wp.d === 'h' ? `${wp.bl} 0` : `0 ${wp.bl}`); cw.style.filter = 'url(#mb)'; } else cw.style.filter = 'none';
-    $('#flash').style.opacity = wp ? wp.fl * .5 : 0;
+    $('#flash').style.opacity = wp ? wp.fl * .18 : 0;
     // reflet qui balaie la vitre au début de chaque scène
     let sk = -1; [S.valid[0] + .3, ...WHIPS.map(w => w.t + .1)].forEach(a => { const q = p(t, a, 1.1); if (q > 0 && q < 1) sk = q; });
-    const sh = $('#wsheen'); sh.style.opacity = sk >= 0 ? Math.sin(sk * Math.PI) : 0; sh.style.transform = `translateX(${lerp(-70, 70, sk < 0 ? 0 : eio(sk))}%)`;
+    const sh = $('#wsheen'); sh.style.opacity = sk >= 0 ? Math.sin(sk * Math.PI) * .55 : 0; sh.style.transform = `translateX(${lerp(-70, 70, sk < 0 ? 0 : eio(sk))}%)`;
     layerSet(t, DSHOTS, IMG); revealSet(t, REV); ringSet(t, RINGS);
     const c = camAt(t);
     camEl.style.transform = `translate(${VW / 2 - c.x * c.z}px, ${VH / 2 - c.y * c.z}px) scale(${c.z})`;
@@ -436,10 +436,10 @@ function render(t) {
   if (pv) {
     const q = kf(t, PHONE); ph.style.opacity = q.o;
     const lx = 12 + q.fx * 1.1, ly = 56 + q.fy * 1.1; ph.style.transformOrigin = '0 0';
-    const pry = 6 * Math.sin(t * .47 + .5) + q.r * 3, prx = 2.5 * Math.sin(t * .36);
+    const pry = 3.2 * Math.sin(t * .47 + .5) + q.r * 2, prx = 1.4 * Math.sin(t * .36);
     ph.style.transform = `translate(${q.sx - lx * q.s}px, ${q.sy - 318 - ly * q.s + q.dy}px) scale(${q.s}) translate(226px, 498px) perspective(1700px) rotateY(${pry}deg) rotateX(${prx}deg) rotate(${q.r}deg) translate(-226px, -498px)`;
     let psk = -1; [6.6, 7.9, 10.35, 13.25, 17.5].forEach(a => { const qq = p(t, a, 1.0); if (qq > 0 && qq < 1) psk = qq; });
-    const psh = $('#psheen'); psh.style.opacity = psk >= 0 ? Math.sin(psk * Math.PI) * .9 : 0; psh.style.transform = `translateX(${lerp(-70, 70, psk < 0 ? 0 : eio(psk))}%)`;
+    const psh = $('#psheen'); psh.style.opacity = psk >= 0 ? Math.sin(psk * Math.PI) * .45 : 0; psh.style.transform = `translateX(${lerp(-70, 70, psk < 0 ? 0 : eio(psk))}%)`;
     layerSet(t, PSHOTS, PIMG); revealSet(t, PREV); ringSet(t, prings);
     // le tiroir du formulaire glisse depuis la droite
     const sl = eo(p(t, 7.85, .45)); PIMG['m1-form0'].style.transform = t < 8.4 ? `translateX(${(1 - sl) * 100}%)` : 'none';
