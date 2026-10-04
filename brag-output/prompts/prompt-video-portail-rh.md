@@ -10,7 +10,7 @@ APPLICATION
 - Démonstration en ligne : https://mohamed-ja.github.io/portail-rh/
 - Dépôt GitHub : MOHAMED-JA/portail-rh (lis le code, le README et le guide d'utilisation pour connaître les vraies fonctionnalités, les vrais écrans, les vrais libellés, les couleurs et le logo actuels)
 - Fonctionnalités à mettre en avant, dans cet ordre : [congés et circuit de validation], [présences et pointeuse], [objectifs et évaluation], [organigramme], [assistant RH], [tableau de bord et prévisions RH], [sécurité des données]
-- Public visé : tout le monde, sans limite de pays ni de secteur : dirigeants, responsables RH, managers et collaborateurs d'entreprises de 50 à 500 personnes
+- Public visé : tout le monde, sans limite de pays ni de secteur : dirigeants, responsables RH, managers et collaborateurs d'entreprises de toute taille
 
 CONTENU ET TON
 - Ton sobre, professionnel et rassurant, sans superlatifs creux ni promesses invérifiables.

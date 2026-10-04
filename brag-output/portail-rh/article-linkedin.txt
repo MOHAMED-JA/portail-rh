@@ -6,7 +6,7 @@ Comme pour mes autres applications, j'ai déjà présenté le Portail RH en dét
 🔹 Managers : la validation et le suivi de l'équipe.
 🔹 RH : des indicateurs à jour, et de quoi anticiper.
 
-Conçu pour les entreprises de 50 à 500 personnes, en français. Les données restent hébergées chez l'entreprise. Le portail est gratuit et open source (licence MIT).
+Conçu en français. Les données restent hébergées chez l'entreprise. Le portail est gratuit et open source (licence MIT).
 
 👉 Démonstration en ligne, sans rien installer (société et personnes fictives) :
 https://mohamed-ja.github.io/portail-rh/
