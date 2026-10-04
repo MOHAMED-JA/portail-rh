@@ -31,8 +31,8 @@ body { font-family: Inter, system-ui, sans-serif; color: var(--marine); -webkit-
 .acc { background: linear-gradient(95deg, #0C3160 0%, #1559D6 55%, #1E8BFF 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 /* fenêtre d'application (ordinateur) */
-#win { position: absolute; left: 40px; top: 336px; width: 1000px; height: 954px; border-radius: 22px; background: #fff; overflow: hidden; transform-style: flat;
-  box-shadow: 0 50px 90px -40px rgba(7, 34, 65, .45), 0 18px 40px -22px rgba(7, 34, 65, .28), 0 0 0 1px rgba(7, 34, 65, .08); transform-origin: 50% 50%; visibility: hidden; }
+#win { position: absolute; left: 40px; top: 336px; width: 1000px; height: 954px; border-radius: 22px; background: #fff; overflow: hidden;
+  box-shadow: 0 50px 90px -40px rgba(7, 34, 65, .45), 0 18px 40px -22px rgba(7, 34, 65, .28), 0 0 0 1px rgba(7, 34, 65, .08); transform-origin: 50% 0; visibility: hidden; }
 #win .bar { position: absolute; left: 0; right: 0; top: 0; height: 48px; background: linear-gradient(#FBFCFE, #F2F5FA); border-bottom: 1px solid #E3E8F0; display: flex; align-items: center; padding: 0 20px; gap: 9px; z-index: 3; }
 #win .bar b { width: 13px; height: 13px; border-radius: 50%; display: block; }
 #win .url { position: absolute; left: 50%; transform: translateX(-50%); height: 30px; padding: 0 18px; border-radius: 9px; background: #fff; box-shadow: 0 0 0 1px #E1E6EF;
@@ -84,23 +84,9 @@ body { font-family: Inter, system-ui, sans-serif; color: var(--marine); -webkit-
   background: linear-gradient(100deg, #072241, #0C3160 45%, #1559D6); color: #fff; font-size: 27px; font-weight: 600; box-shadow: 0 30px 60px -24px rgba(12, 49, 96, .7); }
 .lien i { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; background: rgba(255, 255, 255, .16); }
 .lien i svg { width: 28px; height: 28px; }
-
-.wd { display: inline-block; }
-.acc { background-size: 260% 100%; background-image: linear-gradient(95deg, #0C3160 0%, #1559D6 30%, #8FD0FF 46%, #1559D6 60%, #1E8BFF 100%); background-position: 100% 0; }
-.rsvg { position: absolute; overflow: visible; pointer-events: none; }
-.rsvg rect { fill: rgba(30, 111, 240, .07); stroke: #1E6FF0; stroke-width: 3; filter: drop-shadow(0 0 7px rgba(30, 111, 240, .75)) drop-shadow(0 0 18px rgba(30, 111, 240, .35)); }
-.sheen { position: absolute; inset: -20% -60%; pointer-events: none; z-index: 8; opacity: 0;
-  background: linear-gradient(105deg, rgba(255,255,255,0) 42%, rgba(255,255,255,.55) 49%, rgba(200,225,255,.35) 52%, rgba(255,255,255,0) 58%); }
-#flash { position: absolute; inset: 0; pointer-events: none; z-index: 20; opacity: 0; background: radial-gradient(ellipse 60% 45% at 50% 52%, rgba(255,255,255,1) 0%, rgba(214,232,255,.75) 35%, rgba(214,232,255,0) 75%); }
-#orb { position: absolute; left: 540px; top: 234px; width: 520px; height: 520px; margin: -260px 0 0 -260px; border-radius: 50%; pointer-events: none;
-  background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(120,190,255,.95) 14%, rgba(30,111,240,.55) 30%, rgba(30,111,240,.12) 55%, rgba(30,111,240,0) 70%); opacity: 0; }
-.shock { position: absolute; left: 540px; top: 234px; border-radius: 50%; border: 3px solid rgba(30,111,240,.7); box-shadow: 0 0 30px rgba(30,111,240,.45), inset 0 0 30px rgba(30,111,240,.3); opacity: 0; pointer-events: none; }
-#ostreak { position: absolute; left: 0; top: 0; width: 1080px; height: 1350px; pointer-events: none; overflow: visible; }
-#ostreak path { fill: none; stroke: #4FA3FF; stroke-width: 4; stroke-linecap: round; filter: drop-shadow(0 0 6px rgba(80,160,255,.95)) drop-shadow(0 0 20px rgba(30,111,240,.6)); }
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute"><filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter></svg>
 <canvas id="bg" width="1080" height="1350"></canvas>
 
 <!-- INTRO -->
@@ -108,7 +94,6 @@ body { font-family: Inter, system-ui, sans-serif; color: var(--marine); -webkit-
   <div class="card abs" id="ic1" style="left:-70px;top:790px;width:600px;height:375px"><img src="cap/d10-prev2.png" alt=""></div>
   <div class="card abs" id="ic3" style="left:560px;top:800px;width:600px;height:375px"><img src="cap/d8-org-deplie.png" alt=""></div>
   <div class="card abs" id="ic2" style="left:170px;top:700px;width:740px;height:462px"><img src="cap/d10-equipe.png" alt=""></div>
-  <div id="orb"></div><div class="shock" id="sh1"></div><div class="shock" id="sh2"></div>
   <img class="logo" id="ilogo" src="logo-picto.png" alt="" style="left:456px;top:150px">
   <div class="big" id="ititle" style="top:350px;font-size:118px">Portail <span class="acc">RH</span></div>
   <div class="sub" id="isub" style="top:510px">Congés, présences, objectifs, organigramme et pilotage : toute la gestion RH, au même endroit.</div>
@@ -136,16 +121,15 @@ body { font-family: Inter, system-ui, sans-serif; color: var(--marine); -webkit-
 <div id="win">
   <div class="bar"><b style="background:#FF5F57"></b><b style="background:#FEBC2E"></b><b style="background:#28C840"></b>
     <div class="url"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Portail RH · Veltaris</div></div>
-  <div class="sheen" id="wsheen"></div>
   <div class="inner">
-    <div id="camwrap" style="position:absolute;inset:0"><div class="cam" id="cam"></div></div>
+    <div class="cam" id="cam"></div>
     <div class="clk" id="clk"></div>
     <svg id="cur" viewBox="0 0 34 40"><path d="M4 3 L4 31 L11.5 24.5 L16.5 36 L21.5 33.8 L16.6 22.6 L26.5 22.6 Z" fill="#0B1220" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>
   </div>
 </div>
 
 <!-- téléphone -->
-<div id="pstage" style="position:absolute;left:0;top:318px;width:1080px;height:1032px;overflow:hidden;-webkit-mask-image:linear-gradient(transparent,#000 46px);mask-image:linear-gradient(transparent,#000 46px);z-index:4"><div id="phone"><div class="scr"><div class="notch"></div><div class="sbar"><span>08:26</span><span class="sic"><svg viewBox="0 0 20 12"><rect x="0" y="8" width="3" height="4" rx=".8"/><rect x="5" y="5.5" width="3" height="6.5" rx=".8"/><rect x="10" y="3" width="3" height="9" rx=".8"/><rect x="15" y="0" width="3" height="12" rx=".8"/></svg><svg viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor"/><rect x="2.5" y="2.5" width="16" height="8" rx="2"/><rect x="25" y="4.5" width="1.6" height="4" rx=".8"/></svg></span></div><div class="pcam" id="pcam"></div><div class="sheen" id="psheen"></div></div></div></div>
+<div id="pstage" style="position:absolute;left:0;top:318px;width:1080px;height:1032px;overflow:hidden;-webkit-mask-image:linear-gradient(transparent,#000 46px);mask-image:linear-gradient(transparent,#000 46px);z-index:4"><div id="phone"><div class="scr"><div class="notch"></div><div class="sbar"><span>08:26</span><span class="sic"><svg viewBox="0 0 20 12"><rect x="0" y="8" width="3" height="4" rx=".8"/><rect x="5" y="5.5" width="3" height="6.5" rx=".8"/><rect x="10" y="3" width="3" height="9" rx=".8"/><rect x="15" y="0" width="3" height="12" rx=".8"/></svg><svg viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor"/><rect x="2.5" y="2.5" width="16" height="8" rx="2"/><rect x="25" y="4.5" width="1.6" height="4" rx=".8"/></svg></span></div><div class="pcam" id="pcam"></div></div></div></div>
 
 <!-- pastilles sécurité / présences -->
 <div class="chip" id="cp1"><i data-icon="refresh"></i>Liaison avec la pointeuse</div>
@@ -167,7 +151,6 @@ body { font-family: Inter, system-ui, sans-serif; color: var(--marine); -webkit-
 
 <!-- OUTRO -->
 <div class="scene" id="s-outro">
-  <svg id="ostreak" viewBox="0 0 1080 1350"><path id="ostp" pathLength="1" d="M 540 194 A 140 140 0 1 1 539.9 194"/></svg>
   <img class="logo" id="ologo" src="logo-picto.png" alt="" style="left:456px;top:250px">
   <div class="big" id="otitle" style="top:450px;font-size:112px">Portail <span class="acc">RH</span></div>
   <div class="sub" id="osub" style="top:600px;font-size:31px">Application conçue par <b style="color:#072241;font-weight:650">Mohamed Aziz Jaouadi</b></div>
@@ -175,7 +158,6 @@ body { font-family: Inter, system-ui, sans-serif; color: var(--marine); -webkit-
   <div class="sub" id="ofict" style="top:1190px;font-size:20px;color:#7C8CA3">Démonstration : société « Veltaris » et personnes fictives · licence MIT</div>
 </div>
 
-<div id="flash"></div>
 <div id="fictif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8h.01M11 12h1v4h1"/></svg>Démonstration · société et personnes fictives</div>
 
 <script src="../../engine/engine.js"></script>
@@ -222,26 +204,18 @@ function kf(t, keys) {
   return keys[keys.length - 1];
 }
 
-// anneau de mise en avant : un trait lumineux qui se dessine autour de l'élément
-function mkRing(r, parent, pad, rad) {
-  const W = r.w + 2 * pad, H = r.h + 2 * pad, NS = 'http://www.w3.org/2000/svg';
-  const sv = document.createElementNS(NS, 'svg'); sv.setAttribute('class', 'rsvg'); sv.setAttribute('width', W); sv.setAttribute('height', H);
-  Object.assign(sv.style, { left: r.x - pad + 'px', top: r.y - pad + 'px', zIndex: 3, opacity: 0 });
-  const rc = document.createElementNS(NS, 'rect'); Object.assign(rc, {}); rc.setAttribute('x', 1.5); rc.setAttribute('y', 1.5); rc.setAttribute('width', W - 3); rc.setAttribute('height', H - 3);
-  rc.setAttribute('rx', rad); rc.setAttribute('pathLength', 1); rc.setAttribute('stroke-dasharray', '1 1'); sv.appendChild(rc); parent.appendChild(sv); r.el = sv; r.rc = rc;
-}
 // ---------------- écran ordinateur ----------------
 const camEl = $('#cam'), IMG = {};
 function img(name, parent) { const i = document.createElement('img'); i.src = 'cap/' + name + '.png'; i.alt = ''; parent.appendChild(i); return i; }
 const DSHOTS = [ // [début, image, durée du fondu]
   [S.valid[0] - .2, 'd2-liste', 0], [16.1, 'd2-approuve', .12],
-  [S.pres[0], 'd4-pointages', 0], [24.5, 'd4-anomalies', .15],
-  [S.obj[0], 'd5-obj0', 0], [29.25, 'd5-obj1', .1], [30.05, 'd5-obj2', .1], [30.85, 'd5-obj3', .22],
-  [31.75, 'd6-eval0', 0], [32.55, 'd6-eval1', .08], [33.1, 'd6-eval2', .08], [33.65, 'd6-eval3', .08], [34.1, 'd6-eval-note', .3],
-  [S.org[0], 'd8-org-replie', 0], [36.75, 'd8-org-deplie', .3],
-  [S.assist[0], 'd9-a0', 0], [43.35, 'd9-a1', .2], [45.75, 'd9-a2', .2],
-  [S.pilot[0], 'd10-equipe', 0], [51.2, 'd10-prev2', 0],
-  [S.secu[0], 'd11-secu', 0],
+  [S.pres[0], 'd4-pointages', .35], [24.5, 'd4-anomalies', .15],
+  [S.obj[0], 'd5-obj0', .35], [29.25, 'd5-obj1', .1], [30.05, 'd5-obj2', .1], [30.85, 'd5-obj3', .22],
+  [31.75, 'd6-eval0', .3], [32.55, 'd6-eval1', .08], [33.1, 'd6-eval2', .08], [33.65, 'd6-eval3', .08], [34.1, 'd6-eval-note', .3],
+  [S.org[0], 'd8-org-replie', .35], [36.75, 'd8-org-deplie', .3],
+  [S.assist[0], 'd9-a0', .35], [43.35, 'd9-a1', .2], [45.75, 'd9-a2', .2],
+  [S.pilot[0], 'd10-equipe', .35], [51.2, 'd10-prev2', .35],
+  [S.secu[0], 'd11-secu', .35],
 ];
 DSHOTS.forEach(([, n]) => { if (!IMG[n]) IMG[n] = img(n, camEl); });
 // révélations « frappe » : la zone de l'image suivante apparaît de gauche à droite, par paliers
@@ -271,7 +245,7 @@ const RINGS = [
   { x: 781, y: 352, w: 456, h: 207, a: 58.4, b: 60.4, r: 16 },
   { x: 752, y: 499, w: 234, h: 39, a: 46.6, b: 47.7, r: 12 },
 ];
-RINGS.forEach(r => mkRing(r, camEl, 5, r.r || 16));
+RINGS.forEach(r => { r.el = document.createElement('div'); r.el.className = 'ring'; Object.assign(r.el.style, { left: r.x - 5 + 'px', top: r.y - 5 + 'px', width: r.w + 10 + 'px', height: r.h + 10 + 'px', zIndex: 3, borderRadius: (r.r || 18) + 'px' }); camEl.appendChild(r.el); });
 
 const CAM = [
   { t: 13.8, x: 760, y: 470, z: 1.22 }, { t: 14.9, x: 640, y: 545, z: 1.6 }, { t: 15.4, x: 640, y: 545, z: 1.6 }, { t: 15.9, x: 905, y: 548, z: 1.6 }, { t: 16.3, x: 905, y: 548, z: 1.6 }, { t: 17.2, x: 880, y: 600, z: 1.38 }, { t: 21.0, x: 860, y: 590, z: 1.36 },
@@ -308,7 +282,7 @@ const PREV = [
 PREV.forEach(r => { r.el = img(r.n, pcam); r.el.style.zIndex = 3; if (r.blank) { r.bl = document.createElement('div'); Object.assign(r.bl.style, { position: 'absolute', left: r.blank.x + 'px', top: r.blank.y + 'px', width: r.blank.w + 'px', height: r.blank.h + 'px', background: '#fff', zIndex: 2 }); pcam.appendChild(r.bl); } });
 const tap = document.createElement('div'); tap.className = 'tap'; pcam.appendChild(tap);
 const prings = [{ x: 21, y: 444, w: 349, h: 126, a: 10.45, b: 11.25 }];
-prings.forEach(r => mkRing(r, pcam, 4, 16));
+prings.forEach(r => { r.el = document.createElement('div'); r.el.className = 'ring'; Object.assign(r.el.style, { left: r.x - 4 + 'px', top: r.y - 4 + 'px', width: r.w + 8 + 'px', height: r.h + 8 + 'px', zIndex: 3, borderRadius: '16px' }); pcam.appendChild(r.el); });
 const TAPS = [[7.6, 126, 421], [8.6, 195, 240], [9.5, 195, 326], [11.9, 195, 620], [13.0, 269, 810]];
 const PHONE = [ // fx, fy = point de l'écran (px CSS) placé en (sx, sy) sur la scène ; s = échelle ; o = opacité ; dy = décalage d'entrée
   { t: 6.0, fx: 195, fy: 400, sx: 540, sy: 820, s: 1.3, o: 0, dy: 700, r: 4 }, { t: 6.9, fx: 195, fy: 400, sx: 540, sy: 820, s: 1.3, o: 1, dy: 0, r: 0 },
@@ -324,10 +298,6 @@ const PHONE = [ // fx, fy = point de l'écran (px CSS) placé en (sx, sy) sur la
 
 // ---------------- rendu ----------------
 const bg = $('#bg').getContext('2d');
-const BOK = Array.from({ length: 16 }, (_, i) => ({ x: E.hash(i) * 1080, y: E.hash(i + 40) * 1350, r: 40 + E.hash(i + 7) * 110, v: 6 + E.hash(i + 3) * 16, a: .05 + E.hash(i + 9) * .08, ph: E.hash(i + 5) * 6.3 }));
-function drawBokeh(t) { BOK.forEach(b => { const y = ((b.y - t * b.v) % 1500 + 1500) % 1500 - 75, x = b.x + Math.sin(t * .3 + b.ph) * 30;
-  const g = bg.createRadialGradient(x, y, 0, x, y, b.r); g.addColorStop(0, `rgba(120,175,255,${b.a})`); g.addColorStop(.7, `rgba(120,175,255,${b.a * .5})`); g.addColorStop(1, 'rgba(120,175,255,0)');
-  bg.fillStyle = g; bg.beginPath(); bg.arc(x, y, b.r, 0, 6.283); bg.fill(); }); }
 function drawBg(t) {
   const W = 1080, H = 1350;
   const g = bg.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#F6F8FC'); g.addColorStop(1, '#E9EFF8');
@@ -354,48 +324,30 @@ function revealSet(t, list) {
     r.el.style.clipPath = `inset(${r.y}px ${W0 - (r.x + r.w * k)}px ${H0 - r.y - r.h}px ${r.x}px)`;
   });
 }
-function ringSet(t, list) { list.forEach(r => { const o = Math.min(p(t, r.a, .08), 1 - p(t, r.b - .3, .3)); r.el.style.opacity = o; if (o <= 0) return;
-  const d = eio(p(t, r.a, .6)); r.rc.setAttribute('stroke-dashoffset', 1 - d); r.rc.style.fillOpacity = d; }); }
+function ringSet(t, list) { list.forEach(r => { const k = Math.min(eo(p(t, r.a, .35)), 1 - p(t, r.b - .3, .3)); r.el.style.opacity = k; r.el.style.transform = `scale(${lerp(1.06, 1, eo(p(t, r.a, .45)))})`; }); }
 function titleSet(t, id, [a, b]) {
   const el = $('#' + id); const vis = t >= a - .05 && t < b + .05; el.style.visibility = vis ? 'visible' : 'hidden'; if (!vis) return;
   const kick = $('.kick', el); const ki = eo(p(t, a + .05, .5)); kick.style.opacity = ki; kick.style.transform = `translateX(${(1 - ki) * -24}px)`;
-  $$('.line > span', el).forEach((sp, i) => { const k = eo(p(t, a + .12 + i * .11, .85)); sp.style.transform = `translateY(${(1 - k) * 105}%)`; sp.style.filter = k < 1 ? `blur(${(1 - k) * 12}px)` : 'none'; });
-  const ac = $('.acc', el); if (ac) ac.style.backgroundPosition = `${lerp(100, 0, eio(p(t, a + .7, 1.3)))}% 0`;
-  const out = eio(p(t, b - .38, .38)); $('.ttl', el).style.opacity = 1 - out; $('.ttl', el).style.transform = `translateY(${-36 * out}px) scale(${1 - .03 * out})`; $('.ttl', el).style.filter = out > 0 ? `blur(${12 * out}px)` : 'none';
+  E.lineReveal(el, t, a + .12, .1, .75);
+  const out = eio(p(t, b - .38, .38)); $('.ttl', el).style.opacity = 1 - out; $('.ttl', el).style.transform = `translateY(${-30 * out}px)`; $('.ttl', el).style.filter = out > 0 ? `blur(${7 * out}px)` : 'none';
 }
 const VW = 1000, VH = 906;
-const WHIPS = [{ t: S.pres[0], d: 'h' }, { t: S.obj[0], d: 'h' }, { t: 31.75, d: 'v' }, { t: S.org[0], d: 'h' }, { t: S.assist[0], d: 'h' }, { t: S.pilot[0], d: 'h' }, { t: 51.2, d: 'v' }, { t: S.secu[0], d: 'h' }];
-const WD = .5; // durée d'une coupe
-function whip(t) {
-  for (const w of WHIPS) { const k = (t - (w.t - WD / 2)) / WD; if (k > 0 && k < 1) {
-    const ein = x => x * x * x, eout = x => 1 - Math.pow(1 - x, 3);
-    const off = k < .5 ? -ein(k * 2) * 560 : (1 - eout((k - .5) * 2)) * 560;
-    return { dx: w.d === 'h' ? off : 0, dy: w.d === 'v' ? off * .8 : 0, bl: Math.sin(k * Math.PI) * 46, d: w.d, fl: Math.pow(Math.sin(k * Math.PI), 3), sw: Math.sin(k * Math.PI) * (k < .5 ? 1 : -1) }; } }
-  return null;
-}
-const mbg = document.getElementById('mbg');
-function camAt(t) { const c0 = kf(t, CAM); const c = { x: c0.x + Math.sin(t * .53) * 7 + Math.sin(t * .21) * 5, y: c0.y + Math.cos(t * .41) * 6, z: c0.z * (1 + .014 * Math.sin(t * .33)) }; const z = c.z; const hw = VW / 2 / z, hh = VH / 2 / z;
+function camAt(t) { const c = kf(t, CAM); const z = c.z; const hw = VW / 2 / z, hh = VH / 2 / z;
   const x = 1280 > 2 * hw ? clamp(c.x, hw, 1280 - hw) : 640, y = 800 > 2 * hh ? clamp(c.y, hh, 800 - hh) : 400; return { x, y, z }; }
 
 function render(t) {
-  drawBg(t); drawBokeh(t);
+  drawBg(t);
   // ----- intro -----
   const si = $('#s-intro'); si.style.visibility = t < S.intro[1] + .05 ? 'visible' : 'hidden';
   if (t < S.intro[1] + .05) {
-    const ob = $('#orb'); const ok = Math.min(eo(p(t, 0, .45)), 1 - eio(p(t, .7, 1.4)));
-    ob.style.opacity = ok; ob.style.transform = `scale(${lerp(.15, 1, eo(p(t, 0, .7))) * (1 + .06 * Math.sin(t * 9))})`;
-    [['#sh1', .45], ['#sh2', .62]].forEach(([id, a]) => { const q = p(t, a, 1.3); const e = $(id); const r = lerp(80, 1100, eo(q));
-      e.style.width = e.style.height = r + 'px'; e.style.marginLeft = e.style.marginTop = -r / 2 + 'px'; e.style.opacity = q > 0 && q < 1 ? (1 - q) * .9 : 0; e.style.borderWidth = lerp(6, 1, q) + 'px'; });
-    const lk = eo(p(t, .45, .9)); const lg = $('#ilogo'); lg.style.opacity = lk;
-    lg.style.transform = `translateY(${(1 - lk) * 30}px) scale(${lerp(.55, 1, lk)})`; lg.style.filter = lk < 1 ? `blur(${(1 - lk) * 18}px) brightness(${1 + (1 - lk) * .8})` : 'none';
-    lg.style.boxShadow = `0 30px 60px -24px rgba(7,34,65,.5), 0 0 ${lerp(120, 30, eo(p(t, .5, 1.6)))}px rgba(30,111,240,${lerp(.85, .25, eo(p(t, .5, 1.6)))})`;
-    E.charReveal($('#ititle'), t, .85, .045, .6); $('.acc', $('#ititle')).style.backgroundPosition = `${lerp(100, 0, eio(p(t, 1.4, 1.4)))}% 0`;
-    E.wordReveal($('#isub'), t, 1.4, .04, .6);
-    [['#ic2', 2.0, 0, 0], ['#ic1', 2.25, -6, -1], ['#ic3', 2.45, 6, 1]].forEach(([s, a, rz, side]) => {
-      const k = eo(p(t, a, 1.1)); const el = $(s); el.style.opacity = Math.min(1, k * 1.6);
-      el.style.transform = `perspective(1600px) translateX(${(1 - k) * side * 380}px) translateY(${(1 - k) * 420 + Math.sin(t * .8 + a) * 7}px) rotateX(${(1 - k) * 50 + 9}deg) rotateY(${(1 - k) * side * -35 + Math.sin(t * .5 + a) * 3}deg) rotateZ(${rz * k}deg) scale(${lerp(.7, 1, k)})`;
+    const lk = eo(p(t, .1, .9)); $('#ilogo').style.opacity = lk; $('#ilogo').style.transform = `translateY(${(1 - lk) * 40}px) scale(${lerp(.7, 1, lk)}) rotate(${(1 - lk) * -8}deg)`;
+    E.charReveal($('#ititle'), t, .45, .045, .6);
+    E.wordReveal($('#isub'), t, 1.1, .045, .6);
+    [['#ic2', 1.7, 0, -2], ['#ic1', 2.0, -5, 4], ['#ic3', 2.25, 5, -4]].forEach(([s, a, rz, dy]) => {
+      const k = eo(p(t, a, 1.0)); const el = $(s); el.style.opacity = k;
+      el.style.transform = `perspective(1600px) translateY(${(1 - k) * 160 + Math.sin(t * .8 + a) * 6}px) rotateX(${(1 - k) * 30 + 8}deg) rotateZ(${rz * k}deg)`;
     });
-    const out = eio(p(t, S.intro[1] - .55, .55)); si.style.opacity = 1 - out; si.style.filter = out > 0 ? `blur(${14 * out}px)` : 'none'; si.style.transform = `scale(${1 + .12 * out})`;
+    const out = eio(p(t, S.intro[1] - .5, .5)); si.style.opacity = 1 - out; si.style.filter = out > 0 ? `blur(${8 * out}px)` : 'none';
   }
   // ----- titres -----
   ['conge', 'valid', 'pres', 'obj', 'org', 'assist', 'pilot', 'secu'].forEach(k => titleSet(t, 't-' + k, S[k]));
@@ -404,15 +356,7 @@ function render(t) {
   const wv = t > S.valid[0] - .25 && t < S.secu[1]; win.style.visibility = wv ? 'visible' : 'hidden';
   if (wv) {
     win.style.opacity = Math.min(wIn, 1 - wOut);
-    const wp = whip(t); const sw = wp ? wp.sw : 0;
-    const rx = (1 - wIn) * 16 + 1.6 + 1.3 * Math.sin(t * .29) + (wp && wp.d === 'v' ? sw * 5 : 0), ry = 2.6 * Math.sin(t * .23 + 1) + (wp && wp.d === 'h' ? -sw * 7 : 0);
-    win.style.transform = `perspective(2000px) translateY(${(1 - wIn) * 140 + wOut * 40 + Math.sin(t * .37) * 4}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(${(1 - .05 * wOut) * (1 - .012 * Math.abs(sw))})`;
-    const cw = $('#camwrap'); cw.style.transform = wp ? `translate(${wp.dx}px, ${wp.dy}px)` : 'none';
-    if (wp && wp.bl > .5) { mbg.setAttribute('stdDeviation', wp.d === 'h' ? `${wp.bl} 0` : `0 ${wp.bl}`); cw.style.filter = 'url(#mb)'; } else cw.style.filter = 'none';
-    $('#flash').style.opacity = wp ? wp.fl * .5 : 0;
-    // reflet qui balaie la vitre au début de chaque scène
-    let sk = -1; [S.valid[0] + .3, ...WHIPS.map(w => w.t + .1)].forEach(a => { const q = p(t, a, 1.1); if (q > 0 && q < 1) sk = q; });
-    const sh = $('#wsheen'); sh.style.opacity = sk >= 0 ? Math.sin(sk * Math.PI) : 0; sh.style.transform = `translateX(${lerp(-70, 70, sk < 0 ? 0 : eio(sk))}%)`;
+    win.style.transform = `perspective(1800px) translateY(${(1 - wIn) * 120 + wOut * 40}px) rotateX(${(1 - wIn) * 12}deg) scale(${1 - .04 * wOut})`;
     layerSet(t, DSHOTS, IMG); revealSet(t, REV); ringSet(t, RINGS);
     const c = camAt(t);
     camEl.style.transform = `translate(${VW / 2 - c.x * c.z}px, ${VH / 2 - c.y * c.z}px) scale(${c.z})`;
@@ -436,10 +380,7 @@ function render(t) {
   if (pv) {
     const q = kf(t, PHONE); ph.style.opacity = q.o;
     const lx = 12 + q.fx * 1.1, ly = 56 + q.fy * 1.1; ph.style.transformOrigin = '0 0';
-    const pry = 6 * Math.sin(t * .47 + .5) + q.r * 3, prx = 2.5 * Math.sin(t * .36);
-    ph.style.transform = `translate(${q.sx - lx * q.s}px, ${q.sy - 318 - ly * q.s + q.dy}px) scale(${q.s}) translate(226px, 498px) perspective(1700px) rotateY(${pry}deg) rotateX(${prx}deg) rotate(${q.r}deg) translate(-226px, -498px)`;
-    let psk = -1; [6.6, 7.9, 10.35, 13.25, 17.5].forEach(a => { const qq = p(t, a, 1.0); if (qq > 0 && qq < 1) psk = qq; });
-    const psh = $('#psheen'); psh.style.opacity = psk >= 0 ? Math.sin(psk * Math.PI) * .9 : 0; psh.style.transform = `translateX(${lerp(-70, 70, psk < 0 ? 0 : eio(psk))}%)`;
+    ph.style.transform = `translate(${q.sx - lx * q.s}px, ${q.sy - 318 - ly * q.s + q.dy}px) rotate(${q.r}deg) scale(${q.s})`;
     layerSet(t, PSHOTS, PIMG); revealSet(t, PREV); ringSet(t, prings);
     // le tiroir du formulaire glisse depuis la droite
     const sl = eo(p(t, 7.85, .45)); PIMG['m1-form0'].style.transform = t < 8.4 ? `translateX(${(1 - sl) * 100}%)` : 'none';
@@ -473,10 +414,7 @@ function render(t) {
   if (ov) {
     const a = S.outro[0]; const lk = eo(p(t, a + .05, .9));
     $('#ologo').style.opacity = lk; $('#ologo').style.transform = `translateY(${(1 - lk) * 40}px) scale(${lerp(.7, 1, lk)})`;
-    E.charReveal($('#otitle'), t, a + .35, .045, .6); $('.acc', $('#otitle')).style.backgroundPosition = `${lerp(100, 0, eio(p(t, a + 1.0, 1.4)))}% 0`;
-    const sp = $('#ostp'); const sd = eio(p(t, a + .25, 1.3)); sp.setAttribute('stroke-dasharray', `${sd} 1`);
-    $('#ostreak').style.opacity = Math.min(p(t, a + .25, .15), 1 - p(t, a + 1.7, .8));
-    $('#ologo').style.filter = lk < 1 ? `blur(${(1 - lk) * 16}px)` : 'none';
+    E.charReveal($('#otitle'), t, a + .35, .045, .6);
     E.wordReveal($('#osub'), t, a + .9, .05, .6);
     const lkk = eo(p(t, a + 1.5, .8)); const li = $('#olien'); li.style.opacity = lkk;
     li.style.transform = `translateX(-50%) translateY(${(1 - lkk) * 40}px) scale(${lerp(.94, 1, lkk)})`;
