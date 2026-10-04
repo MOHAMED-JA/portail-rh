@@ -1,0 +1,57 @@
+[
+ {
+  "id": "intro",
+  "text": "Portail R-H. Toute la gestion des ressources humaines de l'entreprise, réunie au même endroit.",
+  "srt": "Portail RH. Toute la gestion des ressources humaines de l'entreprise, réunie au même endroit."
+ },
+ {
+  "id": "conge",
+  "text": "Le collaborateur demande un congé en quelques secondes. Les jours ouvrés et le solde restant se calculent en direct.",
+  "srt": "Le collaborateur demande un congé en quelques secondes. Les jours ouvrés et le solde restant se calculent en direct."
+ },
+ {
+  "id": "valid",
+  "text": "Son responsable la valide en un clic. Le collaborateur est aussitôt notifié, et son solde est à jour.",
+  "srt": "Son responsable la valide en un clic. Le collaborateur est aussitôt notifié, et son solde est à jour."
+ },
+ {
+  "id": "pres",
+  "text": "Les présences se suivent au jour le jour : pointages, liaison avec la pointeuse, et anomalies à régulariser.",
+  "srt": "Les présences se suivent au jour le jour : pointages, liaison avec la pointeuse, et anomalies à régulariser."
+ },
+ {
+  "id": "obj",
+  "text": "Les objectifs sont pondérés, puis validés par le N+1. À l'évaluation, la note se calcule automatiquement.",
+  "srt": "Les objectifs sont pondérés, puis validés par le N+1. À l'évaluation, la note se calcule automatiquement."
+ },
+ {
+  "id": "org",
+  "text": "L'organigramme se dessine tout seul, à partir des rattachements enregistrés par les R-H.",
+  "srt": "L'organigramme se dessine tout seul, à partir des rattachements enregistrés par les RH."
+ },
+ {
+  "id": "assist",
+  "text": "L'assistant R-H répond aux questions de chacun, et prépare même une demande, à vérifier avant de l'envoyer.",
+  "srt": "L'assistant RH répond aux questions de chacun, et prépare même une demande, à vérifier avant de l'envoyer."
+ },
+ {
+  "id": "pilot",
+  "text": "Les R-H pilotent avec des indicateurs à jour, et anticipent les douze prochains mois : présence, départs, besoins d'effectif.",
+  "srt": "Les RH pilotent avec des indicateurs à jour, et anticipent les douze prochains mois : présence, départs, besoins d'effectif."
+ },
+ {
+  "id": "secu",
+  "text": "Les données restent chez l'entreprise, protégées par la double autentification, le chiffrement et un journal d'audit.",
+  "srt": "Les données restent chez l'entreprise, protégées par la double authentification, le chiffrement et un journal d'audit."
+ },
+ {
+  "id": "atouts",
+  "text": "En français, sur ordinateur comme sur téléphone. Gratuit, et opène source.",
+  "srt": "En français, sur ordinateur comme sur téléphone. Gratuit, et open source."
+ },
+ {
+  "id": "outro",
+  "text": "Essayez la démonstration en ligne, sans rien installer. Le lien est juste au-dessus, dans la publication.",
+  "srt": "Essayez la démonstration en ligne, sans rien installer. Le lien est juste au-dessus, dans la publication."
+ }
+]

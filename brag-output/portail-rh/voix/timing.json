@@ -1,0 +1,68 @@
+[
+ {
+  "id": "intro",
+  "at": 0.55,
+  "end": 5.78,
+  "srt": "Portail RH. Toute la gestion des ressources humaines de l'entreprise, réunie au même endroit."
+ },
+ {
+  "id": "conge",
+  "at": 6.65,
+  "end": 13.36,
+  "srt": "Le collaborateur demande un congé en quelques secondes. Les jours ouvrés et le solde restant se calculent en direct."
+ },
+ {
+  "id": "valid",
+  "at": 14.4,
+  "end": 20.66,
+  "srt": "Son responsable la valide en un clic. Le collaborateur est aussitôt notifié, et son solde est à jour."
+ },
+ {
+  "id": "pres",
+  "at": 21.55,
+  "end": 27.7,
+  "srt": "Les présences se suivent au jour le jour : pointages, liaison avec la pointeuse, et anomalies à régulariser."
+ },
+ {
+  "id": "obj",
+  "at": 28.35,
+  "end": 34.79,
+  "srt": "Les objectifs sont pondérés, puis validés par le N+1. À l'évaluation, la note se calcule automatiquement."
+ },
+ {
+  "id": "org",
+  "at": 35.65,
+  "end": 40.73,
+  "srt": "L'organigramme se dessine tout seul, à partir des rattachements enregistrés par les RH."
+ },
+ {
+  "id": "assist",
+  "at": 41.45,
+  "end": 47.53,
+  "srt": "L'assistant RH répond aux questions de chacun, et prépare même une demande, à vérifier avant de l'envoyer."
+ },
+ {
+  "id": "pilot",
+  "at": 48.2,
+  "end": 55.3,
+  "srt": "Les RH pilotent avec des indicateurs à jour, et anticipent les douze prochains mois : présence, départs, besoins d'effectif."
+ },
+ {
+  "id": "secu",
+  "at": 56.25,
+  "end": 62.43,
+  "srt": "Les données restent chez l'entreprise, protégées par la double authentification, le chiffrement et un journal d'audit."
+ },
+ {
+  "id": "atouts",
+  "at": 63.05,
+  "end": 67.12,
+  "srt": "En français, sur ordinateur comme sur téléphone. Gratuit, et open source."
+ },
+ {
+  "id": "outro",
+  "at": 67.95,
+  "end": 73.66,
+  "srt": "Essayez la démonstration en ligne, sans rien installer. Le lien est juste au-dessus, dans la publication."
+ }
+]

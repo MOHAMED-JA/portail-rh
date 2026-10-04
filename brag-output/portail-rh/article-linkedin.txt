@@ -1,0 +1,16 @@
+Portail RH : toute la gestion des ressources humaines, au même endroit.
+
+J'ai conçu un portail RH complet, en français, pour les entreprises de 50 à 500 personnes. La vidéo suit un parcours réel dans l'application : une demande de congé posée depuis un téléphone, validée par le manager en un clic, puis les présences, les objectifs et l'évaluation, l'organigramme, l'assistant RH et les prévisions sur 12 mois.
+
+🔹 Collaborateurs : leurs demandes et leur solde, en quelques secondes.
+🔹 Managers : la validation et le suivi de l'équipe.
+🔹 RH : des indicateurs à jour, et de quoi anticiper.
+
+Les données restent hébergées chez l'entreprise. Le portail est gratuit et open source (licence MIT).
+
+👉 Démonstration en ligne, sans rien installer (société et personnes fictives) :
+https://mohamed-ja.github.io/portail-rh/
+
+Vos retours m'intéressent : quelle fonctionnalité aimeriez-vous y trouver ?
+
+#RH #RessourcesHumaines #SIRH #TransformationDigitale #OpenSource

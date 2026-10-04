@@ -1,0 +1,102 @@
+1
+00:00:00,550 --> 00:00:01,155
+Portail RH.
+
+2
+00:00:01,175 --> 00:00:05,760
+Toute la gestion des ressources humaines
+de l'entreprise, réunie au même endroit.
+
+3
+00:00:06,650 --> 00:00:09,839
+Le collaborateur demande un congé
+en quelques secondes.
+
+4
+00:00:09,859 --> 00:00:13,340
+Les jours ouvrés et le solde restant
+se calculent en direct.
+
+5
+00:00:14,400 --> 00:00:16,696
+Son responsable la valide en un clic.
+
+6
+00:00:16,716 --> 00:00:20,640
+Le collaborateur est aussitôt notifié,
+et son solde est à jour.
+
+7
+00:00:21,550 --> 00:00:23,944
+Les présences se suivent au jour le jour :
+
+8
+00:00:23,964 --> 00:00:27,680
+pointages, liaison avec la pointeuse,
+et anomalies à régulariser.
+
+9
+00:00:28,350 --> 00:00:31,612
+Les objectifs sont pondérés,
+puis validés par le N+1.
+
+10
+00:00:31,632 --> 00:00:34,770
+À l'évaluation, la note
+se calcule automatiquement.
+
+11
+00:00:35,650 --> 00:00:37,757
+L'organigramme se dessine tout seul,
+
+12
+00:00:37,777 --> 00:00:40,710
+à partir des rattachements
+enregistrés par les RH.
+
+13
+00:00:41,450 --> 00:00:44,094
+L'assistant RH répond
+aux questions de chacun,
+
+14
+00:00:44,114 --> 00:00:47,510
+et prépare même une demande,
+à vérifier avant de l'envoyer.
+
+15
+00:00:48,200 --> 00:00:50,720
+Les RH pilotent avec des indicateurs à jour,
+
+16
+00:00:50,740 --> 00:00:55,280
+et anticipent les douze prochains mois :
+présence, départs, besoins d'effectif.
+
+17
+00:00:56,250 --> 00:00:58,237
+Les données restent chez l'entreprise,
+
+18
+00:00:58,257 --> 00:01:02,410
+protégées par la double authentification,
+le chiffrement et un journal d'audit.
+
+19
+00:01:03,050 --> 00:01:05,743
+En français, sur ordinateur
+comme sur téléphone.
+
+20
+00:01:05,763 --> 00:01:07,100
+Gratuit, et open source.
+
+21
+00:01:07,950 --> 00:01:10,950
+Essayez la démonstration en ligne,
+sans rien installer.
+
+22
+00:01:10,970 --> 00:01:13,640
+Le lien est juste au-dessus,
+dans la publication.
