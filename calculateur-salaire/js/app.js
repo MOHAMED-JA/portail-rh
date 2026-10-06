@@ -36,6 +36,10 @@
 
   function el(id) { return doc.getElementById(id); }
 
+  function tauxRegime(regime) {
+    return regime.salarie.reduce(function (t, c) { return t + c.taux; }, 0);
+  }
+
   /* ---------- Paramètres affichés dans l'interface (depuis la config) ---------- */
 
   function remplirTextesParametres() {
@@ -58,10 +62,12 @@
     var date = new Date(P.dateVerification + "T12:00:00");
     el("date-verification").textContent = date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
-    var tauxCnss = P.cnss.salarie.map(function (c) { return fmtTaux.format(c.taux); }).join(" + ");
+    var prive = P.regimes.prive;
+    var pub = P.regimes.public;
     el("resume-regles").textContent =
       "barème IRPP à " + P.irpp.bareme.length + " tranches (0 à " + fmtTaux.format(P.irpp.bareme[P.irpp.bareme.length - 1].taux) +
-      "), CNSS salariale " + tauxCnss + ", frais professionnels " + fmtTaux.format(P.irpp.fraisProfessionnels.taux) +
+      "), cotisations salariales " + prive.caisse + " " + fmtPourcent.format(tauxRegime(prive)) +
+      " (privé) ou " + pub.caisse + " " + fmtPourcent.format(tauxRegime(pub)) + " (public), frais professionnels " + fmtTaux.format(P.irpp.fraisProfessionnels.taux) +
       " plafonnés à " + dt(P.irpp.fraisProfessionnels.plafondAnnuel) + " par an, CSS " + fmtTaux.format(P.css.taux);
 
     var parents = el("parents");
@@ -101,7 +107,9 @@
         etudiants: lireEntier("etudiants"),
         handicapes: lireEntier("handicapes"),
         parents: lireEntier("parents"),
+        secteur: valeurRadio("secteur"),
         primesImposables: lireMontant(el("primes").value).valeur,
+        primesNonCotisables: lireMontant(el("non-cotisables").value).valeur,
         avantagesNature: lireMontant(el("avantages").value).valeur,
         indemnitesNonImposables: lireMontant(el("indemnites").value).valeur,
         tauxAccidentTravail: at.vide || !at.valide ? undefined : at.valeur / 100,
@@ -184,14 +192,18 @@
 
     ligne(corps, { libelle: "Salaire de base brut", valeurs: v(a.salaireBase) });
     if (a.primesImposables > 0) ligne(corps, { signe: "+", libelle: "Primes et indemnités imposables", valeurs: v(a.primesImposables) });
+    if (a.primesNonCotisables > 0) ligne(corps, { signe: "+", libelle: "Primes non soumises à cotisation", valeurs: v(a.primesNonCotisables) });
     if (a.avantagesNature > 0) ligne(corps, { signe: "+", libelle: "Avantages en nature", valeurs: v(a.avantagesNature) });
     ligne(corps, { classe: "total", signe: "=", libelle: "Salaire brut", valeurs: v(a.brutTotal) });
 
-    ligne(corps, { classe: "retenue", signe: "−", libelle: "Cotisations CNSS (" + fmtPourcent.format(ind.tauxCnss) + ")", valeurs: v(a.cnss) });
-    a.cnssLignes.forEach(function (c) {
+    var caisse = r.regime.caisse;
+    var libCotis = "Cotisations " + caisse + " (" + fmtPourcent.format(ind.tauxCotisations) +
+      (a.primesNonCotisables > 0 ? " de " + montant(a.assietteCotisations / mois) + " DT/mois" : "") + ")";
+    ligne(corps, { classe: "retenue", signe: "−", libelle: libCotis, valeurs: v(a.cotisations) });
+    a.cotisationsLignes.forEach(function (c) {
       ligne(corps, { classe: "sous-ligne", libelle: c.libelle + " · " + fmtPourcent.format(c.taux), valeurs: v(c.montant) });
     });
-    ligne(corps, { classe: "total", signe: "=", libelle: "Revenu après cotisations", valeurs: v(a.revenuApresCnss) });
+    ligne(corps, { classe: "total", signe: "=", libelle: "Revenu après cotisations", valeurs: v(a.revenuApresCotisations) });
 
     ligne(corps, {
       signe: "−",
@@ -250,7 +262,7 @@
 
   var SEGMENTS = [
     { cle: "net", nom: "Salaire net", champ: "salaireNet", couleur: "--c-net" },
-    { cle: "cnss", nom: "CNSS", champ: "cnss", couleur: "--c-cnss" },
+    { cle: "cnss", nom: "Cotisations", champ: "cotisations", couleur: "--c-cnss" },
     { cle: "irpp", nom: "IRPP", champ: "irpp", couleur: "--c-irpp" },
     { cle: "css", nom: "CSS", champ: "css", couleur: "--c-css" }
   ];
@@ -278,7 +290,7 @@
       pastille.setAttribute("aria-hidden", "true");
       var nom = doc.createElement("span");
       nom.className = "legende__nom";
-      nom.textContent = s.nom;
+      nom.textContent = s.cle === "cnss" ? "Cotisations " + r.regime.caisse : s.nom;
       var val = doc.createElement("span");
       val.className = "legende__valeur chiffre";
       val.textContent = montant(valeur / P.moisParAn);
@@ -289,7 +301,7 @@
       li.append(pastille, nom, val);
       legende.appendChild(li);
 
-      description.push(s.nom + " " + fmtPourcent.format(part));
+      description.push(nom.textContent + " " + fmtPourcent.format(part));
     });
 
     el("barre-description").textContent =
@@ -326,8 +338,14 @@
 
   var annonceTimer = null;
 
-  function mettreAJourLibelles(sens, periode) {
+  function mettreAJourLibelles(sens, periode, secteur) {
     var mensuel = periode === "mensuel";
+    var regime = P.regimes[secteur] || P.regimes[P.regimeParDefaut];
+    el("aide-secteur").textContent = "Cotisations salariales " + regime.caisse + " : " +
+      fmtPourcent.format(tauxRegime(regime)) + ". L’impôt est identique dans les deux secteurs.";
+    var publicSect = secteur === "public";
+    el("options-prive").hidden = publicSect;
+    el("note-employeur-public").hidden = !publicSect;
     el("libelle-montant").textContent = (sens === "brut" ? "Salaire brut " : "Salaire net souhaité ") + (mensuel ? "mensuel" : "annuel");
     el("aide-montant").textContent = sens === "brut"
       ? "Salaire de base, hors primes. Décimales avec une virgule."
@@ -338,7 +356,7 @@
   function calculer() {
     var lu = lireFormulaire();
     var sens = lu.sens;
-    mettreAJourLibelles(sens, lu.entree.periode);
+    mettreAJourLibelles(sens, lu.entree.periode, lu.entree.secteur);
 
     el("compteurs-enfants").toggleAttribute("data-inactif", !lu.entree.chefDeFamille);
 
@@ -432,7 +450,7 @@
   });
 
   /* Mise en forme du montant à la sortie du champ : « 2500 » → « 2 500 » */
-  ["montant", "primes", "avantages", "indemnites"].forEach(function (id) {
+  ["montant", "primes", "non-cotisables", "avantages", "indemnites"].forEach(function (id) {
     el(id).addEventListener("blur", function () {
       var m = lireMontant(this.value);
       if (m.valide && !m.vide) this.value = fmtSaisie.format(m.valeur);
@@ -444,7 +462,7 @@
     radio.addEventListener("change", function () {
       var vers = this.value;
       var facteur = vers === "annuel" ? P.moisParAn : 1 / P.moisParAn;
-      ["montant", "primes", "avantages", "indemnites"].forEach(function (id) {
+      ["montant", "primes", "non-cotisables", "avantages", "indemnites"].forEach(function (id) {
         var champ = el(id);
         var m = lireMontant(champ.value);
         if (m.valide && !m.vide && m.valeur > 0) champ.value = fmtSaisie.format(C.arrondiMillime(m.valeur * facteur));

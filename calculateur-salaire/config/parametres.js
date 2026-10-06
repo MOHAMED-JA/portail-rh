@@ -20,44 +20,94 @@
     moisParAn: 12,
 
     /* ---------------------------------------------------------------
-     * Cotisations sociales CNSS — régime des salariés non agricoles (RSNA)
-     * Assiette : rémunération brute totale (salaire, primes, avantages en nature).
-     * Le régime général n'a pas de plafond de salaire.
+     * Régimes de cotisations sociales
+     * Le calcul de l'impôt (IRPP, CSS) est identique dans les deux secteurs ;
+     * seules les cotisations et les charges employeur changent.
+     * Assiette : rémunération soumise à cotisation (brut hors éléments
+     * déclarés « non soumis à cotisation »). Pas de plafond.
      * ------------------------------------------------------------- */
-    cnss: {
-      regime: "Régime des salariés non agricoles (RSNA)",
-      salarie: [
-        {
-          code: "regime_general",
-          libelle: "Régime général (retraite, maladie, famille…)",
-          taux: 0.0918,
-          source: "Loi n° 60-30 du 14/12/1960 et textes modificatifs ; CNSS"
-        },
-        {
-          code: "perte_emploi",
-          libelle: "Fonds d’assurance perte d’emploi",
-          taux: 0.005,
-          source: "Loi n° 2024-48 du 09/12/2024 (LF 2025), art. 17"
-        }
-      ],
-      employeur: [
-        {
-          code: "regime_general",
-          libelle: "Régime général (part patronale)",
-          taux: 0.1657,
-          source: "Loi n° 60-30 du 14/12/1960 et textes modificatifs ; CNSS"
-        },
-        {
-          code: "perte_emploi",
-          libelle: "Fonds d’assurance perte d’emploi",
-          taux: 0.005,
-          source: "Loi n° 2024-48 du 09/12/2024 (LF 2025), art. 17"
-        }
-      ]
+    regimeParDefaut: "prive",
+    regimes: {
+      prive: {
+        libelle: "Secteur privé",
+        caisse: "CNSS",
+        description: "Régime des salariés non agricoles (RSNA)",
+        salarie: [
+          {
+            code: "regime_general",
+            libelle: "Régime général (retraite, maladie, famille…)",
+            taux: 0.0918,
+            source: "Loi n° 60-30 du 14/12/1960 et textes modificatifs ; CNSS"
+          },
+          {
+            code: "perte_emploi",
+            libelle: "Fonds d’assurance perte d’emploi",
+            taux: 0.005,
+            source: "Loi n° 2024-48 du 09/12/2024 (LF 2025), art. 17"
+          }
+        ],
+        employeur: [
+          {
+            code: "regime_general",
+            libelle: "Régime général (part patronale)",
+            taux: 0.1657,
+            source: "Loi n° 60-30 du 14/12/1960 et textes modificatifs ; CNSS"
+          },
+          {
+            code: "perte_emploi",
+            libelle: "Fonds d’assurance perte d’emploi",
+            taux: 0.005,
+            source: "Loi n° 2024-48 du 09/12/2024 (LF 2025), art. 17"
+          }
+        ],
+        /* Charges employeur hors caisse applicables à ce secteur */
+        chargesEmployeur: { accidentTravail: true, tfp: true, foprolos: true }
+      },
+      public: {
+        libelle: "Secteur public",
+        caisse: "CNRPS",
+        description: "Agents de l’État, des collectivités locales et des établissements publics",
+        salarie: [
+          {
+            code: "retraite",
+            libelle: "Retraite (pensions civiles)",
+            taux: 0.092,
+            source: "Loi n° 85-12 du 05/03/1985 ; loi n° 2019-37 du 30/04/2019 (9,2 % depuis le 01/01/2020)"
+          },
+          {
+            code: "maladie",
+            libelle: "Assurance maladie (prévoyance sociale)",
+            taux: 0.0275,
+            source: "Décret n° 2007-1406 du 18/06/2007"
+          },
+          {
+            code: "capital_deces",
+            libelle: "Capital décès",
+            taux: 0.01,
+            source: "Décret n° 74-572 du 22/05/1974 ; décret n° 93-308 du 01/02/1993"
+          }
+        ],
+        employeur: [
+          {
+            code: "retraite",
+            libelle: "Retraite (part employeur)",
+            taux: 0.145,
+            source: "Loi n° 2019-37 du 30/04/2019 (14,5 % depuis juin 2019)"
+          },
+          {
+            code: "maladie",
+            libelle: "Assurance maladie (part employeur)",
+            taux: 0.04,
+            source: "Décret n° 2007-1406 du 18/06/2007"
+          }
+        ],
+        /* État et collectivités : pas de TFP ; accidents du travail : régime propre */
+        chargesEmployeur: { accidentTravail: false, tfp: false, foprolos: true }
+      }
     },
 
     /* ---------------------------------------------------------------
-     * Charges employeur hors CNSS (pour le coût employeur indicatif)
+     * Charges employeur hors caisse (pour le coût employeur indicatif)
      * ------------------------------------------------------------- */
     employeur: {
       accidentTravail: {

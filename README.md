@@ -18,8 +18,9 @@ Le projet cherche des **retours d'utilisateurs** : ouvrez une *issue* pour
 signaler un défaut, une incompréhension ou une idée (voir « Donner votre avis »).
 
 **Nouveau : [calculateur de salaire brut ⇄ net (Tunisie 2026)](calculateur-salaire/)**
-— application autonome dans le dossier `calculateur-salaire/` (CNSS, IRPP,
-CSS, déductions familiales, calcul inverse exact). Voir son
+— application autonome dans le dossier `calculateur-salaire/` (secteurs
+privé CNSS et public CNRPS, IRPP, CSS, déductions familiales, calcul inverse
+exact). Voir son
 [README](calculateur-salaire/README.md).
 
 ## Aperçu des fonctions

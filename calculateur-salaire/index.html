@@ -42,7 +42,7 @@
       </svg>
       <div>
         <h1 class="entete__titre">Salaire brut <span aria-hidden="true">⇄</span><span class="visuellement-cache"> et</span> net</h1>
-        <p class="entete__sous-titre">Tunisie · règles <span data-annee>2026</span> · secteur privé (CNSS)</p>
+        <p class="entete__sous-titre">Tunisie · règles <span data-annee>2026</span> · secteurs privé et public</p>
       </div>
     </div>
     <button type="button" class="bouton-icone" id="bouton-theme" aria-label="Passer au thème clair">
@@ -68,6 +68,18 @@
           <label for="sens-net">Net <span aria-hidden="true">→</span><span class="visuellement-cache"> vers</span> brut</label>
           <span class="segment__curseur" aria-hidden="true"></span>
         </div>
+      </fieldset>
+
+      <fieldset class="champ">
+        <legend class="champ__libelle">Secteur d’activité</legend>
+        <div class="segment" data-segment>
+          <input type="radio" name="secteur" id="secteur-prive" value="prive" checked>
+          <label for="secteur-prive">Privé <span class="segment__precision">CNSS</span></label>
+          <input type="radio" name="secteur" id="secteur-public" value="public">
+          <label for="secteur-public">Public <span class="segment__precision">CNRPS</span></label>
+          <span class="segment__curseur" aria-hidden="true"></span>
+        </div>
+        <p class="champ__aide" id="aide-secteur">Cotisations salariales CNSS : 9,68 %. L’impôt est identique dans les deux secteurs.</p>
       </fieldset>
 
       <fieldset class="champ">
@@ -159,6 +171,14 @@
             <p class="champ__aide" id="aide-primes">Rendement, ancienneté, présence… Soumises à la CNSS et à l’impôt.</p>
           </div>
           <div class="champ">
+            <label class="champ__libelle" for="non-cotisables">Primes imposables non soumises à cotisation</label>
+            <div class="saisie-montant saisie-montant--compacte">
+              <input class="saisie-montant__champ" id="non-cotisables" name="primesNonCotisables" type="text" inputmode="decimal" autocomplete="off" placeholder="0" aria-describedby="aide-non-cotisables">
+              <span class="saisie-montant__devise" aria-hidden="true">DT</span>
+            </div>
+            <p class="champ__aide" id="aide-non-cotisables">Indemnités exclues de l’assiette de la caisse (fréquent dans le public, selon le statut) : soumises à l’impôt, pas aux cotisations.</p>
+          </div>
+          <div class="champ">
             <label class="champ__libelle" for="avantages">Avantages en nature</label>
             <div class="saisie-montant saisie-montant--compacte">
               <input class="saisie-montant__champ" id="avantages" name="avantagesNature" type="text" inputmode="decimal" autocomplete="off" placeholder="0" aria-describedby="aide-avantages">
@@ -183,6 +203,8 @@
           <svg class="icone depliant__chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
         </summary>
         <div class="depliant__contenu">
+          <p class="champ__aide" id="note-employeur-public" hidden>Secteur public : cotisations CNRPS employeur et FOPROLOS. L’État et les collectivités ne paient ni TFP ni cotisation accidents du travail (régime propre).</p>
+          <div class="options-prive" id="options-prive">
           <div class="champ">
             <label class="champ__libelle" for="taux-at">Taux accidents du travail</label>
             <div class="saisie-montant saisie-montant--compacte">
@@ -195,6 +217,7 @@
             <input type="checkbox" id="industrie" name="industrieManufacturiere">
             <span>Industrie manufacturière (TFP à <span data-param="tfpReduite">1 %</span> au lieu de <span data-param="tfp">2 %</span>)</span>
           </label>
+          </div>
         </div>
       </details>
 
@@ -237,7 +260,7 @@
 
       <div class="avertissement" role="note">
         <svg class="icone" aria-hidden="true"><use href="#i-info"/></svg>
-        <p><strong>Résultat indicatif.</strong> Ce calcul ne remplace pas un calcul de paie officiel ni l’avis d’un professionnel (expert-comptable, CNSS, administration fiscale).</p>
+        <p><strong>Résultat indicatif.</strong> Ce calcul ne remplace pas un calcul de paie officiel ni l’avis d’un professionnel (expert-comptable, caisse de sécurité sociale, administration fiscale).</p>
       </div>
 
       <div class="panneau" data-apparition>
@@ -306,6 +329,32 @@
     </section>
   </main>
 
+  <section class="autres-simulateurs" aria-labelledby="titre-autres">
+    <h2 class="autres-simulateurs__titre" id="titre-autres">Les autres simulateurs</h2>
+    <p class="autres-simulateurs__intro">Du même auteur, gratuits et installables sur téléphone.</p>
+    <div class="autres-simulateurs__grille">
+      <a class="autre-sim autre-sim--credit" href="https://mohamed-ja.github.io/simulateur-credit/" target="_blank" rel="noopener">
+        <svg class="autre-sim__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><defs><linearGradient id="as-credit" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset=".6" stop-color="#c026d3"/><stop offset="1" stop-color="#db2777"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#as-credit)"/><g fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" transform="translate(32 32) scale(2.55) translate(-12 -12)"><path d="M5 5v14h14"/><path d="M8 8c3 .5 6 3.5 8.5 8"/><circle cx="16.6" cy="16" r=".75"/></g></svg>
+        <span class="autre-sim__texte"><strong>Simulateur de crédit</strong><span>Mensualité, TEG et tableau d’amortissement, en dinars tunisiens.</span></span>
+        <span class="autre-sim__fleche" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span>
+        <span class="visuellement-cache"> (nouvel onglet)</span>
+      </a>
+      <a class="autre-sim autre-sim--vie" href="https://mohamed-ja.github.io/simulateur-assurance-vie/" target="_blank" rel="noopener">
+        <svg class="autre-sim__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><defs><linearGradient id="as-vie" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset=".55" stop-color="#7c3aed"/><stop offset="1" stop-color="#c026d3"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#as-vie)"/><g fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" transform="translate(32 32) scale(2.3) translate(-12 -12.5)"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></g></svg>
+        <span class="autre-sim__texte"><strong>Simulateur Assurance Vie et CEA</strong><span>Économie d’impôt, montant optimal à investir et projection du capital.</span></span>
+        <span class="autre-sim__fleche" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span>
+        <span class="visuellement-cache"> (nouvel onglet)</span>
+      </a>
+      <a class="autre-sim autre-sim--auto" href="https://mohamed-ja.github.io/simulateur-Assurance-Automobile/" target="_blank" rel="noopener">
+        <svg class="autre-sim__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><defs><linearGradient id="as-auto" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f5bea"/><stop offset="1" stop-color="#1e88e5"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#as-auto)"/><g fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" transform="translate(32 32) scale(2.35) translate(-12 -12.5)"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></g></svg>
+        <span class="autre-sim__texte"><strong>Simulateur Assurance Automobile</strong><span>Prime détaillée par garantie, offre imprimable et constat amiable.</span></span>
+        <span class="autre-sim__fleche" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span>
+        <span class="visuellement-cache"> (nouvel onglet)</span>
+      </a>
+    </div>
+  </section>
+
+  <aside aria-label="Résumé du résultat">
   <a class="barre-mobile" id="barre-mobile" href="#resultats" data-cache>
     <span class="barre-mobile__texte">
       <span class="barre-mobile__libelle" id="barre-mobile-libelle">Net à payer par mois</span>
@@ -313,10 +362,11 @@
     </span>
     <span class="barre-mobile__action">Détail <svg class="icone" aria-hidden="true"><use href="#i-chevron"/></svg></span>
   </a>
+  </aside>
 
   <footer class="pied">
     <p>Paramètres légaux <span data-annee>2026</span>, vérifiés le <span id="date-verification">6 octobre 2026</span> : <span id="resume-regles">barème IRPP, CNSS, CSS</span>. Sources et méthode détaillées dans le <a href="https://github.com/MOHAMED-JA/portail-rh/tree/main/calculateur-salaire#règles-appliquées">README du projet</a>.</p>
-    <p>Hors champ : fonction publique (CNRPS), régimes agricoles, primes de fin d’année et régularisations annuelles.</p>
+    <p>Hors champ : régimes agricoles et des travailleurs indépendants, primes de fin d’année ponctuelles et régularisations annuelles.</p>
   </footer>
 
   <script src="config/parametres.js"></script>

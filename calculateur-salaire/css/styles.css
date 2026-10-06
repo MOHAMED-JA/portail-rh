@@ -399,6 +399,14 @@ a:hover { text-decoration-thickness: 2px; }
 }
 
 .segment input:checked + label { color: var(--accent-texte); }
+
+.segment__precision {
+  font-family: var(--police-chiffres);
+  font-size: var(--t-xs);
+  font-weight: 500;
+}
+
+.options-prive { display: grid; gap: var(--e-4); }
 .segment input:focus-visible + label {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
@@ -970,6 +978,97 @@ a:hover { text-decoration-thickness: 2px; }
   .etapes .final th, .etapes .final td { font-size: var(--t-s); }
 }
 
+/* ---------- Les autres simulateurs ---------- */
+.autres-simulateurs {
+  max-width: var(--largeur-max);
+  margin: 0 auto var(--e-6);
+  padding: 0 var(--e-4);
+}
+
+.autres-simulateurs__titre {
+  font-size: var(--t-xl);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.autres-simulateurs__intro {
+  margin-top: var(--e-1);
+  font-size: var(--t-s);
+  color: var(--texte-2);
+}
+
+.autres-simulateurs__grille {
+  margin-top: var(--e-4);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: var(--e-3);
+}
+
+.autre-sim {
+  --c1: #7c3aed;
+  --c2: #db2777;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--e-4);
+  padding: var(--e-4);
+  border: 1px solid var(--trait);
+  border-radius: var(--r-l);
+  background: var(--surface);
+  box-shadow: var(--ombre);
+  color: var(--texte);
+  text-decoration: none;
+  transition: transform var(--d-normale) var(--ease-out), border-color var(--d-normale) ease;
+}
+.autre-sim::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: radial-gradient(120% 90% at 0% 0%, color-mix(in srgb, var(--c1) 16%, transparent), transparent 60%);
+  pointer-events: none;
+}
+.autre-sim--credit { --c1: #a855f7; --c2: #ec4899; }
+.autre-sim--vie { --c1: #6366f1; --c2: #c026d3; }
+.autre-sim--auto { --c1: #3b82f6; --c2: #22d3ee; }
+
+.autre-sim__logo {
+  width: 52px;
+  height: 52px;
+  flex: none;
+  border-radius: 15px;
+  box-shadow: 0 8px 18px -10px var(--c1);
+  transition: transform var(--d-normale) var(--ease-out);
+}
+
+.autre-sim__texte { display: grid; gap: 2px; min-width: 0; }
+.autre-sim__texte strong { font-size: var(--t-m); font-weight: 750; line-height: 1.3; }
+.autre-sim__texte span { font-size: var(--t-s); line-height: 1.45; color: var(--texte-2); }
+
+.autre-sim__fleche {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(140deg, var(--c1), var(--c2));
+  transition: transform var(--d-normale) var(--ease-out);
+}
+.autre-sim__fleche svg { width: 18px; height: 18px; transition: transform var(--d-normale) var(--ease-out); }
+
+.autre-sim:active { transform: scale(0.985); }
+
+@media (hover: hover) and (pointer: fine) {
+  .autre-sim:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--c1) 55%, var(--trait)); }
+  .autre-sim:hover .autre-sim__logo { transform: rotate(-5deg) scale(1.05); }
+  .autre-sim:hover .autre-sim__fleche svg { transform: translate(2px, -2px); }
+}
+
 /* ---------- Barre de synthèse mobile ---------- */
 .barre-mobile {
   position: fixed;
@@ -1061,7 +1160,7 @@ a:hover { text-decoration-thickness: 2px; }
 /* ---------- Impression ---------- */
 @media print {
   body { background: #fff; color: #000; }
-  .saisie, .bouton-icone, .lien-evitement, .depliant__chevron, .barre-mobile { display: none; }
+  .saisie, .bouton-icone, .lien-evitement, .depliant__chevron, .barre-mobile, .autres-simulateurs { display: none; }
   .mise-en-page { display: block; }
   .panneau { box-shadow: none; border-color: #999; break-inside: avoid; margin-bottom: 1rem; }
 }
