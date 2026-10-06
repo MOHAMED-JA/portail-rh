@@ -17,6 +17,11 @@ documents PDF…) s'essaient en installant le portail (voir « Démarrer »).
 Le projet cherche des **retours d'utilisateurs** : ouvrez une *issue* pour
 signaler un défaut, une incompréhension ou une idée (voir « Donner votre avis »).
 
+**Nouveau : [calculateur de salaire brut ⇄ net (Tunisie 2026)](calculateur-salaire/)**
+— application autonome dans le dossier `calculateur-salaire/` (CNSS, IRPP,
+CSS, déductions familiales, calcul inverse exact). Voir son
+[README](calculateur-salaire/README.md).
+
 ## Aperçu des fonctions
 
 | Domaine | Ce que fait le portail |
