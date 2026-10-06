@@ -42,8 +42,9 @@
 
   /*
    * entree = {
-   *   montant, periode: "mensuel" | "annuel",
-   *   primesImposables, avantagesNature, indemnitesNonImposables,   (même période que montant)
+   *   montant, periode: "mensuel" | "annuel", secteur: "prive" | "public",
+   *   primesImposables, primesNonCotisables, avantagesNature,
+   *   indemnitesNonImposables,                                       (même période que montant)
    *   chefDeFamille, enfants, etudiants, handicapes, parents,
    *   tauxAccidentTravail, industrieManufacturiere
    * }
@@ -56,11 +57,15 @@
       ? at.tauxParDefaut
       : nombre(e.tauxAccidentTravail);
 
+    var secteur = params.regimes[e.secteur] ? e.secteur : params.regimeParDefaut;
+
     return {
       periode: e.periode === "annuel" ? "annuel" : "mensuel",
+      secteur: secteur,
       facteur: facteur,
       salaireBase: positif(e.montant) * facteur,
       primesImposables: positif(e.primesImposables) * facteur,
+      primesNonCotisables: positif(e.primesNonCotisables) * facteur,
       avantagesNature: positif(e.avantagesNature) * facteur,
       indemnitesNonImposables: positif(e.indemnitesNonImposables) * facteur,
       chefDeFamille: Boolean(e.chefDeFamille),
@@ -141,21 +146,23 @@
     var e = normaliser(entree, params);
     var p = params;
 
-    var brutTotal = e.salaireBase + e.primesImposables + e.avantagesNature;
+    var regime = p.regimes[e.secteur];
+    var brutTotal = e.salaireBase + e.primesImposables + e.primesNonCotisables + e.avantagesNature;
+    var assietteCotisations = brutTotal - e.primesNonCotisables;
 
-    /* 1. Cotisations salariales CNSS */
-    var cnssLignes = p.cnss.salarie.map(function (c) {
-      return { code: c.code, libelle: c.libelle, taux: c.taux, montant: brutTotal * c.taux };
+    /* 1. Cotisations salariales (CNSS ou CNRPS selon le secteur) */
+    var cotisationsLignes = regime.salarie.map(function (c) {
+      return { code: c.code, libelle: c.libelle, taux: c.taux, montant: assietteCotisations * c.taux };
     });
-    var cnss = somme(cnssLignes, "montant");
-    var tauxCnss = somme(p.cnss.salarie, "taux");
+    var cotisations = somme(cotisationsLignes, "montant");
+    var tauxCotisations = somme(regime.salarie, "taux");
 
     /* 2. Revenu après cotisations, puis frais professionnels */
-    var revenuApresCnss = brutTotal - cnss;
+    var revenuApresCotisations = brutTotal - cotisations;
     var fp = p.irpp.fraisProfessionnels;
-    var fraisProfessionnels = Math.min(revenuApresCnss * fp.taux, fp.plafondAnnuel);
-    var fraisPlafonnes = revenuApresCnss * fp.taux > fp.plafondAnnuel;
-    var revenuNet = revenuApresCnss - fraisProfessionnels;
+    var fraisProfessionnels = Math.min(revenuApresCotisations * fp.taux, fp.plafondAnnuel);
+    var fraisPlafonnes = revenuApresCotisations * fp.taux > fp.plafondAnnuel;
+    var revenuNet = revenuApresCotisations - fraisProfessionnels;
 
     /* 3. Déductions pour situation de famille */
     var deductions = calculerDeductions(e, revenuNet, p);
@@ -170,34 +177,45 @@
     var css = cssDispense ? 0 : revenuImposable * p.css.taux;
 
     /* 6. Net */
-    var retenues = cnss + irpp + css;
+    var retenues = cotisations + irpp + css;
     var salaireNet = brutTotal - retenues;
     var netAPayer = salaireNet - e.avantagesNature + e.indemnitesNonImposables;
 
     /* 7. Coût employeur indicatif */
     var emp = p.employeur;
-    var employeurLignes = p.cnss.employeur.map(function (c) {
-      return { code: "cnss_" + c.code, libelle: "CNSS — " + c.libelle, taux: c.taux, montant: brutTotal * c.taux };
+    var applicables = regime.chargesEmployeur;
+    var employeurLignes = regime.employeur.map(function (c) {
+      return { code: "caisse_" + c.code, libelle: regime.caisse + " — " + c.libelle, taux: c.taux, montant: assietteCotisations * c.taux };
     });
-    employeurLignes.push({ code: "accident_travail", libelle: emp.accidentTravail.libelle, taux: e.tauxAccidentTravail, montant: brutTotal * e.tauxAccidentTravail });
-    var tauxTfp = e.industrieManufacturiere ? emp.tfp.tauxIndustrieManufacturiere : emp.tfp.taux;
-    employeurLignes.push({ code: "tfp", libelle: emp.tfp.libelle, taux: tauxTfp, montant: brutTotal * tauxTfp });
-    employeurLignes.push({ code: "foprolos", libelle: emp.foprolos.libelle, taux: emp.foprolos.taux, montant: brutTotal * emp.foprolos.taux });
+    if (applicables.accidentTravail) {
+      employeurLignes.push({ code: "accident_travail", libelle: emp.accidentTravail.libelle, taux: e.tauxAccidentTravail, montant: assietteCotisations * e.tauxAccidentTravail });
+    }
+    if (applicables.tfp) {
+      var tauxTfp = e.industrieManufacturiere ? emp.tfp.tauxIndustrieManufacturiere : emp.tfp.taux;
+      employeurLignes.push({ code: "tfp", libelle: emp.tfp.libelle, taux: tauxTfp, montant: brutTotal * tauxTfp });
+    }
+    if (applicables.foprolos) {
+      employeurLignes.push({ code: "foprolos", libelle: emp.foprolos.libelle, taux: emp.foprolos.taux, montant: brutTotal * emp.foprolos.taux });
+    }
     var chargesPatronales = somme(employeurLignes, "montant");
 
     return {
       annee: p.annee,
       periode: e.periode,
+      secteur: e.secteur,
+      regime: { libelle: regime.libelle, caisse: regime.caisse },
       entree: e,
       annuel: {
         salaireBase: e.salaireBase,
         primesImposables: e.primesImposables,
+        primesNonCotisables: e.primesNonCotisables,
         avantagesNature: e.avantagesNature,
         indemnitesNonImposables: e.indemnitesNonImposables,
         brutTotal: brutTotal,
-        cnss: cnss,
-        cnssLignes: cnssLignes,
-        revenuApresCnss: revenuApresCnss,
+        assietteCotisations: assietteCotisations,
+        cotisations: cotisations,
+        cotisationsLignes: cotisationsLignes,
+        revenuApresCotisations: revenuApresCotisations,
         fraisProfessionnels: fraisProfessionnels,
         revenuNet: revenuNet,
         deductions: deductions.total,
@@ -214,7 +232,7 @@
         coutEmployeur: brutTotal + chargesPatronales + e.indemnitesNonImposables
       },
       indicateurs: {
-        tauxCnss: tauxCnss,
+        tauxCotisations: tauxCotisations,
         fraisPlafonnes: fraisPlafonnes,
         cssDispense: cssDispense,
         enfantsIgnores: deductions.enfantsIgnores,
@@ -326,7 +344,109 @@
     };
   }
 
+  /* ---------- Répartition d'un dinar de coût employeur ---------- */
+
+  /*
+   * Ventile le coût total employeur entre le salarié, la caisse sociale et l'État.
+   * Salarié : salaire net + indemnités non imposables (avantages en nature compris).
+   * Caisse  : cotisations salariales + cotisations patronales de la caisse + accidents du travail.
+   * État    : IRPP + CSS + TFP + FOPROLOS.
+   */
+  function repartitionCoutEmployeur(resultat) {
+    var a = resultat.annuel;
+    var caissePatronale = 0;
+    var etatPatronal = 0;
+    a.chargesPatronalesLignes.forEach(function (l) {
+      if (l.code === "tfp" || l.code === "foprolos") etatPatronal += l.montant;
+      else caissePatronale += l.montant;
+    });
+    var salarie = a.salaireNet + a.indemnitesNonImposables;
+    var caisse = a.cotisations + caissePatronale;
+    var etat = a.irpp + a.css + etatPatronal;
+    var total = a.coutEmployeur;
+    function part(x) { return total > 0 ? x / total : 0; }
+    return {
+      total: total,
+      salarie: { montant: salarie, part: part(salarie) },
+      caisse: { montant: caisse, part: part(caisse) },
+      etat: { montant: etat, part: part(etat) }
+    };
+  }
+
+  /* ---------- Courbe du net en fonction du brut ---------- */
+
+  /*
+   * Échantillonne le net à payer (par période saisie) pour des salaires de base
+   * allant de `min` à `max`, les autres éléments restant fixes.
+   */
+  function courbeNetBrut(entree, params, options) {
+    var o = options || {};
+    var n = Math.max(2, o.points || 100);
+    var min = o.min || 0;
+    var max = o.max > min ? o.max : min + 1;
+    var points = [];
+    for (var i = 0; i < n; i++) {
+      var brut = min + (max - min) * i / (n - 1);
+      var r = calculerDepuisBrut(Object.assign({}, entree, { montant: brut }), params);
+      var f = r.entree.facteur;
+      points.push({
+        brut: brut,
+        brutTotal: r.annuel.brutTotal / f,
+        net: r.annuel.netAPayer / f,
+        tauxMarginal: r.indicateurs.tauxMarginalIrpp
+      });
+    }
+    return points;
+  }
+
+  /* ---------- Simulation d'une augmentation ---------- */
+
+  /*
+   * augmentation = { mode: "net" | "brut" | "pourcent", valeur }
+   *   net      : hausse du net à payer souhaitée (même période que l'entrée)
+   *   brut     : hausse du salaire de base brut
+   *   pourcent : hausse du salaire de base brut en % (10 = +10 %)
+   * L'entrée décrit la situation actuelle « brut → net ».
+   */
+  function simulerAugmentation(entree, params, augmentation) {
+    var aug = augmentation || {};
+    var valeur = positif(aug.valeur);
+    var avant = calculerDepuisBrut(entree, params);
+    var f = avant.entree.facteur;
+    var baseAvant = avant.annuel.salaireBase / f;
+    var apres;
+    var verifie = true;
+
+    if (aug.mode === "net") {
+      var inv = calculerDepuisNet(Object.assign({}, entree, { montant: avant.annuel.netAPayer / f + valeur }), params);
+      apres = inv.resultat;
+      verifie = inv.verifie;
+    } else {
+      var hausse = aug.mode === "pourcent" ? baseAvant * valeur / 100 : valeur;
+      apres = calculerDepuisBrut(Object.assign({}, entree, { montant: baseAvant + hausse }), params);
+    }
+
+    function ecart(cle) { return (apres.annuel[cle] - avant.annuel[cle]) / f; }
+    var hausseNet = ecart("netAPayer");
+    var hausseCout = ecart("coutEmployeur");
+    return {
+      avant: avant,
+      apres: apres,
+      verifie: verifie,
+      salaireBaseApres: apres.annuel.salaireBase / f,
+      hausseBrut: ecart("brutTotal"),
+      hausseNet: hausseNet,
+      hausseCout: hausseCout,
+      hausseRetenues: ecart("retenues"),
+      coutParDinarNet: hausseNet > 0 ? hausseCout / hausseNet : 0,
+      partNetDeLaHausseBrute: ecart("brutTotal") > 0 ? hausseNet / ecart("brutTotal") : 0
+    };
+  }
+
   var API = {
+    repartitionCoutEmployeur: repartitionCoutEmployeur,
+    courbeNetBrut: courbeNetBrut,
+    simulerAugmentation: simulerAugmentation,
     calculerDepuisBrut: calculerDepuisBrut,
     calculerDepuisNet: calculerDepuisNet,
     calculerImpotBareme: calculerImpotBareme,

@@ -28,8 +28,10 @@ test("paramètres : barème croissant, taux cohérents, année 2026", () => {
     assert.ok(b[i].de > b[i - 1].de, "bornes croissantes");
     assert.ok(b[i].taux > b[i - 1].taux, "taux croissants");
   }
-  proche(P.cnss.salarie.reduce((s, c) => s + c.taux, 0), 0.0968, "taux CNSS salarié total");
-  proche(P.cnss.employeur.reduce((s, c) => s + c.taux, 0), 0.1707, "taux CNSS patronal total");
+  proche(P.regimes.prive.salarie.reduce((s, c) => s + c.taux, 0), 0.0968, "taux CNSS salarié total");
+  proche(P.regimes.prive.employeur.reduce((s, c) => s + c.taux, 0), 0.1707, "taux CNSS patronal total");
+  proche(P.regimes.public.salarie.reduce((s, c) => s + c.taux, 0), 0.1295, "taux CNRPS salarié total");
+  proche(P.regimes.public.employeur.reduce((s, c) => s + c.taux, 0), 0.185, "taux CNRPS employeur total");
 });
 
 test("barème IRPP : exemples par tranche", () => {
@@ -49,7 +51,7 @@ test("cas typique : 2 500 DT/mois, chef de famille, 2 enfants (frais pro plafonn
   const a = r.annuel;
   // brut 30 000 ; CNSS 9,68 % = 2 904 ; après CNSS 27 096
   proche(a.brutTotal, 30000, "brut annuel");
-  proche(a.cnss, 2904, "CNSS");
+  proche(a.cotisations, 2904, "CNSS");
   // frais pro : 10 % = 2 709,6 → plafond 2 000
   proche(a.fraisProfessionnels, 2000, "frais professionnels plafonnés");
   assert.equal(r.indicateurs.fraisPlafonnes, true);
@@ -191,6 +193,48 @@ test("coût employeur : CNSS 17,07 % + AT + TFP + FOPROLOS", () => {
 });
 
 /* ------------------------------------------------------------------ */
+test("secteur public (CNRPS) : 2 500 DT/mois, chef de famille, 2 enfants", () => {
+  const r = C.calculerDepuisBrut(
+    { montant: 2500, periode: "mensuel", secteur: "public", chefDeFamille: true, enfants: 2 }, P
+  );
+  const a = r.annuel;
+  assert.equal(r.regime.caisse, "CNRPS");
+  // 30 000 × 12,95 % = 3 885 ; après cotisations 26 115 ; frais plafonnés 2 000
+  proche(a.cotisations, 3885, "cotisations CNRPS");
+  proche(a.fraisProfessionnels, 2000, "frais professionnels");
+  // imposable 24 115 − 500 = 23 615 ; IRPP 750 + 2 500 + 3 615 × 30 % = 4 334,5
+  proche(a.revenuImposable, 23615, "revenu imposable");
+  proche(a.irpp, 4334.5, "IRPP");
+  proche(a.css, 118.075, "CSS");
+  proche(a.salaireNet, 21662.425, "net annuel");
+  // même brut, net inférieur au privé (22 344,22)
+  assert.ok(a.salaireNet < 22344.22);
+});
+
+test("secteur public : coût employeur sans TFP ni accidents du travail", () => {
+  const a = C.calculerDepuisBrut({ montant: 2500, periode: "mensuel", secteur: "public" }, P).annuel;
+  // 30 000 × (14,5 % + 4 %) + FOPROLOS 1 % = 5 550 + 300
+  proche(a.chargesPatronales, 5850, "charges patronales");
+  const codes = a.chargesPatronalesLignes.map((l) => l.code);
+  assert.ok(!codes.includes("tfp") && !codes.includes("accident_travail"));
+});
+
+test("primes non soumises à cotisation : imposables mais hors assiette CNRPS", () => {
+  const a = C.calculerDepuisBrut(
+    { montant: 2000, primesNonCotisables: 500, periode: "mensuel", secteur: "public" }, P
+  ).annuel;
+  proche(a.brutTotal, 30000, "brut total");
+  proche(a.assietteCotisations, 24000, "assiette des cotisations");
+  proche(a.cotisations, 24000 * 0.1295, "cotisations sur l'assiette seulement");
+});
+
+test("secteur inconnu → secteur privé par défaut", () => {
+  const r = C.calculerDepuisBrut({ montant: 1000, periode: "mensuel", secteur: "xyz" }, P);
+  assert.equal(r.secteur, "prive");
+  assert.equal(r.regime.caisse, "CNSS");
+});
+
+/* ------------------------------------------------------------------ */
 test("net → brut : cas typique, vérification du net recalculé", () => {
   const r = C.calculerDepuisNet({ montant: 1862.018333, periode: "mensuel", chefDeFamille: true, enfants: 2 }, P);
   assert.equal(r.verifie, true);
@@ -205,14 +249,16 @@ test("net → brut : net demandé inférieur à ce que donnent les seules primes
   assert.ok(r.message);
 });
 
-test("aller-retour brut → net → brut sur 1 200 profils", () => {
+test("aller-retour brut → net → brut sur 1 600 cas (privé et public)", () => {
   const profils = [
     {},
     { chefDeFamille: true },
     { chefDeFamille: true, enfants: 2 },
     { chefDeFamille: true, enfants: 3, etudiants: 1, handicapes: 1, parents: 2 },
     { primesImposables: 150, avantagesNature: 80, indemnitesNonImposables: 40 },
-    { periode: "annuel", chefDeFamille: true, enfants: 1 }
+    { periode: "annuel", chefDeFamille: true, enfants: 1 },
+    { secteur: "public" },
+    { secteur: "public", chefDeFamille: true, enfants: 2, primesNonCotisables: 120, parents: 1 }
   ];
   let ecartMax = 0;
   let cas = 0;
@@ -242,14 +288,16 @@ test("aller-retour brut → net → brut sur 1 200 profils", () => {
       cas++;
     }
   }
-  assert.equal(cas, 1200);
+  assert.equal(cas, 1600);
   assert.ok(ecartMax <= TOL, `écart maximal ${ecartMax}`);
 });
 
 test("net → brut : autour du seuil de dispense de CSS, le net cible est toujours atteint", () => {
   // Balayage fin des nets mensuels entre 440 et 520 DT
-  for (let net = 440; net <= 520; net += 0.25) {
-    const r = C.calculerDepuisNet({ montant: net, periode: "mensuel" }, P);
-    assert.equal(r.verifie, true, `net ${net}`);
+  for (const secteur of ["prive", "public"]) {
+    for (let net = 440; net <= 520; net += 0.25) {
+      const r = C.calculerDepuisNet({ montant: net, periode: "mensuel", secteur }, P);
+      assert.equal(r.verifie, true, `${secteur} net ${net}`);
+    }
   }
 });
