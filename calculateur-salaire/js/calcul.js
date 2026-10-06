@@ -344,7 +344,109 @@
     };
   }
 
+  /* ---------- Répartition d'un dinar de coût employeur ---------- */
+
+  /*
+   * Ventile le coût total employeur entre le salarié, la caisse sociale et l'État.
+   * Salarié : salaire net + indemnités non imposables (avantages en nature compris).
+   * Caisse  : cotisations salariales + cotisations patronales de la caisse + accidents du travail.
+   * État    : IRPP + CSS + TFP + FOPROLOS.
+   */
+  function repartitionCoutEmployeur(resultat) {
+    var a = resultat.annuel;
+    var caissePatronale = 0;
+    var etatPatronal = 0;
+    a.chargesPatronalesLignes.forEach(function (l) {
+      if (l.code === "tfp" || l.code === "foprolos") etatPatronal += l.montant;
+      else caissePatronale += l.montant;
+    });
+    var salarie = a.salaireNet + a.indemnitesNonImposables;
+    var caisse = a.cotisations + caissePatronale;
+    var etat = a.irpp + a.css + etatPatronal;
+    var total = a.coutEmployeur;
+    function part(x) { return total > 0 ? x / total : 0; }
+    return {
+      total: total,
+      salarie: { montant: salarie, part: part(salarie) },
+      caisse: { montant: caisse, part: part(caisse) },
+      etat: { montant: etat, part: part(etat) }
+    };
+  }
+
+  /* ---------- Courbe du net en fonction du brut ---------- */
+
+  /*
+   * Échantillonne le net à payer (par période saisie) pour des salaires de base
+   * allant de `min` à `max`, les autres éléments restant fixes.
+   */
+  function courbeNetBrut(entree, params, options) {
+    var o = options || {};
+    var n = Math.max(2, o.points || 100);
+    var min = o.min || 0;
+    var max = o.max > min ? o.max : min + 1;
+    var points = [];
+    for (var i = 0; i < n; i++) {
+      var brut = min + (max - min) * i / (n - 1);
+      var r = calculerDepuisBrut(Object.assign({}, entree, { montant: brut }), params);
+      var f = r.entree.facteur;
+      points.push({
+        brut: brut,
+        brutTotal: r.annuel.brutTotal / f,
+        net: r.annuel.netAPayer / f,
+        tauxMarginal: r.indicateurs.tauxMarginalIrpp
+      });
+    }
+    return points;
+  }
+
+  /* ---------- Simulation d'une augmentation ---------- */
+
+  /*
+   * augmentation = { mode: "net" | "brut" | "pourcent", valeur }
+   *   net      : hausse du net à payer souhaitée (même période que l'entrée)
+   *   brut     : hausse du salaire de base brut
+   *   pourcent : hausse du salaire de base brut en % (10 = +10 %)
+   * L'entrée décrit la situation actuelle « brut → net ».
+   */
+  function simulerAugmentation(entree, params, augmentation) {
+    var aug = augmentation || {};
+    var valeur = positif(aug.valeur);
+    var avant = calculerDepuisBrut(entree, params);
+    var f = avant.entree.facteur;
+    var baseAvant = avant.annuel.salaireBase / f;
+    var apres;
+    var verifie = true;
+
+    if (aug.mode === "net") {
+      var inv = calculerDepuisNet(Object.assign({}, entree, { montant: avant.annuel.netAPayer / f + valeur }), params);
+      apres = inv.resultat;
+      verifie = inv.verifie;
+    } else {
+      var hausse = aug.mode === "pourcent" ? baseAvant * valeur / 100 : valeur;
+      apres = calculerDepuisBrut(Object.assign({}, entree, { montant: baseAvant + hausse }), params);
+    }
+
+    function ecart(cle) { return (apres.annuel[cle] - avant.annuel[cle]) / f; }
+    var hausseNet = ecart("netAPayer");
+    var hausseCout = ecart("coutEmployeur");
+    return {
+      avant: avant,
+      apres: apres,
+      verifie: verifie,
+      salaireBaseApres: apres.annuel.salaireBase / f,
+      hausseBrut: ecart("brutTotal"),
+      hausseNet: hausseNet,
+      hausseCout: hausseCout,
+      hausseRetenues: ecart("retenues"),
+      coutParDinarNet: hausseNet > 0 ? hausseCout / hausseNet : 0,
+      partNetDeLaHausseBrute: ecart("brutTotal") > 0 ? hausseNet / ecart("brutTotal") : 0
+    };
+  }
+
   var API = {
+    repartitionCoutEmployeur: repartitionCoutEmployeur,
+    courbeNetBrut: courbeNetBrut,
+    simulerAugmentation: simulerAugmentation,
     calculerDepuisBrut: calculerDepuisBrut,
     calculerDepuisNet: calculerDepuisNet,
     calculerImpotBareme: calculerImpotBareme,

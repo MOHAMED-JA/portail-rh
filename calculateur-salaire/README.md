@@ -45,6 +45,27 @@ graphique de répartition et un coût employeur indicatif.
 Le résultat se met à jour à chaque saisie. En mode **Net → brut**, un encadré
 confirme que le net recalculé à partir du brut trouvé est égal au net saisi.
 
+### Fonctions avancées
+
+- **Lien de partage** : l'adresse de la page contient toujours la simulation
+  en cours (`?m=2500&chef=1&enf=2…`). Le bouton *Partager ce calcul* la copie
+  (ou ouvre le partage du téléphone) ; le lien rouvre exactement le même calcul.
+- **Comparateur** : bouton *Comparer* → scénarios A et B (onglets), tableau
+  des écarts B − A (cotisations, impôt, net, coût employeur, taux de
+  prélèvement). Les deux scénarios sont inclus dans le lien de partage.
+- **Simulateur d'augmentation** : hausse en net, en brut ou en %, avec la
+  hausse du coût employeur et le coût d'un dinar net supplémentaire ; le
+  bouton *Comparer avec la situation actuelle* crée le scénario B.
+- **Graphiques** : répartition du brut ; « sur 1 dinar dépensé par
+  l'employeur » (salarié, caisse sociale, État) ; courbe du net selon le brut
+  avec les bandes du taux marginal de l'IRPP, lisible au survol et au clavier.
+- **Lignes modifiées** : après chaque changement, les lignes des tableaux dont
+  la valeur a changé s'éclairent brièvement (désactivé si « réduire les
+  animations » est demandé par le système).
+- **Application installable et hors connexion** : manifeste, icônes, service
+  worker (`sw.js`) et code QR d'installation.
+- **Signature commune** aux quatre simulateurs de l'auteur, avec liens croisés.
+
 ## Règles appliquées
 
 Paramètres de l'année **2026**, vérifiés le **6 octobre 2026**.
@@ -156,7 +177,9 @@ Chaque année, après la publication de la loi de finances :
      `irpp.fraisProfessionnels`.
 4. Mettez à jour le champ `source` de chaque valeur modifiée, puis le tableau
    « Règles appliquées » de ce README.
-5. Adaptez les montants attendus dans `tests/calcul.test.js` et lancez les
+5. Incrémentez `VERSION` dans `sw.js` (par exemple `calc-salaire-v3`) pour que
+   les applications installées récupèrent les nouveaux paramètres.
+6. Adaptez les montants attendus dans `tests/calcul.test.js` et lancez les
    tests.
 
 L'interface lit les libellés (montants de déduction, taux affichés) dans ce
@@ -172,12 +195,15 @@ cd calculateur-salaire
 npm test            # ou : node --test tests/*.test.js
 ```
 
-25 tests couvrent : le barème, des cas typiques, le SMIG, les bas salaires
+38 tests couvrent : le barème, des cas typiques, le SMIG, les bas salaires
 (ni IRPP ni CSS), les très hauts salaires (tranche à 40 %), le salaire nul,
 les entrées invalides, les plafonds (frais professionnels, 4 enfants,
 parents), les primes et avantages, le coût employeur, le **secteur public
 (CNRPS)**, et **1 600 allers-retours brut → net → brut** sur huit profils
-(privé et public), plus un balayage fin autour du seuil de la CSS.
+(privé et public), plus un balayage fin autour du seuil de la CSS ; ainsi que
+l'augmentation (en net, en brut, en %), la courbe net/brut, la répartition
+d'un dinar de coût employeur et le lien de partage (aller-retour, valeurs
+invalides, deux scénarios).
 
 ## Lancer en local
 
@@ -210,11 +236,15 @@ un dépôt dédié.
 calculateur-salaire/
 ├── index.html            Page unique (formulaire + résultats)
 ├── config/parametres.js  Paramètres légaux de l'année (seul fichier à mettre à jour)
-├── js/calcul.js          Moteur de calcul pur (brut → net, net → brut)
-├── js/app.js             Interface : lecture du formulaire, rendu, animations
+├── js/calcul.js          Moteur de calcul pur (brut → net, net → brut, augmentation, courbe)
+├── js/etat.js            État d'une simulation ⇄ lien de partage (pur, testé)
+├── js/graphiques.js      Barres empilées et courbe SVG interactive
+├── js/app.js             Interface : formulaire, scénarios A/B, rendu, animations
+├── sw.js                 Service worker (hors connexion)
+├── manifest.webmanifest  Application installable (nom, icônes, couleurs)
 ├── css/styles.css        Styles (tokens de couleurs, typographie, espacements)
-├── assets/               Icône, polices auto-hébergées (Manrope, JetBrains Mono)
-├── tests/calcul.test.js  Tests automatisés de la logique
+├── assets/               Icônes, QR d'installation, image d'aperçu, polices auto-hébergées
+├── tests/                Tests automatisés (calcul.test.js, fonctions.test.js)
 ├── DESIGN.md             Système visuel
 ├── package.json          Scripts `npm test` et `npm run serve`
 └── LICENSE               Licence MIT (code) et mentions des polices

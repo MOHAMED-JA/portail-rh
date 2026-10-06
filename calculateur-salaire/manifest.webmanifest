@@ -1,0 +1,24 @@
+{
+  "name": "Calculateur de salaire brut ⇄ net — Tunisie",
+  "short_name": "Salaire TN",
+  "description": "Salaire net à partir du brut et brut nécessaire pour un net donné : CNSS ou CNRPS, IRPP, CSS et déductions familiales.",
+  "lang": "fr",
+  "dir": "ltr",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070b14",
+  "theme_color": "#070b14",
+  "categories": ["finance", "business", "utilities"],
+  "icons": [
+    { "src": "assets/icones/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icones/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icones/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Calcul net → brut", "url": "./?sens=net", "icons": [{ "src": "assets/icones/icone-192.png", "sizes": "192x192" }] },
+    { "name": "Secteur public (CNRPS)", "url": "./?sec=public", "icons": [{ "src": "assets/icones/icone-192.png", "sizes": "192x192" }] }
+  ]
+}
