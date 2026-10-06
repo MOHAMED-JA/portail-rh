@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Calculateur de salaire Tunisie 2026</title>
+  <meta name="description" content="Calculez votre salaire net à partir du brut, ou le brut nécessaire pour un net donné, selon les règles tunisiennes 2026 : CNSS, IRPP, CSS, déductions familiales.">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#070b14">
+  <link rel="icon" href="assets/icone.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/manrope-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/jetbrains-mono-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    /* Thème mémorisé, appliqué avant l'affichage pour éviter un flash */
+    try {
+      var t = localStorage.getItem("calc-theme");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <a class="lien-evitement" href="#resultats">Aller aux résultats</a>
+
+  <svg width="0" height="0" class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-alerte" viewBox="0 0 24 24"><path d="M12 4l9 16H3z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M12 10v4.5M12 17.2v.1" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 11v5.5M12 7.8v.1" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-moins" viewBox="0 0 24 24"><path d="M6 12h12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-soleil" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6L6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-lune" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></symbol>
+    <symbol id="i-echange" viewBox="0 0 24 24"><path d="M4 8h14l-3.5-3.5M20 16H6l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <header class="entete">
+    <div class="entete__marque">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <rect x="1" y="1" width="30" height="30" rx="9" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".35"/>
+        <path d="M8 12h13l-3-3M24 20H11l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <h1 class="entete__titre">Salaire brut <span aria-hidden="true">⇄</span><span class="visuellement-cache"> et</span> net</h1>
+        <p class="entete__sous-titre">Tunisie · règles <span data-annee>2026</span> · secteur privé (CNSS)</p>
+      </div>
+    </div>
+    <button type="button" class="bouton-icone" id="bouton-theme" aria-label="Passer au thème clair">
+      <svg class="icone" aria-hidden="true"><use href="#i-soleil"/></svg>
+    </button>
+  </header>
+
+  <noscript>
+    <p class="avertissement-js">Ce calculateur a besoin de JavaScript pour fonctionner. Activez-le dans votre navigateur.</p>
+  </noscript>
+
+  <main class="mise-en-page">
+    <!-- ============ Saisie ============ -->
+    <form class="panneau saisie" id="formulaire" novalidate aria-labelledby="titre-saisie">
+      <h2 id="titre-saisie" class="panneau__titre">Vos informations</h2>
+
+      <fieldset class="champ">
+        <legend class="champ__libelle">Sens du calcul</legend>
+        <div class="segment" data-segment>
+          <input type="radio" name="sens" id="sens-brut" value="brut" checked>
+          <label for="sens-brut">Brut <span aria-hidden="true">→</span><span class="visuellement-cache"> vers</span> net</label>
+          <input type="radio" name="sens" id="sens-net" value="net">
+          <label for="sens-net">Net <span aria-hidden="true">→</span><span class="visuellement-cache"> vers</span> brut</label>
+          <span class="segment__curseur" aria-hidden="true"></span>
+        </div>
+      </fieldset>
+
+      <fieldset class="champ">
+        <legend class="champ__libelle">Période du montant</legend>
+        <div class="segment" data-segment>
+          <input type="radio" name="periode" id="periode-mensuel" value="mensuel" checked>
+          <label for="periode-mensuel">Mensuel</label>
+          <input type="radio" name="periode" id="periode-annuel" value="annuel">
+          <label for="periode-annuel">Annuel</label>
+          <span class="segment__curseur" aria-hidden="true"></span>
+        </div>
+      </fieldset>
+
+      <div class="champ">
+        <label class="champ__libelle" for="montant" id="libelle-montant">Salaire brut mensuel</label>
+        <div class="saisie-montant">
+          <input class="saisie-montant__champ" id="montant" name="montant" type="text" inputmode="decimal"
+                 autocomplete="off" spellcheck="false" value="2 500" placeholder="Ex. 2 500…"
+                 aria-describedby="aide-montant erreur-montant">
+          <span class="saisie-montant__devise" aria-hidden="true">DT</span>
+        </div>
+        <p class="champ__aide" id="aide-montant">Salaire de base, hors primes. Décimales avec une virgule.</p>
+        <p class="champ__erreur" id="erreur-montant" role="alert" hidden></p>
+      </div>
+
+      <fieldset class="groupe">
+        <legend class="groupe__titre">Situation familiale</legend>
+
+        <label class="interrupteur" for="chef">
+          <span class="interrupteur__texte">
+            <span class="interrupteur__libelle">Chef de famille</span>
+            <span class="champ__aide">Déduction de <span data-param="chef">300 DT</span> par an ; ouvre droit aux déductions pour enfants.</span>
+          </span>
+          <input type="checkbox" role="switch" id="chef" name="chefDeFamille" class="interrupteur__case">
+          <span class="interrupteur__piste" aria-hidden="true"><span class="interrupteur__pastille"></span></span>
+        </label>
+
+        <div class="compteurs" id="compteurs-enfants">
+          <div class="compteur">
+            <label class="compteur__libelle" for="enfants">Enfants à charge <span class="compteur__precision">moins de <span data-param="ageEnfant">20</span> ans</span></label>
+            <div class="compteur__controle">
+              <button type="button" class="bouton-pas" data-pas="-1" data-cible="enfants" aria-label="Retirer un enfant à charge"><svg class="icone" aria-hidden="true"><use href="#i-moins"/></svg></button>
+              <input type="number" id="enfants" name="enfants" min="0" max="15" step="1" value="0" inputmode="numeric">
+              <button type="button" class="bouton-pas" data-pas="1" data-cible="enfants" aria-label="Ajouter un enfant à charge"><svg class="icone" aria-hidden="true"><use href="#i-plus"/></svg></button>
+            </div>
+          </div>
+          <div class="compteur">
+            <label class="compteur__libelle" for="etudiants">Étudiants non boursiers <span class="compteur__precision">moins de <span data-param="ageEtudiant">25</span> ans</span></label>
+            <div class="compteur__controle">
+              <button type="button" class="bouton-pas" data-pas="-1" data-cible="etudiants" aria-label="Retirer un enfant étudiant"><svg class="icone" aria-hidden="true"><use href="#i-moins"/></svg></button>
+              <input type="number" id="etudiants" name="etudiants" min="0" max="15" step="1" value="0" inputmode="numeric">
+              <button type="button" class="bouton-pas" data-pas="1" data-cible="etudiants" aria-label="Ajouter un enfant étudiant"><svg class="icone" aria-hidden="true"><use href="#i-plus"/></svg></button>
+            </div>
+          </div>
+          <div class="compteur">
+            <label class="compteur__libelle" for="handicapes">Enfants handicapés <span class="compteur__precision">sans limite d’âge</span></label>
+            <div class="compteur__controle">
+              <button type="button" class="bouton-pas" data-pas="-1" data-cible="handicapes" aria-label="Retirer un enfant handicapé"><svg class="icone" aria-hidden="true"><use href="#i-moins"/></svg></button>
+              <input type="number" id="handicapes" name="handicapes" min="0" max="15" step="1" value="0" inputmode="numeric">
+              <button type="button" class="bouton-pas" data-pas="1" data-cible="handicapes" aria-label="Ajouter un enfant handicapé"><svg class="icone" aria-hidden="true"><use href="#i-plus"/></svg></button>
+            </div>
+          </div>
+          <p class="champ__aide note-chef" id="note-chef">Les déductions pour enfants sont accordées au chef de famille : cochez « Chef de famille » pour les appliquer.</p>
+        </div>
+
+        <div class="compteur">
+          <label class="compteur__libelle" for="parents">Parents à charge <span class="compteur__precision">5 % du revenu net, plafonné</span></label>
+          <div class="compteur__controle">
+            <button type="button" class="bouton-pas" data-pas="-1" data-cible="parents" aria-label="Retirer un parent à charge"><svg class="icone" aria-hidden="true"><use href="#i-moins"/></svg></button>
+            <input type="number" id="parents" name="parents" min="0" max="2" step="1" value="0" inputmode="numeric">
+            <button type="button" class="bouton-pas" data-pas="1" data-cible="parents" aria-label="Ajouter un parent à charge"><svg class="icone" aria-hidden="true"><use href="#i-plus"/></svg></button>
+          </div>
+        </div>
+      </fieldset>
+
+      <details class="depliant">
+        <summary class="depliant__titre">
+          <span>Primes, avantages et indemnités</span>
+          <svg class="icone depliant__chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="depliant__contenu">
+          <p class="champ__aide">Montants pour la même période que le salaire (<span data-periode-texte>par mois</span>).</p>
+          <div class="champ">
+            <label class="champ__libelle" for="primes">Primes et indemnités imposables</label>
+            <div class="saisie-montant saisie-montant--compacte">
+              <input class="saisie-montant__champ" id="primes" name="primesImposables" type="text" inputmode="decimal" autocomplete="off" placeholder="0" aria-describedby="aide-primes">
+              <span class="saisie-montant__devise" aria-hidden="true">DT</span>
+            </div>
+            <p class="champ__aide" id="aide-primes">Rendement, ancienneté, présence… Soumises à la CNSS et à l’impôt.</p>
+          </div>
+          <div class="champ">
+            <label class="champ__libelle" for="avantages">Avantages en nature</label>
+            <div class="saisie-montant saisie-montant--compacte">
+              <input class="saisie-montant__champ" id="avantages" name="avantagesNature" type="text" inputmode="decimal" autocomplete="off" placeholder="0" aria-describedby="aide-avantages">
+              <span class="saisie-montant__devise" aria-hidden="true">DT</span>
+            </div>
+            <p class="champ__aide" id="aide-avantages">Voiture, logement… Soumis à la CNSS et à l’impôt, mais non versés : retirés du net à payer.</p>
+          </div>
+          <div class="champ">
+            <label class="champ__libelle" for="indemnites">Indemnités non imposables</label>
+            <div class="saisie-montant saisie-montant--compacte">
+              <input class="saisie-montant__champ" id="indemnites" name="indemnitesNonImposables" type="text" inputmode="decimal" autocomplete="off" placeholder="0" aria-describedby="aide-indemnites">
+              <span class="saisie-montant__devise" aria-hidden="true">DT</span>
+            </div>
+            <p class="champ__aide" id="aide-indemnites">Remboursements de frais réels exonérés : ajoutés au net à payer sans retenue. Vérifiez leur caractère exonéré.</p>
+          </div>
+        </div>
+      </details>
+
+      <details class="depliant">
+        <summary class="depliant__titre">
+          <span>Coût employeur</span>
+          <svg class="icone depliant__chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="depliant__contenu">
+          <div class="champ">
+            <label class="champ__libelle" for="taux-at">Taux accidents du travail</label>
+            <div class="saisie-montant saisie-montant--compacte">
+              <input class="saisie-montant__champ" id="taux-at" name="tauxAccidentTravail" type="text" inputmode="decimal" autocomplete="off" value="0,5" aria-describedby="aide-at">
+              <span class="saisie-montant__devise" aria-hidden="true">%</span>
+            </div>
+            <p class="champ__aide" id="aide-at">Fixé par la CNSS selon l’activité de l’entreprise (entre <span data-param="atMin">0</span> et <span data-param="atMax">5</span> %).</p>
+          </div>
+          <label class="case">
+            <input type="checkbox" id="industrie" name="industrieManufacturiere">
+            <span>Industrie manufacturière (TFP à <span data-param="tfpReduite">1 %</span> au lieu de <span data-param="tfp">2 %</span>)</span>
+          </label>
+        </div>
+      </details>
+
+      <button type="reset" class="bouton-secondaire" id="reinitialiser">Réinitialiser</button>
+    </form>
+
+    <!-- ============ Résultats ============ -->
+    <section class="resultats" id="resultats" aria-labelledby="titre-resultats" tabindex="-1">
+      <h2 id="titre-resultats" class="visuellement-cache">Résultats</h2>
+
+      <div class="panneau synthese" data-apparition>
+        <div class="synthese__principal">
+          <p class="synthese__libelle" id="libelle-principal">Net à payer par mois</p>
+          <p class="synthese__montant" aria-describedby="libelle-principal">
+            <span class="chiffre" id="montant-principal" data-compteur>0,000</span>
+            <span class="synthese__devise">DT</span>
+          </p>
+          <p class="synthese__secondaire"><span id="texte-secondaire">soit</span> <span class="chiffre" id="montant-secondaire" data-compteur>0,000</span> DT par an</p>
+        </div>
+        <dl class="synthese__reperes">
+          <div class="repere">
+            <dt id="libelle-repere-1">Brut mensuel</dt>
+            <dd class="chiffre" id="repere-1">—</dd>
+          </div>
+          <div class="repere">
+            <dt>Prélèvements</dt>
+            <dd class="chiffre" id="repere-taux">—</dd>
+          </div>
+          <div class="repere">
+            <dt>Taux marginal IRPP</dt>
+            <dd class="chiffre" id="repere-marginal">—</dd>
+          </div>
+        </dl>
+        <p class="verification" id="verification" hidden>
+          <svg class="icone" aria-hidden="true"><use href="#i-check"/></svg>
+          <span id="verification-texte"></span>
+        </p>
+        <ul class="alertes" id="alertes"></ul>
+      </div>
+
+      <div class="avertissement" role="note">
+        <svg class="icone" aria-hidden="true"><use href="#i-info"/></svg>
+        <p><strong>Résultat indicatif.</strong> Ce calcul ne remplace pas un calcul de paie officiel ni l’avis d’un professionnel (expert-comptable, CNSS, administration fiscale).</p>
+      </div>
+
+      <div class="panneau" data-apparition>
+        <h3 class="panneau__titre">Répartition du brut</h3>
+        <div class="barre" id="barre" role="img" aria-labelledby="barre-description">
+          <span class="barre__segment" data-segment="net"></span>
+          <span class="barre__segment" data-segment="cnss"></span>
+          <span class="barre__segment" data-segment="irpp"></span>
+          <span class="barre__segment" data-segment="css"></span>
+        </div>
+        <p class="visuellement-cache" id="barre-description"></p>
+        <ul class="legende" id="legende"></ul>
+      </div>
+
+      <div class="panneau" data-apparition>
+        <div class="panneau__entete">
+          <h3 class="panneau__titre">Calcul étape par étape</h3>
+          <p class="panneau__note">Montants en dinars (DT), au millime.</p>
+        </div>
+        <div class="tableau-defilant" tabindex="0" role="region" aria-label="Tableau du calcul étape par étape">
+          <table class="etapes" id="etapes">
+            <caption class="visuellement-cache">Calcul détaillé du salaire, en montants mensuels et annuels</caption>
+            <thead>
+              <tr><th scope="col">Étape</th><th scope="col" class="num">Mensuel</th><th scope="col" class="num">Annuel</th></tr>
+            </thead>
+            <tbody id="etapes-corps"></tbody>
+          </table>
+        </div>
+
+        <details class="depliant depliant--interne">
+          <summary class="depliant__titre">
+            <span>Détail de l’IRPP par tranche</span>
+            <svg class="icone depliant__chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+          </summary>
+          <div class="depliant__contenu">
+            <div class="tableau-defilant" tabindex="0" role="region" aria-label="Tableau de l’impôt par tranche">
+            <table class="etapes etapes--compacte" id="tranches">
+              <caption class="visuellement-cache">Impôt annuel par tranche du barème</caption>
+              <thead>
+                <tr><th scope="col">Tranche annuelle</th><th scope="col" class="num">Taux</th><th scope="col" class="num">Base</th><th scope="col" class="num">Impôt</th></tr>
+              </thead>
+              <tbody id="tranches-corps"></tbody>
+            </table>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="panneau" data-apparition>
+        <div class="panneau__entete">
+          <h3 class="panneau__titre">Coût employeur indicatif</h3>
+          <p class="panneau__note">Hors exonérations et avantages propres à l’entreprise.</p>
+        </div>
+        <div class="tableau-defilant" tabindex="0" role="region" aria-label="Tableau du coût employeur">
+          <table class="etapes" id="employeur">
+            <caption class="visuellement-cache">Charges patronales et coût total pour l’employeur</caption>
+            <thead>
+              <tr><th scope="col">Élément</th><th scope="col" class="num">Mensuel</th><th scope="col" class="num">Annuel</th></tr>
+            </thead>
+            <tbody id="employeur-corps"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="visuellement-cache" aria-live="polite" id="annonce"></p>
+    </section>
+  </main>
+
+  <a class="barre-mobile" id="barre-mobile" href="#resultats" data-cache>
+    <span class="barre-mobile__texte">
+      <span class="barre-mobile__libelle" id="barre-mobile-libelle">Net à payer par mois</span>
+      <span class="barre-mobile__montant chiffre" id="barre-mobile-montant">—</span>
+    </span>
+    <span class="barre-mobile__action">Détail <svg class="icone" aria-hidden="true"><use href="#i-chevron"/></svg></span>
+  </a>
+
+  <footer class="pied">
+    <p>Paramètres légaux <span data-annee>2026</span>, vérifiés le <span id="date-verification">6 octobre 2026</span> : <span id="resume-regles">barème IRPP, CNSS, CSS</span>. Sources et méthode détaillées dans le <a href="https://github.com/MOHAMED-JA/portail-rh/tree/main/calculateur-salaire#règles-appliquées">README du projet</a>.</p>
+    <p>Hors champ : fonction publique (CNRPS), régimes agricoles, primes de fin d’année et régularisations annuelles.</p>
+  </footer>
+
+  <script src="config/parametres.js"></script>
+  <script src="js/calcul.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
