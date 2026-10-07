@@ -15,7 +15,7 @@
     { nom: "secteur", cle: "sec", type: "choix", valeurs: ["prive", "public"], defaut: "prive" },
     { nom: "periode", cle: "per", type: "choix", valeurs: ["mensuel", "annuel"], defaut: "mensuel" },
     { nom: "montant", cle: "m", type: "montant", defaut: 2500 },
-    { nom: "nombreSalaires", cle: "ns", type: "entier", min: 12, max: 16, defaut: 12 },
+    { nom: "nombreSalaires", cle: "ns", type: "entier", min: 12, max: 18, defaut: 12 },
     { nom: "chefDeFamille", cle: "chef", type: "booleen", defaut: false },
     { nom: "enfants", cle: "enf", type: "entier", max: 15, defaut: 0 },
     { nom: "etudiants", cle: "etu", type: "entier", max: 15, defaut: 0 },
@@ -154,3 +154,4 @@
     racine.EtatSimulation = API;
   }
 })(typeof self !== "undefined" ? self : this);
+

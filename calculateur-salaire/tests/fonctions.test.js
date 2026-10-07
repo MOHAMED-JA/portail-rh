@@ -167,9 +167,36 @@ test("15 salaires et saisie annuelle : le montant annuel couvre les 15 versement
   assert.equal(v.versements.supplementaires, 3);
 });
 
-test("nombre de salaires hors bornes ramené entre 12 et 16", () => {
+test("17 et 18 salaires : les versements supplémentaires sont inclus dans la base annuelle", () => {
+  for (const nombreSalaires of [17, 18]) {
+    const r = C.calculerDepuisBrut({ ...TYPE, nombreSalaires }, P);
+    assert.equal(r.entree.nombreSalaires, nombreSalaires);
+    proche(r.annuel.salaireBase, 2500 * nombreSalaires, `${nombreSalaires} versements annuels`);
+  }
+});
+
+test("18 salaires : mois type inchangé et six versements supplémentaires dans le revenu annuel", () => {
+  const mensuel = C.calculerAvecVersements({ ...TYPE, nombreSalaires: 18 }, P);
+  const annuel = C.calculerAvecVersements({ ...TYPE, periode: "annuel", montant: 45000, nombreSalaires: 18 }, P);
+  proche(mensuel.versements.netMensuel, 1862.018333, "net du mois type", 0.001);
+  assert.equal(mensuel.versements.supplementaires, 6);
+  proche(mensuel.versements.brutSupplementaire, 2500, "brut de chaque versement supplémentaire");
+  // 45 000 brut − 4 356 cotisations − 8 937,52 IRPP − 190,72 CSS.
+  proche(mensuel.versements.netAnnuel, 31515.76, "net annuel sur 18 salaires");
+  proche(mensuel.versements.netAnnuel,
+    12 * mensuel.versements.netMensuel + 6 * mensuel.versements.netSupplementaire,
+    "les six versements reconstituent le revenu annuel");
+  proche(annuel.versements.netAnnuel, mensuel.versements.netAnnuel, "même revenu en saisie annuelle");
+  proche(annuel.versements.netMensuel, mensuel.versements.netMensuel, "même mois type en saisie annuelle");
+});
+
+test("nombre de salaires hors bornes ramené entre 12 et 18", () => {
   assert.equal(C.calculerDepuisBrut({ ...TYPE, nombreSalaires: 7 }, P).entree.nombreSalaires, 12);
-  assert.equal(C.calculerDepuisBrut({ ...TYPE, nombreSalaires: 40 }, P).entree.nombreSalaires, 16);
+  for (const nombreSalaires of [19, 40]) {
+    const r = C.calculerDepuisBrut({ ...TYPE, nombreSalaires }, P);
+    assert.equal(r.entree.nombreSalaires, 18);
+    proche(r.annuel.salaireBase, 45000, "base annuelle plafonnée à 18 versements");
+  }
   assert.equal(C.calculerDepuisBrut({ ...TYPE }, P).entree.nombreSalaires, 12);
 });
 
@@ -188,6 +215,19 @@ test("net → brut annuel avec 14 salaires : aller-retour exact", () => {
   proche(inv.brut, 42000, "brut annuel retrouvé", 0.01);
 });
 
+test("net → brut avec 18 salaires : salaire mensuel et brut annuel retrouvés", () => {
+  const mensuel = C.calculerDepuisNet({ ...TYPE, montant: 1862.018333, nombreSalaires: 18 }, P);
+  assert.equal(mensuel.verifie, true);
+  proche(mensuel.brut, 2500, "salaire de base mensuel", 0.001);
+  assert.equal(mensuel.resultat.entree.nombreSalaires, 18);
+  proche(mensuel.resultat.annuel.salaireBase, 45000, "base annuelle sur 18 salaires", 0.02);
+
+  const annuel = C.calculerDepuisNet({ ...TYPE, periode: "annuel", montant: 31515.76, nombreSalaires: 18 }, P);
+  assert.equal(annuel.verifie, true);
+  proche(annuel.brut, 45000, "brut annuel retrouvé", 0.01);
+  assert.equal(annuel.resultat.entree.nombreSalaires, 18);
+});
+
 test("augmentation avec 13 salaires : effet sur le mois type et sur l'année", () => {
   const a = C.simulerAugmentation({ ...TYPE, nombreSalaires: 13 }, P, { mode: "net", valeur: 100 });
   proche(a.hausseNet, 100, "hausse du net mensuel", 0.001);
@@ -201,6 +241,20 @@ test("lien de partage : nombre de salaires conservé et borné", () => {
   assert.equal(E.encoder(etat), "m=2500&ns=13");
   assert.equal(E.decoder("ns=13").a.nombreSalaires, 13);
   assert.equal(E.decoder("ns=3").a.nombreSalaires, 12);
-  assert.equal(E.decoder("ns=99").a.nombreSalaires, 16);
+  assert.equal(E.decoder("ns=17").a.nombreSalaires, 17);
+  assert.equal(E.decoder("ns=18").a.nombreSalaires, 18);
+  assert.equal(E.decoder("ns=19").a.nombreSalaires, 18);
+  assert.equal(E.decoder("ns=99").a.nombreSalaires, 18);
   assert.equal(E.versEntree(E.decoder("ns=14").a).nombreSalaires, 14);
 });
+
+test("lien de partage : 18 salaires conservés dans les deux scénarios et leur calcul", () => {
+  const a = { ...E.etatParDefaut(), montant: 2500, nombreSalaires: 18 };
+  const b = { ...a, montant: 3000, secteur: "public" };
+  const lu = E.decoder(E.encoder(a, b));
+  assert.deepEqual(lu.a, a);
+  assert.deepEqual(lu.b, b);
+  proche(C.calculerDepuisBrut(E.versEntree(lu.a), P).annuel.salaireBase, 45000, "scénario A sur 18 salaires");
+  proche(C.calculerDepuisBrut(E.versEntree(lu.b), P).annuel.salaireBase, 54000, "scénario B sur 18 salaires");
+});
+

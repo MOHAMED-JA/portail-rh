@@ -123,7 +123,14 @@ agents de l'État, des collectivités locales et des établissements publics
 
 Beaucoup d'entreprises versent plus de 12 salaires par an (13e mois, primes
 de bilan ou de rentrée versées comme un mois de salaire). Le calculateur
-accepte de 12 à 16 versements :
+accepte de 12 à 18 versements. Le champ et les boutons − / + sont verrouillés
+par défaut : choisissez **Modifier**, ajustez le nombre, puis **Valider** pour
+appliquer la modification et reverrouiller. **Annuler** (ou la touche Échap)
+conserve la valeur précédente. La saisie en cours ne change ni le calcul ni
+le lien de partage avant validation. La molette ne modifie jamais ce champ.
+Le changement de scénario et la réinitialisation rétablissent le verrou.
+
+Le calcul distingue :
 
 - **Revenu annuel** = salaire de base × nombre de salaires + primes,
   avantages et indemnités mensuels × 12. L'impôt annuel (IRPP, CSS) est
@@ -220,7 +227,7 @@ cd calculateur-salaire
 npm test            # ou : node --test tests/*.test.js
 ```
 
-46 tests couvrent : le barème, des cas typiques, le SMIG, les bas salaires
+50 tests couvrent : le barème, des cas typiques, le SMIG, les bas salaires
 (ni IRPP ni CSS), les très hauts salaires (tranche à 40 %), le salaire nul,
 les entrées invalides, les plafonds (frais professionnels, 4 enfants,
 parents), les primes et avantages, le coût employeur, le **secteur public
@@ -229,7 +236,7 @@ parents), les primes et avantages, le coût employeur, le **secteur public
 l'augmentation (en net, en brut, en %), la courbe net/brut, la répartition
 d'un dinar de coût employeur et le lien de partage (aller-retour, valeurs
 invalides, deux scénarios) et le nombre de salaires par an (13e mois,
-15 salaires, saisie annuelle, calcul inverse, augmentation).
+15 à 18 salaires, saisie annuelle, calcul inverse, augmentation).
 
 ## Lancer en local
 
@@ -300,3 +307,4 @@ et [assurance automobile](https://mohamed-ja.github.io/simulateur-Assurance-Auto
 
 Code sous licence MIT (voir [LICENSE](LICENSE)). Polices Manrope et JetBrains
 Mono sous licence SIL Open Font License 1.1.
+

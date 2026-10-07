@@ -33,6 +33,15 @@
       var t = localStorage.getItem("calc-theme");
       if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
     } catch (e) {}
+    /* Une page déjà installée recharge ses fichiers après la mise à jour du cache. */
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+      var miseAJourRechargee = false;
+      navigator.serviceWorker.addEventListener("controllerchange", function () {
+        if (miseAJourRechargee) return;
+        miseAJourRechargee = true;
+        location.reload();
+      });
+    }
   </script>
 </head>
 <body>
@@ -135,11 +144,16 @@
 
       <div class="compteur compteur--salaires">
         <label class="compteur__libelle" for="nombre-salaires">Salaires versés par an <span class="compteur__precision" id="aide-salaires">salaire mensuel seul</span></label>
-        <div class="compteur__controle">
-          <button type="button" class="bouton-pas" data-pas="-1" data-cible="nombre-salaires" aria-label="Un salaire de moins par an"><svg class="icone" aria-hidden="true"><use href="#i-moins"/></svg></button>
-          <input type="number" id="nombre-salaires" name="nombreSalaires" min="12" max="16" step="1" value="12" inputmode="numeric" aria-describedby="aide-salaires">
-          <button type="button" class="bouton-pas" data-pas="1" data-cible="nombre-salaires" aria-label="Un salaire de plus par an"><svg class="icone" aria-hidden="true"><use href="#i-plus"/></svg></button>
+        <div class="compteur__actions">
+          <div class="compteur__controle">
+            <button type="button" class="bouton-pas" data-pas="-1" data-cible="nombre-salaires" aria-label="Un salaire de moins par an" disabled><svg class="icone" aria-hidden="true"><use href="#i-moins"/></svg></button>
+            <input type="number" id="nombre-salaires" name="nombreSalaires" min="12" max="18" step="1" value="12" inputmode="numeric" aria-describedby="aide-salaires statut-salaires" disabled>
+            <button type="button" class="bouton-pas" data-pas="1" data-cible="nombre-salaires" aria-label="Un salaire de plus par an" disabled><svg class="icone" aria-hidden="true"><use href="#i-plus"/></svg></button>
+          </div>
+          <button type="button" class="bouton-secondaire" id="modifier-salaires" aria-controls="nombre-salaires" aria-label="Modifier le nombre de salaires par an">Modifier</button>
+          <button type="button" class="bouton-secondaire" id="annuler-salaires" hidden>Annuler</button>
         </div>
+        <p class="champ__aide" id="statut-salaires" aria-live="polite">Verrouillé. Choisissez « Modifier » pour changer le nombre de salaires.</p>
       </div>
 
       <div class="champ">

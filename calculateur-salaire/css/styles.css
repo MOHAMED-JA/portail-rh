@@ -604,6 +604,12 @@ a:hover { text-decoration-thickness: 2px; }
 .compteur__controle input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .compteur__controle input:focus-visible { outline-offset: -2px; }
 
+.compteur--salaires { flex-direction: column; align-items: stretch; }
+.compteur__actions { display: flex; align-items: center; flex-wrap: wrap; gap: var(--e-2); }
+.compteur__actions .bouton-secondaire { width: auto; }
+.compteur--salaires input:disabled { opacity: 1; -webkit-text-fill-color: var(--texte); cursor: default; }
+.compteur--salaires .champ__aide { margin: 0; }
+
 .bouton-pas {
   touch-action: manipulation;
   display: inline-grid;

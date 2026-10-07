@@ -81,12 +81,44 @@
 
     var parents = el("parents");
     parents.max = String(d.parentACharge.nombreMax);
+    el("nombre-salaires").min = String(P.versements.minimum);
+    el("nombre-salaires").max = String(P.versements.maximum);
     el("taux-at").value = fmtSaisie.format(P.employeur.accidentTravail.tauxParDefaut * 100);
   }
 
   /* ---------- Lecture du formulaire ---------- */
 
   var form = el("formulaire");
+  var salairesValides = P.versements.parDefaut;
+  var editionSalaires = false;
+
+  function fermerEditionSalaires() {
+    editionSalaires = false;
+    var champ = el("nombre-salaires");
+    champ.value = String(salairesValides);
+    champ.disabled = true;
+    champ.removeAttribute("aria-invalid");
+    el("modifier-salaires").textContent = "Modifier";
+    el("modifier-salaires").setAttribute("aria-label", "Modifier le nombre de salaires par an");
+    el("annuler-salaires").hidden = true;
+    el("statut-salaires").textContent = "Verrouillé. Choisissez « Modifier » pour changer le nombre de salaires.";
+    majBoutonsPas();
+  }
+
+  function validerSalaires() {
+    var champ = el("nombre-salaires");
+    var valeur = Number(champ.value);
+    if (!champ.value || !Number.isInteger(valeur) || valeur < P.versements.minimum || valeur > P.versements.maximum) {
+      champ.setAttribute("aria-invalid", "true");
+      el("statut-salaires").textContent = "Saisissez un nombre entier entre " + P.versements.minimum + " et " + P.versements.maximum + ".";
+      champ.focus();
+      return;
+    }
+    salairesValides = valeur;
+    fermerEditionSalaires();
+    calculer();
+    el("modifier-salaires").focus();
+  }
 
   function valeurRadio(nom) {
     var coche = form.querySelector('input[name="' + nom + '"]:checked');
@@ -111,7 +143,7 @@
       secteur: valeurRadio("secteur"),
       periode: valeurRadio("periode"),
       montant: lireMontant(el("montant").value).valeur,
-      nombreSalaires: lireEntier("nombre-salaires"),
+      nombreSalaires: salairesValides,
       chefDeFamille: el("chef").checked,
       enfants: lireEntier("enfants"),
       etudiants: lireEntier("etudiants"),
@@ -139,6 +171,8 @@
     radio("periode", etat.periode);
     el("montant").value = fmtSaisie.format(etat.montant);
     el("nombre-salaires").value = String(etat.nombreSalaires || P.versements.parDefaut);
+    salairesValides = lireEntier("nombre-salaires");
+    fermerEditionSalaires();
     el("chef").checked = etat.chefDeFamille;
     ["enfants", "etudiants", "handicapes", "parents"].forEach(function (id) { el(id).value = String(etat[id]); });
     texte("primes", etat.primesImposables);
@@ -487,7 +521,7 @@
 
   function mettreAJourLibelles(sens, periode, secteur) {
     var mensuel = periode === "mensuel";
-    el("aide-salaires").textContent = texteSalaires(lireEntier("nombre-salaires"));
+    el("aide-salaires").textContent = texteSalaires(salairesValides);
     var regime = P.regimes[secteur] || P.regimes[P.regimeParDefaut];
     el("aide-secteur").textContent = "Cotisations salariales " + regime.caisse + " : " +
       fmtPourcent.format(tauxRegime(regime)) + ". L’impôt est identique dans les deux secteurs.";
@@ -846,6 +880,7 @@
   form.addEventListener("change", planifierCalcul);
   form.addEventListener("submit", function (e) {
     e.preventDefault();
+    if (editionSalaires) { validerSalaires(); return; }
     calculer();
     el("resultats").focus({ preventScroll: false });
   });
@@ -863,7 +898,7 @@
     radio.addEventListener("change", function () {
       var vers = this.value;
       var facteur = vers === "annuel" ? P.moisParAn : 1 / P.moisParAn;
-      var n = lireEntier("nombre-salaires");
+      var n = salairesValides;
       ["montant", "primes", "non-cotisables", "avantages", "indemnites"].forEach(function (id) {
         var champ = el(id);
         var m = lireMontant(champ.value);
@@ -885,8 +920,9 @@
   /* Boutons − / + des compteurs */
   form.addEventListener("click", function (e) {
     var bouton = e.target.closest(".bouton-pas");
-    if (!bouton) return;
+    if (!bouton || bouton.disabled) return;
     var champ = el(bouton.getAttribute("data-cible"));
+    if (champ.disabled) return;
     var pas = Number(bouton.getAttribute("data-pas"));
     var max = Number(champ.max);
     var v = Math.max(Number(champ.min) || 0, Math.min(max, (Number(champ.value) || 0) + pas));
@@ -899,16 +935,43 @@
     form.querySelectorAll(".bouton-pas").forEach(function (b) {
       var champ = el(b.getAttribute("data-cible"));
       var v = Number(champ.value) || 0;
-      b.disabled = Number(b.getAttribute("data-pas")) < 0 ? v <= Number(champ.min) : v >= Number(champ.max);
+      b.disabled = champ.disabled || (Number(b.getAttribute("data-pas")) < 0 ? v <= Number(champ.min) : v >= Number(champ.max));
     });
   }
   form.addEventListener("input", function (e) {
     if (e.target.type === "number") majBoutonsPas();
   });
 
+  /* Le nombre de salaires ne change qu'après une édition explicite validée. */
+  el("modifier-salaires").addEventListener("click", function () {
+    if (editionSalaires) { validerSalaires(); return; }
+    editionSalaires = true;
+    el("nombre-salaires").disabled = false;
+    this.textContent = "Valider";
+    this.setAttribute("aria-label", "Valider le nombre de salaires par an");
+    el("annuler-salaires").hidden = false;
+    el("statut-salaires").textContent = "De " + P.versements.minimum + " à " + P.versements.maximum + " salaires. Validez pour appliquer la modification.";
+    majBoutonsPas();
+    el("nombre-salaires").focus();
+    el("nombre-salaires").select();
+  });
+  function annulerEditionSalaires() {
+    fermerEditionSalaires();
+    el("modifier-salaires").focus();
+  }
+  el("annuler-salaires").addEventListener("click", annulerEditionSalaires);
+  doc.querySelector(".compteur--salaires").addEventListener("keydown", function (e) {
+    if (!editionSalaires) return;
+    if (e.key === "Escape") { e.preventDefault(); annulerEditionSalaires(); }
+    else if (e.key === "Enter" && e.target.id === "nombre-salaires") { e.preventDefault(); validerSalaires(); }
+  });
+  el("nombre-salaires").addEventListener("wheel", function (e) { e.preventDefault(); }, { passive: false });
+
   form.addEventListener("reset", function () {
     setTimeout(function () {
       remplirTextesParametres();
+      salairesValides = P.versements.parDefaut;
+      fermerEditionSalaires();
       majBoutonsPas();
       calculer();
     }, 0);
@@ -1031,3 +1094,4 @@
     requestAnimationFrame(function () { racine.classList.remove("js-attente"); });
   });
 })();
+

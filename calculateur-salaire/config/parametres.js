@@ -208,7 +208,7 @@
     versements: {
       parDefaut: 12,
       minimum: 12,
-      maximum: 16
+      maximum: 18
     },
 
     /* Repères (affichage seulement, n'interviennent pas dans le calcul) */
@@ -225,3 +225,4 @@
     racine.PARAMETRES_PAIE = PARAMETRES;
   }
 })(typeof self !== "undefined" ? self : this);
+
