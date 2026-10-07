@@ -985,7 +985,7 @@
     boutonTheme.setAttribute("aria-label", clair ? "Passer au thème sombre" : "Passer au thème clair");
     boutonTheme.querySelector("use").setAttribute("href", clair ? "#i-lune" : "#i-soleil");
     var meta = doc.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", clair ? "#eef2f8" : "#070b14");
+    if (meta) meta.setAttribute("content", clair ? "#f3f5f7" : "#0b151e");
   }
   boutonTheme.addEventListener("click", function () {
     var suivant = racine.getAttribute("data-theme") === "light" ? "dark" : "light";
@@ -1043,7 +1043,7 @@
     scenarios.B = null;
     actif = "A";
     ajouterB(etatB);
-    el("resultats").scrollIntoView({ behavior: mouvementReduit.matches ? "auto" : "smooth", block: "start" });
+    /* L'espace de travail ouvre directement la vue Comparer. */
     toast("Scénario B : situation après augmentation.");
   });
 

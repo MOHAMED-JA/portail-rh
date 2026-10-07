@@ -1,51 +1,49 @@
-# DESIGN.md — Calculateur de salaire
+# Design du calculateur de salaire
 
-Mode : **Operate** (outil). L'interface doit disparaître derrière la tâche :
-saisir un montant, lire un résultat juste, comprendre d'où il vient.
+## Un espace de travail compact
 
-## Direction : « instrument »
+La synthèse reste commune aux six vues : Synthèse, Détail, Comparer,
+Augmentation, Employeur et Courbe. La navigation est persistante et les
+fonctions ne sont plus empilées dans une longue page.
 
-Un tableau de bord de précision, sombre par défaut (thème clair disponible).
-Le futurisme vient de la rigueur, pas de l'ornement : chiffres en police à
-chasse fixe, filets fins, une seule couleur d'accent, une trame de points
-discrète en fond. Ni verre dépoli, ni dégradés de texte, ni halos colorés.
+Le formulaire comporte quatre onglets : Salaire, Famille, Primes et Options.
+Sur ordinateur, il reste à gauche des résultats. Sur téléphone, il s'ouvre
+dans un dialogue natif, avec retour au résultat en une action. Les sources,
+l'installation et les autres simulateurs sont réunis dans un guide séparé.
 
-## Tokens (définis une seule fois dans `css/styles.css`, `:root`)
+## Identité visuelle
 
-| Rôle | Sombre | Clair |
+Thème clair par défaut, avec conservation du thème choisi par l'utilisateur.
+Le thème sombre reste disponible. Palette de l'espace définie dans
+`css/workspace.css`, chargé après les composants de `css/styles.css` :
+
+| Usage | Clair | Sombre |
 |---|---|---|
-| Fond | `#070b14` | `#eef2f8` |
-| Surface / surface 2 / surface 3 | `#0d1422` / `#131c2e` / `#1a2539` | `#ffffff` / `#f4f7fb` / `#e8eef6` |
-| Texte / secondaire / tertiaire | `#e8eef8` / `#b0bdd0` / `#8a98ae` | `#0b1220` / `#3d4a60` / `#57647a` |
-| Accent (actions, état actif, net) | `#4fe3c1` | `#0a7a66` |
-| Alerte | `#f5b450` | `#8a5300` |
-| Graphique : net / CNSS / IRPP / CSS | `#4fe3c1` `#7aa7ff` `#f5b450` `#ff7a90` | `#0f9e85` `#3d6fe0` `#c27a0e` `#d6455f` |
+| Fond | #f3f5f7 | #0b151e |
+| Surface | #ffffff | #12232e |
+| Texte | #142c38 | #eff7f8 |
+| Accent | #087f74 | #70ddc5 |
 
-Contraste : texte ≥ 4,5:1 sur toutes les surfaces (audit axe-core, WCAG 2.2 AA).
+La carte de résultat utilise un fond navy #142c38 et un montant menthe
+#98f0d9 dans les deux thèmes. Manrope pour l'interface, JetBrains Mono
+pour les montants ; polices auto-hébergées. Rayons de 12 à 20 pixels,
+ombres discrètes, cibles tactiles d'au moins 44 pixels pour les contrôles
+principaux. Aucun montant décoratif : toutes les données viennent du moteur.
 
-### Typographie
+## Mouvement et accessibilité
 
-- **Manrope** (variable, auto-hébergée) pour toute l'interface.
-- **JetBrains Mono** pour les montants uniquement (chiffres tabulaires, zéro
-  barré) : c'est une donnée mesurée, pas un costume.
-- Échelle 1,2 : 12 · 14 · 16 · 19 · 23 · 28 px ; montant principal
-  `clamp(36px → 52px)`, interlettrage −0,04 em.
+- Transitions d'onglets : 210 ms, opacité et translation courte.
+- Ouverture des dialogues : 220 ms, translation et légère mise à l'échelle.
+- Compteurs et graphiques : animations existantes conservées.
+- `prefers-reduced-motion` désactive les déplacements et les compteurs animés.
+- Onglets avec rôles ARIA, navigation par flèches, Début/Fin et focus visible.
+- Dialogues natifs : focus contenu dans le panneau, fermeture par Échap,
+  retour au contrôle d'ouverture.
+- Défilement interne limité aux formulaires et tableaux longs ; aucun
+  verrouillage de la hauteur de la page qui couperait les informations.
 
-### Espacements et formes
+## Fichiers
 
-Base 4 px : 4 · 8 · 12 · 16 · 24 · 32 · 48. Rayons 8 / 12 / 18 px, pilules
-pour les compteurs. Cibles tactiles ≥ 44 px.
-
-## Mouvement
-
-| Élément | Durée | Courbe | Raison |
-|---|---|---|---|
-| Compteurs du résultat | 420 ms | ease-out quartique (JS), interruptible | montrer le sens et l'ampleur du changement |
-| Barre de répartition | 380 ms | `cubic-bezier(0.23, 1, 0.32, 1)` sur `transform` | transition interruptible, GPU |
-| Curseur des contrôles segmentés, interrupteur | 220 ms | même courbe | continuité spatiale |
-| Pression des boutons | 140 ms | `scale(0.9–0.98)` | retour immédiat |
-| Apparition des panneaux | 480 ms, décalage 50 ms | une seule fois au chargement | entrée unique, pas de chorégraphie répétée |
-
-`prefers-reduced-motion: reduce` : aucun déplacement ; seules les couleurs et
-l'opacité changent, les compteurs affichent directement la valeur finale.
-Les survols sont limités aux appareils à pointeur fin.
+`index.html` organise les vues et conserve les identifiants du calculateur.
+`js/workspace.js` gère uniquement la navigation, les dialogues et les résumés.
+Le moteur `js/calcul.js` et les règles `config/parametres.js` restent inchangés.

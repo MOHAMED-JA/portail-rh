@@ -119,6 +119,24 @@ agents de l'État, des collectivités locales et des établissements publics
 - **Assiette de la CSS.** Elle est calculée sur le revenu net imposable (après
   déductions familiales), pas sur le brut.
 
+## Navigation de l'interface
+
+Les six vues **Synthèse**, **Détail**, **Comparer**, **Augmentation**,
+**Employeur** et **Courbe** sont accessibles depuis une navigation qui reste
+visible pendant le défilement. Une seule vue est affichée à la fois, avec
+le résultat principal commun aux six vues.
+
+Les informations sont regroupées dans quatre onglets : **Salaire**, **Famille**, **Primes**
+et **Options**. Sur ordinateur, elles restent à gauche du résultat. Sur
+téléphone, le bouton **Ma situation** ouvre le formulaire dans un panneau ;
+**Voir mon résultat** le referme. Les informations déjà saisies sont conservées
+lors des changements d'onglet. Fermer le panneau annule uniquement une
+modification du nombre de salaires qui n'a pas été validée.
+
+Le **Guide & informations** rassemble l'installation, les sources, la méthode
+et les autres simulateurs. Les onglets sont utilisables au clavier et les
+animations respectent la préférence de réduction des mouvements.
+
 ## Nombre de salaires par an (13e mois, primes)
 
 Beaucoup d'entreprises versent plus de 12 salaires par an (13e mois, primes

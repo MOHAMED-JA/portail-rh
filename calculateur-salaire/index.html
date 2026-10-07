@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="fr" data-theme="dark">
+<html lang="fr" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Calculateur de salaire Tunisie 2026</title>
   <meta name="description" content="Calculez votre salaire net à partir du brut, ou le brut nécessaire pour un net donné, selon les règles tunisiennes 2026 : CNSS, IRPP, CSS, déductions familiales.">
   <meta name="color-scheme" content="dark light">
-  <meta name="theme-color" content="#070b14">
+  <meta name="theme-color" content="#f3f5f7">
   <link rel="canonical" href="https://mohamed-ja.github.io/portail-rh/calculateur-salaire/">
   <link rel="icon" href="assets/icone.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icones/apple-touch-icon.png">
@@ -43,32 +43,32 @@
       });
     }
   </script>
-</head>
-<body>
+<link rel="stylesheet" href="css/workspace.css"></head>
+<body class="atelier">
   <a class="lien-evitement" href="#resultats">Aller aux résultats</a>
 
   <svg width="0" height="0" class="sprite" aria-hidden="true" focusable="false">
-    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="i-alerte" viewBox="0 0 24 24"><path d="M12 4l9 16H3z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><path d="M12 10v4.5M12 17.2v.1" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
-    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 11v5.5M12 7.8v.1" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
-    <symbol id="i-moins" viewBox="0 0 24 24"><path d="M6 12h12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
-    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
-    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="i-soleil" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6L6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
-    <symbol id="i-lune" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></symbol>
-    <symbol id="i-partage" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M8.3 10.8l7.4-4.4M8.3 13.2l7.4 4.4" fill="none" stroke="currentColor" stroke-width="1.75"/></symbol>
-    <symbol id="i-installer" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="i-comparer" viewBox="0 0 24 24"><rect x="3.5" y="5" width="7" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="13.5" y="5" width="7" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/></symbol>
-    <symbol id="i-fermer" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
-    <symbol id="i-hausse" viewBox="0 0 24 24"><path d="M4 17l6-6 4 4 6-7M15 8h5v5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="i-echange" viewBox="0 0 24 24"><path d="M4 8h14l-3.5-3.5M20 16H6l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  </svg>
+    <symbol id="i-check" viewbox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></symbol>
+    <symbol id="i-alerte" viewbox="0 0 24 24"><path d="M12 4l9 16H3z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"></path><path d="M12 10v4.5M12 17.2v.1" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path></symbol>
+    <symbol id="i-info" viewbox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75"></circle><path d="M12 11v5.5M12 7.8v.1" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path></symbol>
+    <symbol id="i-moins" viewbox="0 0 24 24"><path d="M6 12h12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path></symbol>
+    <symbol id="i-plus" viewbox="0 0 24 24"><path d="M12 6v12M6 12h12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path></symbol>
+    <symbol id="i-chevron" viewbox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path></symbol>
+    <symbol id="i-soleil" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.75"></circle><path d="M12 2.5v2M12 19.5v2M4.6 4.6L6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path></symbol>
+    <symbol id="i-lune" viewbox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"></path></symbol>
+    <symbol id="i-partage" viewbox="0 0 24 24"><circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.75"></circle><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.75"></circle><circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="1.75"></circle><path d="M8.3 10.8l7.4-4.4M8.3 13.2l7.4 4.4" fill="none" stroke="currentColor" stroke-width="1.75"></path></symbol>
+    <symbol id="i-installer" viewbox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path></symbol>
+    <symbol id="i-comparer" viewbox="0 0 24 24"><rect x="3.5" y="5" width="7" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"></rect><rect x="13.5" y="5" width="7" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"></rect></symbol>
+    <symbol id="i-fermer" viewbox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path></symbol>
+    <symbol id="i-hausse" viewbox="0 0 24 24"><path d="M4 17l6-6 4 4 6-7M15 8h5v5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path></symbol>
+    <symbol id="i-echange" viewbox="0 0 24 24"><path d="M4 8h14l-3.5-3.5M20 16H6l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path></symbol>
+  <symbol id="i-dashboard" viewbox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></g></symbol><symbol id="i-list" viewbox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"></rect><path d="M9 8h6M9 12h6M9 16h4"></path></g></symbol><symbol id="i-wallet" viewbox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 8V5a2 2 0 0 0-2-2H6a3 3 0 0 0 0 6h14v11H6a3 3 0 0 1-3-3V6"></path><path d="M20 12h-5v4h5"></path></g></symbol><symbol id="i-graph" viewbox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3v17h17M7 15l4-5 4 2 5-7"></path></g></symbol><symbol id="i-sliders" viewbox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h7m4 0h5M4 17h3m4 0h9"></path><circle cx="13" cy="7" r="2"></circle><circle cx="9" cy="17" r="2"></circle></g></symbol></svg>
 
   <header class="entete">
     <div class="entete__marque">
-      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-        <rect x="1" y="1" width="30" height="30" rx="9" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".35"/>
-        <path d="M8 12h13l-3-3M24 20H11l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg class="logo" viewbox="0 0 32 32" aria-hidden="true" focusable="false">
+        <rect x="1" y="1" width="30" height="30" rx="9" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".35"></rect>
+        <path d="M8 12h13l-3-3M24 20H11l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
       </svg>
       <div>
         <h1 class="entete__titre">Salaire brut <span aria-hidden="true">⇄</span><span class="visuellement-cache"> et</span> net</h1>
@@ -76,11 +76,11 @@
       </div>
     </div>
     <div class="entete__actions">
-    <button type="button" class="bouton-installer" id="bouton-installer" hidden>
-      <svg class="icone" aria-hidden="true"><use href="#i-installer"/></svg><span>Installer</span>
+    <button type="button" class="bouton-icone" id="ouvrir-guide" aria-label="Ouvrir le guide et les informations"><svg class="icone" aria-hidden="true"><use href="#i-info"></use></svg></button><button type="button" class="bouton-installer" id="bouton-installer" hidden>
+      <svg class="icone" aria-hidden="true"><use href="#i-installer"></use></svg><span>Installer</span>
     </button>
-    <button type="button" class="bouton-icone" id="bouton-theme" aria-label="Passer au thème clair">
-      <svg class="icone" aria-hidden="true"><use href="#i-soleil"/></svg>
+    <button type="button" class="bouton-icone" id="bouton-theme" aria-label="Passer au thème sombre">
+      <svg class="icone" aria-hidden="true"><use href="#i-soleil"></use></svg>
     </button>
     </div>
   </header>
@@ -89,13 +89,16 @@
     <p class="avertissement-js">Ce calculateur a besoin de JavaScript pour fonctionner. Activez-le dans votre navigateur.</p>
   </noscript>
 
-  <main class="mise-en-page">
+  <section class="workspace-intro" aria-labelledby="titre-espace">
+  <div><p class="workspace-eyebrow">VOTRE ESPACE DE SIMULATION</p><h2 id="titre-espace">Votre salaire, en clair.</h2><p>Comprenez votre rémunération. Préparez la suite.</p></div>
+  <span class="workspace-status"><span aria-hidden="true"></span>Calcul en direct</span>
+</section><nav class="workspace-nav" role="tablist" aria-label="Fonctionnalités du simulateur"><button type="button" class="workspace-tab" role="tab" id="nav-synthese" data-view="synthese" aria-controls="vue-synthese" aria-selected="true" tabindex="0"><svg class="icone" aria-hidden="true"><use href="#i-dashboard"></use></svg><span>Synthèse</span></button><button type="button" class="workspace-tab" role="tab" id="nav-detail" data-view="detail" aria-controls="vue-detail" aria-selected="false" tabindex="-1"><svg class="icone" aria-hidden="true"><use href="#i-list"></use></svg><span>Détail</span></button><button type="button" class="workspace-tab" role="tab" id="nav-comparer" data-view="comparer" aria-controls="vue-comparer" aria-selected="false" tabindex="-1"><svg class="icone" aria-hidden="true"><use href="#i-comparer"></use></svg><span>Comparer</span></button><button type="button" class="workspace-tab" role="tab" id="nav-augmentation" data-view="augmentation" aria-controls="vue-augmentation" aria-selected="false" tabindex="-1"><svg class="icone" aria-hidden="true"><use href="#i-hausse"></use></svg><span>Augmentation</span></button><button type="button" class="workspace-tab" role="tab" id="nav-employeur" data-view="employeur" aria-controls="vue-employeur" aria-selected="false" tabindex="-1"><svg class="icone" aria-hidden="true"><use href="#i-wallet"></use></svg><span>Employeur</span></button><button type="button" class="workspace-tab" role="tab" id="nav-courbe" data-view="courbe" aria-controls="vue-courbe" aria-selected="false" tabindex="-1"><svg class="icone" aria-hidden="true"><use href="#i-graph"></use></svg><span>Courbe</span></button></nav><button type="button" class="mobile-edit" id="ouvrir-saisie" aria-haspopup="dialog"><svg class="icone" aria-hidden="true"><use href="#i-sliders"></use></svg><span><strong>Ma situation</strong><span id="resume-saisie-mobile">2 500 DT · Privé · 12 salaires</span></span><span class="mobile-edit__action">Modifier <svg class="icone" aria-hidden="true"><use href="#i-chevron"></use></svg></span></button><main class="mise-en-page">
     <!-- ============ Saisie ============ -->
-    <form class="panneau saisie" id="formulaire" novalidate aria-labelledby="titre-saisie">
+    <aside class="saisie-hote" id="saisie-hote" aria-label="Paramètres du calcul"><form class="panneau saisie" id="formulaire" novalidate aria-labelledby="titre-saisie">
       <div class="saisie__entete">
-        <h2 id="titre-saisie" class="panneau__titre">Vos informations</h2>
+        <h2 id="titre-saisie" class="panneau__titre">Votre situation</h2>
         <button type="button" class="bouton-lien" id="ajouter-b">
-          <svg class="icone" aria-hidden="true"><use href="#i-comparer"/></svg><span>Comparer</span>
+          <svg class="icone" aria-hidden="true"><use href="#i-comparer"></use></svg><span>Comparer</span>
         </button>
       </div>
       <div class="scenarios" id="scenarios" hidden>
@@ -104,11 +107,11 @@
           <button type="button" role="tab" id="onglet-B" data-scenario="B" aria-selected="false" aria-controls="formulaire" tabindex="-1">Scénario B</button>
         </div>
         <button type="button" class="bouton-icone bouton-icone--petit" id="retirer-b" aria-label="Retirer le scénario B">
-          <svg class="icone" aria-hidden="true"><use href="#i-fermer"/></svg>
+          <svg class="icone" aria-hidden="true"><use href="#i-fermer"></use></svg>
         </button>
       </div>
 
-      <fieldset class="champ">
+      <div class="form-tabs" role="tablist" aria-label="Informations de la simulation"><button type="button" class="form-tab" role="tab" id="saisie-onglet-salaire" data-form-view="salaire" aria-controls="saisie-salaire" aria-selected="true" tabindex="0">Salaire<span class="form-tab__badge" id="badge-salaire" hidden></span></button><button type="button" class="form-tab" role="tab" id="saisie-onglet-famille" data-form-view="famille" aria-controls="saisie-famille" aria-selected="false" tabindex="-1">Famille<span class="form-tab__badge" id="badge-famille" hidden></span></button><button type="button" class="form-tab" role="tab" id="saisie-onglet-complements" data-form-view="complements" aria-controls="saisie-complements" aria-selected="false" tabindex="-1">Primes<span class="form-tab__badge" id="badge-complements" hidden></span></button><button type="button" class="form-tab" role="tab" id="saisie-onglet-options" data-form-view="options" aria-controls="saisie-options" aria-selected="false" tabindex="-1">Options</button></div><div class="form-pages"><div class="form-panel" id="saisie-salaire" role="tabpanel" aria-labelledby="saisie-onglet-salaire" tabindex="0"><fieldset class="champ">
         <legend class="champ__libelle">Sens du calcul</legend>
         <div class="segment" data-segment>
           <input type="radio" name="sens" id="sens-brut" value="brut" checked>
@@ -118,6 +121,16 @@
           <span class="segment__curseur" aria-hidden="true"></span>
         </div>
       </fieldset>
+
+      <div class="champ">
+        <label class="champ__libelle" for="montant" id="libelle-montant">Salaire brut mensuel</label>
+        <div class="saisie-montant">
+          <input class="saisie-montant__champ" id="montant" name="montant" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="2 500" placeholder="Ex. 2 500…" aria-describedby="aide-montant erreur-montant">
+          <span class="saisie-montant__devise" aria-hidden="true">DT</span>
+        </div>
+        <p class="champ__aide" id="aide-montant">Salaire de base, hors primes. Décimales avec une virgule.</p>
+        <p class="champ__erreur" id="erreur-montant" role="alert" hidden></p>
+      </div>
 
       <fieldset class="champ">
         <legend class="champ__libelle">Secteur d’activité</legend>
@@ -131,44 +144,7 @@
         <p class="champ__aide" id="aide-secteur">Cotisations salariales CNSS : 9,68 %. L’impôt est identique dans les deux secteurs.</p>
       </fieldset>
 
-      <fieldset class="champ">
-        <legend class="champ__libelle">Période du montant</legend>
-        <div class="segment" data-segment>
-          <input type="radio" name="periode" id="periode-mensuel" value="mensuel" checked>
-          <label for="periode-mensuel">Mensuel</label>
-          <input type="radio" name="periode" id="periode-annuel" value="annuel">
-          <label for="periode-annuel">Annuel</label>
-          <span class="segment__curseur" aria-hidden="true"></span>
-        </div>
-      </fieldset>
-
-      <div class="compteur compteur--salaires">
-        <label class="compteur__libelle" for="nombre-salaires">Salaires versés par an <span class="compteur__precision" id="aide-salaires">salaire mensuel seul</span></label>
-        <div class="compteur__actions">
-          <div class="compteur__controle">
-            <button type="button" class="bouton-pas" data-pas="-1" data-cible="nombre-salaires" aria-label="Un salaire de moins par an" disabled><svg class="icone" aria-hidden="true"><use href="#i-moins"/></svg></button>
-            <input type="number" id="nombre-salaires" name="nombreSalaires" min="12" max="18" step="1" value="12" inputmode="numeric" aria-describedby="aide-salaires statut-salaires" disabled>
-            <button type="button" class="bouton-pas" data-pas="1" data-cible="nombre-salaires" aria-label="Un salaire de plus par an" disabled><svg class="icone" aria-hidden="true"><use href="#i-plus"/></svg></button>
-          </div>
-          <button type="button" class="bouton-secondaire" id="modifier-salaires" aria-controls="nombre-salaires" aria-label="Modifier le nombre de salaires par an">Modifier</button>
-          <button type="button" class="bouton-secondaire" id="annuler-salaires" hidden>Annuler</button>
-        </div>
-        <p class="champ__aide" id="statut-salaires" aria-live="polite">Verrouillé. Choisissez « Modifier » pour changer le nombre de salaires.</p>
-      </div>
-
-      <div class="champ">
-        <label class="champ__libelle" for="montant" id="libelle-montant">Salaire brut mensuel</label>
-        <div class="saisie-montant">
-          <input class="saisie-montant__champ" id="montant" name="montant" type="text" inputmode="decimal"
-                 autocomplete="off" spellcheck="false" value="2 500" placeholder="Ex. 2 500…"
-                 aria-describedby="aide-montant erreur-montant">
-          <span class="saisie-montant__devise" aria-hidden="true">DT</span>
-        </div>
-        <p class="champ__aide" id="aide-montant">Salaire de base, hors primes. Décimales avec une virgule.</p>
-        <p class="champ__erreur" id="erreur-montant" role="alert" hidden></p>
-      </div>
-
-      <fieldset class="groupe">
+      </div><div class="form-panel" id="saisie-famille" role="tabpanel" aria-labelledby="saisie-onglet-famille" tabindex="0" hidden><fieldset class="groupe">
         <legend class="groupe__titre">Situation familiale</legend>
 
         <label class="interrupteur" for="chef">
@@ -184,25 +160,25 @@
           <div class="compteur">
             <label class="compteur__libelle" for="enfants">Enfants à charge <span class="compteur__precision">moins de <span data-param="ageEnfant">20</span> ans</span></label>
             <div class="compteur__controle">
-              <button type="button" class="bouton-pas" data-pas="-1" data-cible="enfants" aria-label="Retirer un enfant à charge"><svg class="icone" aria-hidden="true"><use href="#i-moins"/></svg></button>
+              <button type="button" class="bouton-pas" data-pas="-1" data-cible="enfants" aria-label="Retirer un enfant à charge"><svg class="icone" aria-hidden="true"><use href="#i-moins"></use></svg></button>
               <input type="number" id="enfants" name="enfants" min="0" max="15" step="1" value="0" inputmode="numeric">
-              <button type="button" class="bouton-pas" data-pas="1" data-cible="enfants" aria-label="Ajouter un enfant à charge"><svg class="icone" aria-hidden="true"><use href="#i-plus"/></svg></button>
+              <button type="button" class="bouton-pas" data-pas="1" data-cible="enfants" aria-label="Ajouter un enfant à charge"><svg class="icone" aria-hidden="true"><use href="#i-plus"></use></svg></button>
             </div>
           </div>
           <div class="compteur">
             <label class="compteur__libelle" for="etudiants">Étudiants non boursiers <span class="compteur__precision">moins de <span data-param="ageEtudiant">25</span> ans</span></label>
             <div class="compteur__controle">
-              <button type="button" class="bouton-pas" data-pas="-1" data-cible="etudiants" aria-label="Retirer un enfant étudiant"><svg class="icone" aria-hidden="true"><use href="#i-moins"/></svg></button>
+              <button type="button" class="bouton-pas" data-pas="-1" data-cible="etudiants" aria-label="Retirer un enfant étudiant"><svg class="icone" aria-hidden="true"><use href="#i-moins"></use></svg></button>
               <input type="number" id="etudiants" name="etudiants" min="0" max="15" step="1" value="0" inputmode="numeric">
-              <button type="button" class="bouton-pas" data-pas="1" data-cible="etudiants" aria-label="Ajouter un enfant étudiant"><svg class="icone" aria-hidden="true"><use href="#i-plus"/></svg></button>
+              <button type="button" class="bouton-pas" data-pas="1" data-cible="etudiants" aria-label="Ajouter un enfant étudiant"><svg class="icone" aria-hidden="true"><use href="#i-plus"></use></svg></button>
             </div>
           </div>
           <div class="compteur">
             <label class="compteur__libelle" for="handicapes">Enfants handicapés <span class="compteur__precision">sans limite d’âge</span></label>
             <div class="compteur__controle">
-              <button type="button" class="bouton-pas" data-pas="-1" data-cible="handicapes" aria-label="Retirer un enfant handicapé"><svg class="icone" aria-hidden="true"><use href="#i-moins"/></svg></button>
+              <button type="button" class="bouton-pas" data-pas="-1" data-cible="handicapes" aria-label="Retirer un enfant handicapé"><svg class="icone" aria-hidden="true"><use href="#i-moins"></use></svg></button>
               <input type="number" id="handicapes" name="handicapes" min="0" max="15" step="1" value="0" inputmode="numeric">
-              <button type="button" class="bouton-pas" data-pas="1" data-cible="handicapes" aria-label="Ajouter un enfant handicapé"><svg class="icone" aria-hidden="true"><use href="#i-plus"/></svg></button>
+              <button type="button" class="bouton-pas" data-pas="1" data-cible="handicapes" aria-label="Ajouter un enfant handicapé"><svg class="icone" aria-hidden="true"><use href="#i-plus"></use></svg></button>
             </div>
           </div>
           <p class="champ__aide note-chef" id="note-chef">Les déductions pour enfants sont accordées au chef de famille : cochez « Chef de famille » pour les appliquer.</p>
@@ -211,17 +187,17 @@
         <div class="compteur">
           <label class="compteur__libelle" for="parents">Parents à charge <span class="compteur__precision">5 % du revenu net, plafonné</span></label>
           <div class="compteur__controle">
-            <button type="button" class="bouton-pas" data-pas="-1" data-cible="parents" aria-label="Retirer un parent à charge"><svg class="icone" aria-hidden="true"><use href="#i-moins"/></svg></button>
+            <button type="button" class="bouton-pas" data-pas="-1" data-cible="parents" aria-label="Retirer un parent à charge"><svg class="icone" aria-hidden="true"><use href="#i-moins"></use></svg></button>
             <input type="number" id="parents" name="parents" min="0" max="2" step="1" value="0" inputmode="numeric">
-            <button type="button" class="bouton-pas" data-pas="1" data-cible="parents" aria-label="Ajouter un parent à charge"><svg class="icone" aria-hidden="true"><use href="#i-plus"/></svg></button>
+            <button type="button" class="bouton-pas" data-pas="1" data-cible="parents" aria-label="Ajouter un parent à charge"><svg class="icone" aria-hidden="true"><use href="#i-plus"></use></svg></button>
           </div>
         </div>
       </fieldset>
 
-      <details class="depliant">
+      </div><div class="form-panel" id="saisie-complements" role="tabpanel" aria-labelledby="saisie-onglet-complements" tabindex="0" hidden><details class="depliant" open="">
         <summary class="depliant__titre">
           <span>Primes, avantages et indemnités</span>
-          <svg class="icone depliant__chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+          <svg class="icone depliant__chevron" aria-hidden="true"><use href="#i-chevron"></use></svg>
         </summary>
         <div class="depliant__contenu">
           <p class="champ__aide">Montants pour la même période que le salaire (<span data-periode-texte>par mois</span>).</p>
@@ -260,10 +236,35 @@
         </div>
       </details>
 
+      </div><div class="form-panel" id="saisie-options" role="tabpanel" aria-labelledby="saisie-onglet-options" tabindex="0" hidden><fieldset class="champ">
+        <legend class="champ__libelle">Période du montant</legend>
+        <div class="segment" data-segment>
+          <input type="radio" name="periode" id="periode-mensuel" value="mensuel" checked>
+          <label for="periode-mensuel">Mensuel</label>
+          <input type="radio" name="periode" id="periode-annuel" value="annuel">
+          <label for="periode-annuel">Annuel</label>
+          <span class="segment__curseur" aria-hidden="true"></span>
+        </div>
+      </fieldset>
+
+      <div class="compteur compteur--salaires">
+        <label class="compteur__libelle" for="nombre-salaires">Salaires versés par an <span class="compteur__precision" id="aide-salaires">salaire mensuel seul</span></label>
+        <div class="compteur__actions">
+          <div class="compteur__controle">
+            <button type="button" class="bouton-pas" data-pas="-1" data-cible="nombre-salaires" aria-label="Un salaire de moins par an" disabled><svg class="icone" aria-hidden="true"><use href="#i-moins"></use></svg></button>
+            <input type="number" id="nombre-salaires" name="nombreSalaires" min="12" max="18" step="1" value="12" inputmode="numeric" aria-describedby="aide-salaires statut-salaires" disabled>
+            <button type="button" class="bouton-pas" data-pas="1" data-cible="nombre-salaires" aria-label="Un salaire de plus par an" disabled><svg class="icone" aria-hidden="true"><use href="#i-plus"></use></svg></button>
+          </div>
+          <button type="button" class="bouton-secondaire" id="modifier-salaires" aria-controls="nombre-salaires" aria-label="Modifier le nombre de salaires par an">Modifier</button>
+          <button type="button" class="bouton-secondaire" id="annuler-salaires" hidden>Annuler</button>
+        </div>
+        <p class="champ__aide" id="statut-salaires" aria-live="polite">Verrouillé. Choisissez « Modifier » pour changer le nombre de salaires.</p>
+      </div>
+
       <details class="depliant">
         <summary class="depliant__titre">
           <span>Coût employeur</span>
-          <svg class="icone depliant__chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+          <svg class="icone depliant__chevron" aria-hidden="true"><use href="#i-chevron"></use></svg>
         </summary>
         <div class="depliant__contenu">
           <p class="champ__aide" id="note-employeur-public" hidden>Secteur public : cotisations CNRPS employeur et FOPROLOS. L’État et les collectivités ne paient ni TFP ni cotisation accidents du travail (régime propre).</p>
@@ -284,15 +285,15 @@
         </div>
       </details>
 
-      <button type="reset" class="bouton-secondaire" id="reinitialiser">Réinitialiser</button>
-    </form>
+      </div></div><div class="form-footer"><span><svg class="icone" aria-hidden="true"><use href="#i-check"></use></svg>Calcul sur votre appareil</span><button type="reset" class="bouton-secondaire" id="reinitialiser">Réinitialiser</button>
+    </div></form>
 
-    <!-- ============ Résultats ============ -->
+    </aside><!-- ============ Résultats ============ -->
     <section class="resultats" id="resultats" aria-labelledby="titre-resultats" tabindex="-1">
       <h2 id="titre-resultats" class="visuellement-cache">Résultats</h2>
 
-      <div class="panneau synthese" data-apparition>
-        <div class="synthese__principal">
+      <div class="panneau synthese">
+        <div class="synthese__eyebrow"><span>VOTRE ESTIMATION</span><span class="synthese__live"><svg class="icone" aria-hidden="true"><use href="#i-check"></use></svg>Actualisée en direct</span></div><div class="synthese__principal">
           <p class="synthese__libelle" id="libelle-principal">Net à payer par mois</p>
           <p class="synthese__montant" aria-describedby="libelle-principal">
             <span class="chiffre" id="montant-principal" data-compteur>0,000</span>
@@ -316,38 +317,20 @@
           </div>
         </dl>
         <p class="verification" id="verification" hidden>
-          <svg class="icone" aria-hidden="true"><use href="#i-check"/></svg>
+          <svg class="icone" aria-hidden="true"><use href="#i-check"></use></svg>
           <span id="verification-texte"></span>
         </p>
         <ul class="alertes" id="alertes"></ul>
         <div class="synthese__actions">
           <button type="button" class="bouton-secondaire bouton-secondaire--accent" id="partager">
-            <svg class="icone" aria-hidden="true"><use href="#i-partage"/></svg><span>Partager ce calcul</span>
+            <svg class="icone" aria-hidden="true"><use href="#i-partage"></use></svg><span>Partager ce calcul</span>
           </button>
           <span class="synthese__scenario" id="badge-scenario" hidden></span>
         </div>
       </div>
 
-      <div class="panneau comparateur" id="comparateur" hidden>
-        <div class="panneau__entete">
-          <h3 class="panneau__titre">Comparaison des scénarios</h3>
-          <p class="panneau__note">Montants du mois type en DT, puis totaux annuels. Écart = B − A.</p>
-        </div>
-        <div class="tableau-defilant" tabindex="0" role="region" aria-label="Tableau de comparaison des scénarios">
-          <table class="etapes etapes--comparaison">
-            <caption class="visuellement-cache">Comparaison des scénarios A et B</caption>
-            <thead><tr><th scope="col">Élément</th><th scope="col" class="num">A</th><th scope="col" class="num">B</th><th scope="col" class="num">Écart</th></tr></thead>
-            <tbody id="comparateur-corps"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="avertissement" role="note">
-        <svg class="icone" aria-hidden="true"><use href="#i-info"/></svg>
-        <p><strong>Résultat indicatif.</strong> Ce calcul ne remplace pas un calcul de paie officiel ni l’avis d’un professionnel (expert-comptable, caisse de sécurité sociale, administration fiscale).</p>
-      </div>
-
-      <div class="panneau" data-apparition>
+      <p class="visuellement-cache" aria-live="polite" id="annonce"></p>
+    <div class="workspace-panels"><div class="workspace-view" id="vue-synthese" role="tabpanel" aria-labelledby="nav-synthese" tabindex="0"><div class="panneau">
         <h3 class="panneau__titre" id="titre-repartition">Répartition du brut</h3>
         <div class="barre" id="barre" role="img" aria-labelledby="barre-description">
           <span class="barre__segment" data-segment="net"></span>
@@ -359,20 +342,7 @@
         <ul class="legende" id="legende"></ul>
       </div>
 
-      <div class="panneau" data-apparition>
-        <div class="panneau__entete">
-          <h3 class="panneau__titre">Le net selon le brut</h3>
-          <p class="panneau__note">Bandes : taux marginal de l’IRPP. Survolez ou utilisez les flèches.</p>
-        </div>
-        <figure class="courbe" id="courbe">
-          <svg class="courbe__svg" id="courbe-svg" tabindex="0" role="img" aria-labelledby="courbe-titre courbe-description" preserveAspectRatio="none"></svg>
-          <div class="courbe__info" id="courbe-info" aria-hidden="true" hidden></div>
-          <figcaption class="visuellement-cache"><span id="courbe-titre">Courbe du net à payer en fonction du salaire de base brut.</span> <span id="courbe-description"></span></figcaption>
-        </figure>
-        <p class="courbe__lecture" id="courbe-lecture" aria-live="polite"></p>
-      </div>
-
-      <div class="panneau" data-apparition>
+      <div class="overview-insight"><span class="overview-insight__icon"><svg class="icone" aria-hidden="true"><use href="#i-hausse"></use></svg></span><div><strong>Et si votre salaire évoluait ?</strong><p>Mesurez ce qu’une augmentation change pour vous et votre employeur.</p></div><button type="button" class="bouton-icone" data-open-view="augmentation" aria-label="Simuler une augmentation"><svg class="icone" aria-hidden="true"><use href="#i-chevron"></use></svg></button></div></div><div class="workspace-view" id="vue-detail" role="tabpanel" aria-labelledby="nav-detail" tabindex="0" hidden><div class="panneau">
         <div class="panneau__entete">
           <h3 class="panneau__titre">Calcul étape par étape</h3>
           <p class="panneau__note">Montants en dinars (DT), au millime.</p>
@@ -390,7 +360,7 @@
         <details class="depliant depliant--interne">
           <summary class="depliant__titre">
             <span>Détail de l’IRPP par tranche</span>
-            <svg class="icone depliant__chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+            <svg class="icone depliant__chevron" aria-hidden="true"><use href="#i-chevron"></use></svg>
           </summary>
           <div class="depliant__contenu">
             <div class="tableau-defilant" tabindex="0" role="region" aria-label="Tableau de l’impôt par tranche">
@@ -404,9 +374,28 @@
             </div>
           </div>
         </details>
+      <div class="avertissement" role="note">
+        <svg class="icone" aria-hidden="true"><use href="#i-info"></use></svg>
+        <p><strong>Résultat indicatif.</strong> Ce calcul ne remplace pas un calcul de paie officiel ni l’avis d’un professionnel (expert-comptable, caisse de sécurité sociale, administration fiscale).</p>
       </div>
 
-      <div class="panneau augmentation" data-apparition>
+      </div>
+
+      </div><div class="workspace-view" id="vue-comparer" role="tabpanel" aria-labelledby="nav-comparer" tabindex="0" hidden><div class="panneau comparison-empty" id="comparaison-vide"><span class="comparison-empty__icon"><svg class="icone" aria-hidden="true"><use href="#i-comparer"></use></svg></span><h3>Comparez deux situations.</h3><p>Dupliquez votre simulation, puis ajustez le second scénario pour mesurer la différence.</p><button type="button" class="bouton-installer" id="creer-comparaison">Créer le scénario B <svg class="icone" aria-hidden="true"><use href="#i-plus"></use></svg></button></div><div class="panneau comparateur" id="comparateur" hidden>
+        <div class="panneau__entete">
+          <h3 class="panneau__titre">Comparaison des scénarios</h3>
+          <p class="panneau__note">Montants du mois type en DT, puis totaux annuels. Écart = B − A.</p>
+        </div>
+        <div class="tableau-defilant" tabindex="0" role="region" aria-label="Tableau de comparaison des scénarios">
+          <table class="etapes etapes--comparaison">
+            <caption class="visuellement-cache">Comparaison des scénarios A et B</caption>
+            <thead><tr><th scope="col">Élément</th><th scope="col" class="num">A</th><th scope="col" class="num">B</th><th scope="col" class="num">Écart</th></tr></thead>
+            <tbody id="comparateur-corps"></tbody>
+          </table>
+        </div>
+      </div>
+
+      </div><div class="workspace-view" id="vue-augmentation" role="tabpanel" aria-labelledby="nav-augmentation" tabindex="0" hidden><div class="panneau augmentation">
         <div class="panneau__entete">
           <h3 class="panneau__titre">Simuler une augmentation</h3>
           <p class="panneau__note">À partir de la situation actuelle (scénario affiché).</p>
@@ -442,11 +431,11 @@
         <p class="augmentation__phrase" id="aug-phrase"></p>
         <p class="augmentation__phrase" id="aug-annee" hidden></p>
         <button type="button" class="bouton-secondaire" id="aug-vers-b">
-          <svg class="icone" aria-hidden="true"><use href="#i-comparer"/></svg><span>Comparer avec la situation actuelle</span>
+          <svg class="icone" aria-hidden="true"><use href="#i-comparer"></use></svg><span>Comparer avec la situation actuelle</span>
         </button>
       </div>
 
-      <div class="panneau" data-apparition>
+      </div><div class="workspace-view" id="vue-employeur" role="tabpanel" aria-labelledby="nav-employeur" tabindex="0" hidden><div class="panneau">
         <div class="panneau__entete">
           <h3 class="panneau__titre">Coût employeur indicatif</h3>
           <p class="panneau__note">Hors exonérations et avantages propres à l’entreprise.</p>
@@ -472,36 +461,35 @@
         </div>
       </div>
 
-      <p class="visuellement-cache" aria-live="polite" id="annonce"></p>
-    </section>
+      </div><div class="workspace-view" id="vue-courbe" role="tabpanel" aria-labelledby="nav-courbe" tabindex="0" hidden><div class="panneau">
+        <div class="panneau__entete">
+          <h3 class="panneau__titre">Le net selon le brut</h3>
+          <p class="panneau__note">Bandes : taux marginal de l’IRPP. Survolez ou utilisez les flèches.</p>
+        </div>
+        <figure class="courbe" id="courbe">
+          <svg class="courbe__svg" id="courbe-svg" tabindex="0" role="img" aria-labelledby="courbe-titre courbe-description" preserveaspectratio="none"></svg>
+          <div class="courbe__info" id="courbe-info" aria-hidden="true" hidden></div>
+          <figcaption class="visuellement-cache"><span id="courbe-titre">Courbe du net à payer en fonction du salaire de base brut.</span> <span id="courbe-description"></span></figcaption>
+        </figure>
+        <p class="courbe__lecture" id="courbe-lecture" aria-live="polite"></p>
+      </div>
+
+      </div></div><p class="workspace-disclaimer">Estimation indicative · Règles <span data-annee>2026</span> · <button type="button" class="bouton-lien" data-open-guide>Sources et méthode</button></p></section>
   </main>
 
-  <section class="autres-simulateurs" aria-labelledby="titre-autres">
-    <h2 class="autres-simulateurs__titre" id="titre-autres">Les autres simulateurs</h2>
-    <p class="autres-simulateurs__intro">Du même auteur, gratuits et installables sur téléphone.</p>
-    <div class="autres-simulateurs__grille">
-      <a class="autre-sim autre-sim--credit" href="https://mohamed-ja.github.io/simulateur-credit/" target="_blank" rel="noopener">
-        <svg class="autre-sim__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><defs><linearGradient id="as-credit" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset=".6" stop-color="#c026d3"/><stop offset="1" stop-color="#db2777"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#as-credit)"/><g fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" transform="translate(32 32) scale(2.55) translate(-12 -12)"><path d="M5 5v14h14"/><path d="M8 8c3 .5 6 3.5 8.5 8"/><circle cx="16.6" cy="16" r=".75"/></g></svg>
-        <span class="autre-sim__texte"><strong>Simulateur de crédit</strong><span>Mensualité, TEG et tableau d’amortissement, en dinars tunisiens.</span></span>
-        <span class="autre-sim__fleche" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span>
-        <span class="visuellement-cache"> (nouvel onglet)</span>
-      </a>
-      <a class="autre-sim autre-sim--vie" href="https://mohamed-ja.github.io/simulateur-assurance-vie/" target="_blank" rel="noopener">
-        <svg class="autre-sim__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><defs><linearGradient id="as-vie" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"/><stop offset=".55" stop-color="#7c3aed"/><stop offset="1" stop-color="#c026d3"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#as-vie)"/><g fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" transform="translate(32 32) scale(2.3) translate(-12 -12.5)"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></g></svg>
-        <span class="autre-sim__texte"><strong>Simulateur Assurance Vie et CEA</strong><span>Économie d’impôt, montant optimal à investir et projection du capital.</span></span>
-        <span class="autre-sim__fleche" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span>
-        <span class="visuellement-cache"> (nouvel onglet)</span>
-      </a>
-      <a class="autre-sim autre-sim--auto" href="https://mohamed-ja.github.io/simulateur-Assurance-Automobile/" target="_blank" rel="noopener">
-        <svg class="autre-sim__logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><defs><linearGradient id="as-auto" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f5bea"/><stop offset="1" stop-color="#1e88e5"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#as-auto)"/><g fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" transform="translate(32 32) scale(2.35) translate(-12 -12.5)"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></g></svg>
-        <span class="autre-sim__texte"><strong>Simulateur Assurance Automobile</strong><span>Prime détaillée par garantie, offre imprimable et constat amiable.</span></span>
-        <span class="autre-sim__fleche" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span>
-        <span class="visuellement-cache"> (nouvel onglet)</span>
-      </a>
-    </div>
-  </section>
+  <footer class="workspace-footer"><span>Conçu par <a href="https://github.com/MOHAMED-JA" target="_blank" rel="noopener">Mohamed Aziz Jaouadi</a></span><span>Gratuit &amp; open source <span aria-hidden="true">·</span> <button type="button" data-open-guide>Guide &amp; informations</button></span></footer><aside aria-label="Résumé du résultat">
+  <a class="barre-mobile" id="barre-mobile" href="#resultats" data-cache>
+    <span class="barre-mobile__texte">
+      <span class="barre-mobile__libelle" id="barre-mobile-libelle">Net à payer par mois</span>
+      <span class="barre-mobile__montant chiffre" id="barre-mobile-montant">—</span>
+    </span>
+    <span class="barre-mobile__action">Détail <svg class="icone" aria-hidden="true"><use href="#i-chevron"></use></svg></span>
+  </a>
+  </aside>
 
-  <section class="installer" id="installer" aria-labelledby="titre-installer">
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog class="workspace-dialog" id="dialog-guide" aria-labelledby="titre-guide"><div class="dialog-top"><div><p class="workspace-eyebrow">POUR ALLER PLUS LOIN</p><h2 id="titre-guide">Guide &amp; informations</h2></div><button type="button" class="bouton-icone dialog-close" data-close-dialog aria-label="Fermer le guide"><svg class="icone" aria-hidden="true"><use href="#i-fermer"></use></svg></button></div><details class="guide-section" open=""><summary>Installer sur votre appareil<svg class="icone" aria-hidden="true"><use href="#i-chevron"></use></svg></summary><section class="installer" id="installer" aria-labelledby="titre-installer">
     <div class="installer__texte">
       <h2 class="installer__titre" id="titre-installer">Installer l’application</h2>
       <p>Utilisable hors connexion, depuis l’écran d’accueil, sans passer par un magasin d’applications.</p>
@@ -510,7 +498,7 @@
         <li><strong>iPhone, iPad :</strong> bouton <em>Partager</em> de Safari → <em>Sur l’écran d’accueil</em>.</li>
       </ul>
       <button type="button" class="bouton-secondaire bouton-secondaire--accent" id="bouton-installer-2" hidden>
-        <svg class="icone" aria-hidden="true"><use href="#i-installer"/></svg><span>Installer maintenant</span>
+        <svg class="icone" aria-hidden="true"><use href="#i-installer"></use></svg><span>Installer maintenant</span>
       </button>
     </div>
     <figure class="installer__qr">
@@ -519,26 +507,14 @@
     </figure>
   </section>
 
-  <aside aria-label="Résumé du résultat">
-  <a class="barre-mobile" id="barre-mobile" href="#resultats" data-cache>
-    <span class="barre-mobile__texte">
-      <span class="barre-mobile__libelle" id="barre-mobile-libelle">Net à payer par mois</span>
-      <span class="barre-mobile__montant chiffre" id="barre-mobile-montant">—</span>
-    </span>
-    <span class="barre-mobile__action">Détail <svg class="icone" aria-hidden="true"><use href="#i-chevron"/></svg></span>
-  </a>
-  </aside>
-
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-  <footer class="pied">
-    <p>Paramètres légaux <span data-annee>2026</span>, vérifiés le <span id="date-verification">6 octobre 2026</span> : <span id="resume-regles">barème IRPP, CNSS, CSS</span>. Sources et méthode détaillées dans le <a href="https://github.com/MOHAMED-JA/portail-rh/tree/main/calculateur-salaire#règles-appliquées">README du projet</a>.</p>
+  </details><details class="guide-section"><summary>Sources, méthode et auteur<svg class="icone" aria-hidden="true"><use href="#i-chevron"></use></svg></summary><footer class="pied">
+    <p>Paramètres légaux <span data-annee>2026</span>, vérifiés le <span id="date-verification">6 octobre 2026</span> : <span id="resume-regles">barème IRPP, CNSS, CSS</span>. Sources et méthode détaillées dans le <a href="https://github.com/MOHAMED-JA/portail-rh/tree/main/calculateur-salaire#r%C3%A8gles-appliqu%C3%A9es">README du projet</a>.</p>
     <!-- Signature commune aux simulateurs de Mohamed Aziz Jaouadi -->
     <div class="mj-sig">
       <a class="mj-sig__auteur" href="https://www.linkedin.com/in/mohamed-aziz-jaouadi-%D9%85%D8%AD%D9%85%D8%AF-%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AC%D9%88%D8%A7%D8%AF%D9%8A-%C2%AEpsm-i-%C2%AEpspo-l-%C2%AEistqb-851009115/" target="_blank" rel="noopener" aria-label="Application développée par Mohamed Aziz Jaouadi : profil LinkedIn (nouvel onglet)">
         <span class="mj-sig__mono" aria-hidden="true">MJ</span>
         <span class="mj-sig__txt" aria-hidden="true"><span class="mj-sig__lab">Application développée par</span><span class="mj-sig__nom" translate="no">Mohamed Aziz Jaouadi</span></span>
-        <svg class="mj-sig__in" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+        <svg class="mj-sig__in" viewbox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"></path></svg>
       </a>
       <nav class="mj-sig__nav" aria-label="Simulateurs du même auteur">
         <ul class="mj-sig__apps">
@@ -552,10 +528,35 @@
     <p>Hors champ : régimes agricoles et des travailleurs indépendants, primes de fin d’année ponctuelles et régularisations annuelles.</p>
   </footer>
 
-  <script src="config/parametres.js"></script>
+  </details><details class="guide-section"><summary>Les autres simulateurs<svg class="icone" aria-hidden="true"><use href="#i-chevron"></use></svg></summary><section class="autres-simulateurs" aria-labelledby="titre-autres">
+    <h2 class="autres-simulateurs__titre" id="titre-autres">Les autres simulateurs</h2>
+    <p class="autres-simulateurs__intro">Du même auteur, gratuits et installables sur téléphone.</p>
+    <div class="autres-simulateurs__grille">
+      <a class="autre-sim autre-sim--credit" href="https://mohamed-ja.github.io/simulateur-credit/" target="_blank" rel="noopener">
+        <svg class="autre-sim__logo" viewbox="0 0 64 64" aria-hidden="true" focusable="false"><defs><lineargradient id="as-credit" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c3aed"></stop><stop offset=".6" stop-color="#c026d3"></stop><stop offset="1" stop-color="#db2777"></stop></lineargradient></defs><rect width="64" height="64" rx="16" fill="url(#as-credit)"></rect><g fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" transform="translate(32 32) scale(2.55) translate(-12 -12)"><path d="M5 5v14h14"></path><path d="M8 8c3 .5 6 3.5 8.5 8"></path><circle cx="16.6" cy="16" r=".75"></circle></g></svg>
+        <span class="autre-sim__texte"><strong>Simulateur de crédit</strong><span>Mensualité, TEG et tableau d’amortissement, en dinars tunisiens.</span></span>
+        <span class="autre-sim__fleche" aria-hidden="true"><svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"></path><path d="M8 7h9v9"></path></svg></span>
+        <span class="visuellement-cache"> (nouvel onglet)</span>
+      </a>
+      <a class="autre-sim autre-sim--vie" href="https://mohamed-ja.github.io/simulateur-assurance-vie/" target="_blank" rel="noopener">
+        <svg class="autre-sim__logo" viewbox="0 0 64 64" aria-hidden="true" focusable="false"><defs><lineargradient id="as-vie" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f46e5"></stop><stop offset=".55" stop-color="#7c3aed"></stop><stop offset="1" stop-color="#c026d3"></stop></lineargradient></defs><rect width="64" height="64" rx="16" fill="url(#as-vie)"></rect><g fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" transform="translate(32 32) scale(2.3) translate(-12 -12.5)"><path d="M7 20h10"></path><path d="M10 20c5.5-2.5.8-6.4 3-10"></path><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"></path><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"></path></g></svg>
+        <span class="autre-sim__texte"><strong>Simulateur Assurance Vie et CEA</strong><span>Économie d’impôt, montant optimal à investir et projection du capital.</span></span>
+        <span class="autre-sim__fleche" aria-hidden="true"><svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"></path><path d="M8 7h9v9"></path></svg></span>
+        <span class="visuellement-cache"> (nouvel onglet)</span>
+      </a>
+      <a class="autre-sim autre-sim--auto" href="https://mohamed-ja.github.io/simulateur-Assurance-Automobile/" target="_blank" rel="noopener">
+        <svg class="autre-sim__logo" viewbox="0 0 64 64" aria-hidden="true" focusable="false"><defs><lineargradient id="as-auto" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f5bea"></stop><stop offset="1" stop-color="#1e88e5"></stop></lineargradient></defs><rect width="64" height="64" rx="16" fill="url(#as-auto)"></rect><g fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" transform="translate(32 32) scale(2.35) translate(-12 -12.5)"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path><circle cx="7" cy="17" r="2"></circle><path d="M9 17h6"></path><circle cx="17" cy="17" r="2"></circle></g></svg>
+        <span class="autre-sim__texte"><strong>Simulateur Assurance Automobile</strong><span>Prime détaillée par garantie, offre imprimable et constat amiable.</span></span>
+        <span class="autre-sim__fleche" aria-hidden="true"><svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"></path><path d="M8 7h9v9"></path></svg></span>
+        <span class="visuellement-cache"> (nouvel onglet)</span>
+      </a>
+    </div>
+  </section>
+
+  </details></dialog><dialog class="workspace-dialog workspace-dialog--form" id="dialog-saisie" aria-labelledby="titre-dialog-saisie"><div class="dialog-top"><div><p class="workspace-eyebrow">PERSONNALISEZ VOTRE SIMULATION</p><h2 id="titre-dialog-saisie">Ma situation</h2></div><button type="button" class="bouton-icone dialog-close" data-close-dialog aria-label="Fermer les informations"><svg class="icone" aria-hidden="true"><use href="#i-fermer"></use></svg></button></div><div id="saisie-mobile-hote"></div><button type="button" class="dialog-result" id="voir-resultat-mobile">Voir mon résultat <svg class="icone" aria-hidden="true"><use href="#i-chevron"></use></svg></button></dialog><script src="config/parametres.js"></script>
   <script src="js/calcul.js"></script>
   <script src="js/etat.js"></script>
   <script src="js/graphiques.js"></script>
   <script src="js/app.js"></script>
-</body>
+<script src="js/workspace.js"></script></body>
 </html>

@@ -9,16 +9,53 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#070b14",
-  "theme_color": "#070b14",
-  "categories": ["finance", "business", "utilities"],
+  "background_color": "#f3f5f7",
+  "theme_color": "#f3f5f7",
+  "categories": [
+    "finance",
+    "business",
+    "utilities"
+  ],
   "icons": [
-    { "src": "assets/icones/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "assets/icones/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "assets/icones/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "assets/icones/icone-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icones/icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icones/icone-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "shortcuts": [
-    { "name": "Calcul net → brut", "url": "./?sens=net", "icons": [{ "src": "assets/icones/icone-192.png", "sizes": "192x192" }] },
-    { "name": "Secteur public (CNRPS)", "url": "./?sec=public", "icons": [{ "src": "assets/icones/icone-192.png", "sizes": "192x192" }] }
+    {
+      "name": "Calcul net → brut",
+      "url": "./?sens=net",
+      "icons": [
+        {
+          "src": "assets/icones/icone-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Secteur public (CNRPS)",
+      "url": "./?sec=public",
+      "icons": [
+        {
+          "src": "assets/icones/icone-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }
