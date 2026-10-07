@@ -199,6 +199,18 @@
       source: "Loi n° 2017-66 (LF 2018), art. 53 ; décret-loi n° 2022-79 (LF 2023), art. 22 ; loi n° 2025-17 (LF 2026), art. 87 et note DGELF de janvier 2026 ; dispense : loi n° 2019-78 (LF 2020), art. 39"
     },
 
+    /* ---------------------------------------------------------------
+     * Nombre de salaires versés par an (usage de l'entreprise ou de la
+     * convention collective) : 12 = salaire mensuel seul ; 13 = 12 salaires
+     * + un 13e mois ; 14, 15… = primes versées comme des mois de salaire.
+     * Chaque versement supplémentaire est égal au salaire de base mensuel.
+     * ------------------------------------------------------------- */
+    versements: {
+      parDefaut: 12,
+      minimum: 12,
+      maximum: 16
+    },
+
     /* Repères (affichage seulement, n'interviennent pas dans le calcul) */
     reperes: {
       smigMensuel48h: 554.736,

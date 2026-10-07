@@ -133,6 +133,15 @@
         </div>
       </fieldset>
 
+      <div class="compteur compteur--salaires">
+        <label class="compteur__libelle" for="nombre-salaires">Salaires versés par an <span class="compteur__precision" id="aide-salaires">salaire mensuel seul</span></label>
+        <div class="compteur__controle">
+          <button type="button" class="bouton-pas" data-pas="-1" data-cible="nombre-salaires" aria-label="Un salaire de moins par an"><svg class="icone" aria-hidden="true"><use href="#i-moins"/></svg></button>
+          <input type="number" id="nombre-salaires" name="nombreSalaires" min="12" max="16" step="1" value="12" inputmode="numeric" aria-describedby="aide-salaires">
+          <button type="button" class="bouton-pas" data-pas="1" data-cible="nombre-salaires" aria-label="Un salaire de plus par an"><svg class="icone" aria-hidden="true"><use href="#i-plus"/></svg></button>
+        </div>
+      </div>
+
       <div class="champ">
         <label class="champ__libelle" for="montant" id="libelle-montant">Salaire brut mensuel</label>
         <div class="saisie-montant">
@@ -276,6 +285,7 @@
             <span class="synthese__devise">DT</span>
           </p>
           <p class="synthese__secondaire"><span id="texte-secondaire">soit</span> <span class="chiffre" id="montant-secondaire" data-compteur>0,000</span> DT par an</p>
+          <p class="synthese__versements" id="versements-info" hidden></p>
         </div>
         <dl class="synthese__reperes">
           <div class="repere">
@@ -307,7 +317,7 @@
       <div class="panneau comparateur" id="comparateur" hidden>
         <div class="panneau__entete">
           <h3 class="panneau__titre">Comparaison des scénarios</h3>
-          <p class="panneau__note">Montants mensuels en DT. Écart = B − A.</p>
+          <p class="panneau__note">Montants du mois type en DT, puis totaux annuels. Écart = B − A.</p>
         </div>
         <div class="tableau-defilant" tabindex="0" role="region" aria-label="Tableau de comparaison des scénarios">
           <table class="etapes etapes--comparaison">
@@ -324,7 +334,7 @@
       </div>
 
       <div class="panneau" data-apparition>
-        <h3 class="panneau__titre">Répartition du brut</h3>
+        <h3 class="panneau__titre" id="titre-repartition">Répartition du brut</h3>
         <div class="barre" id="barre" role="img" aria-labelledby="barre-description">
           <span class="barre__segment" data-segment="net"></span>
           <span class="barre__segment" data-segment="cnss"></span>
@@ -357,7 +367,7 @@
           <table class="etapes" id="etapes">
             <caption class="visuellement-cache">Calcul détaillé du salaire, en montants mensuels et annuels</caption>
             <thead>
-              <tr><th scope="col">Étape</th><th scope="col" class="num">Mensuel</th><th scope="col" class="num">Annuel</th></tr>
+              <tr><th scope="col">Étape</th><th scope="col" class="num" data-col="mois">Mensuel</th><th scope="col" class="num" data-col="annee">Annuel</th></tr>
             </thead>
             <tbody id="etapes-corps"></tbody>
           </table>
@@ -416,6 +426,7 @@
           <div><dt>Hausse du coût employeur</dt><dd class="chiffre" id="aug-cout-val">—</dd></div>
         </dl>
         <p class="augmentation__phrase" id="aug-phrase"></p>
+        <p class="augmentation__phrase" id="aug-annee" hidden></p>
         <button type="button" class="bouton-secondaire" id="aug-vers-b">
           <svg class="icone" aria-hidden="true"><use href="#i-comparer"/></svg><span>Comparer avec la situation actuelle</span>
         </button>
@@ -440,7 +451,7 @@
           <table class="etapes" id="employeur">
             <caption class="visuellement-cache">Charges patronales et coût total pour l’employeur</caption>
             <thead>
-              <tr><th scope="col">Élément</th><th scope="col" class="num">Mensuel</th><th scope="col" class="num">Annuel</th></tr>
+              <tr><th scope="col">Élément</th><th scope="col" class="num" data-col="mois">Mensuel</th><th scope="col" class="num" data-col="annee">Annuel</th></tr>
             </thead>
             <tbody id="employeur-corps"></tbody>
           </table>

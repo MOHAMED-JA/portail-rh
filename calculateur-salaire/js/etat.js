@@ -15,6 +15,7 @@
     { nom: "secteur", cle: "sec", type: "choix", valeurs: ["prive", "public"], defaut: "prive" },
     { nom: "periode", cle: "per", type: "choix", valeurs: ["mensuel", "annuel"], defaut: "mensuel" },
     { nom: "montant", cle: "m", type: "montant", defaut: 2500 },
+    { nom: "nombreSalaires", cle: "ns", type: "entier", min: 12, max: 16, defaut: 12 },
     { nom: "chefDeFamille", cle: "chef", type: "booleen", defaut: false },
     { nom: "enfants", cle: "enf", type: "entier", max: 15, defaut: 0 },
     { nom: "etudiants", cle: "etu", type: "entier", max: 15, defaut: 0 },
@@ -50,6 +51,7 @@
         var n = nombreValide(texte);
         if (n === null) return undefined;
         n = Math.floor(n);
+        if (champ.min !== undefined) n = Math.max(n, champ.min);
         return champ.max !== undefined ? Math.min(n, champ.max) : n;
       }
       case "montant": {
@@ -120,6 +122,7 @@
   function versEntree(etat) {
     return {
       montant: etat.montant,
+      nombreSalaires: etat.nombreSalaires,
       periode: etat.periode,
       secteur: etat.secteur,
       chefDeFamille: etat.chefDeFamille,

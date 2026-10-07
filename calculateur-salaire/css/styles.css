@@ -743,6 +743,14 @@ a:hover { text-decoration-thickness: 2px; }
   color: var(--accent);
 }
 
+.synthese__versements {
+  margin-top: var(--e-2);
+  max-width: 60ch;
+  font-size: var(--t-s);
+  color: var(--texte-2);
+}
+.synthese__versements strong { color: var(--texte); font-weight: 650; }
+
 .synthese__secondaire {
   margin-top: var(--e-2);
   font-size: var(--t-s);

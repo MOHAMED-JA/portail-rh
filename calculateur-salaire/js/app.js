@@ -24,7 +24,7 @@
   var fmtSaisie = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 3 });
 
   function montant(v) { return fmtMontant.format(C.arrondiMillime(v)); }
-  function dt(v) { return fmtEntier.format(v) + " DT"; }
+  function dt(v) { return fmtEntier.format(v) + "\u00a0DT"; }
 
   /* Lecture tolérante : « 2 500,5 », « 2500.5 », « 2 500 » */
   function lireMontant(texte) {
@@ -37,6 +37,13 @@
   }
 
   function el(id) { return doc.getElementById(id); }
+
+  function texteFort(t) {
+    var b = doc.createElement("strong");
+    b.className = "chiffre";
+    b.textContent = t;
+    return b;
+  }
 
   function tauxRegime(regime) {
     return regime.salarie.reduce(function (t, c) { return t + c.taux; }, 0);
@@ -90,7 +97,8 @@
     var champ = el(id);
     var v = Math.floor(Number(champ.value));
     var max = Number(champ.max);
-    if (!Number.isFinite(v) || v < 0) v = 0;
+    var min = Number(champ.min) || 0;
+    if (!Number.isFinite(v) || v < min) v = min;
     if (Number.isFinite(max) && max > 0 && v > max) v = max;
     return v;
   }
@@ -103,6 +111,7 @@
       secteur: valeurRadio("secteur"),
       periode: valeurRadio("periode"),
       montant: lireMontant(el("montant").value).valeur,
+      nombreSalaires: lireEntier("nombre-salaires"),
       chefDeFamille: el("chef").checked,
       enfants: lireEntier("enfants"),
       etudiants: lireEntier("etudiants"),
@@ -129,6 +138,7 @@
     radio("secteur", etat.secteur);
     radio("periode", etat.periode);
     el("montant").value = fmtSaisie.format(etat.montant);
+    el("nombre-salaires").value = String(etat.nombreSalaires || P.versements.parDefaut);
     el("chef").checked = etat.chefDeFamille;
     ["enfants", "etudiants", "handicapes", "parents"].forEach(function (id) { el(id).value = String(etat[id]); });
     texte("primes", etat.primesImposables);
@@ -144,19 +154,26 @@
   function cloner(etat) { return JSON.parse(JSON.stringify(etat)); }
 
   /* Calcule un état : brut → net, ou net → brut avec vérification */
+  /*
+   * Calcule un état : brut → net, ou net → brut avec vérification.
+   * Retourne l'année complète (r), le mois type (m), le détail des
+   * versements (v) et, le cas échéant, le calcul inverse.
+   */
   function calculerEtat(etat) {
     var entree = E.versEntree(etat);
+    var inverse = null;
     if (etat.sens === "net") {
-      var inverse = C.calculerDepuisNet(entree, P);
-      return { r: inverse.resultat, inverse: inverse };
+      inverse = C.calculerDepuisNet(entree, P);
+      entree = entreeBrut(etat, inverse.resultat);
     }
-    return { r: C.calculerDepuisBrut(entree, P), inverse: null };
+    var av = C.calculerAvecVersements(entree, P);
+    return { r: av.annee, m: av.moisType, v: av.versements, inverse: inverse };
   }
 
   /* Entrée « brut → net » équivalente au résultat (utile après un calcul inverse) */
   function entreeBrut(etat, r) {
     var entree = E.versEntree(etat);
-    entree.montant = r.annuel.salaireBase / r.entree.facteur;
+    entree.montant = r.periode === "annuel" ? r.annuel.salaireBase : r.annuel.salaireBase / r.entree.nombreSalaires;
     return entree;
   }
 
@@ -243,63 +260,75 @@
     corps.appendChild(tr);
   }
 
-  function rendreEtapes(r) {
+  /* Valeurs d'une ligne : [mois type, année]. `cle` = champ, ou (liste, code) */
+  function valeursMoisAnnee(r, m) {
+    var mois = P.moisParAn;
+    function v(cle) { return [m.annuel[cle] / mois, r.annuel[cle]]; }
+    v.liste = function (nom, element) {
+      var trouve = (m.annuel[nom] || []).filter(function (x) { return x.code === element.code; })[0];
+      return [(trouve ? trouve.montant : 0) / mois, element.montant];
+    };
+    return v;
+  }
+
+  function rendreEtapes(r, m) {
     var a = r.annuel;
     var mois = P.moisParAn;
     var corps = el("etapes-corps");
     var avant = instantane(corps);
     corps.textContent = "";
-    function v(x) { return [x / mois, x]; }
+    var v = valeursMoisAnnee(r, m);
     var ind = r.indicateurs;
     var fp = P.irpp.fraisProfessionnels;
 
-    ligne(corps, { libelle: "Salaire de base brut", valeurs: v(a.salaireBase) });
-    if (a.primesImposables > 0) ligne(corps, { signe: "+", libelle: "Primes et indemnités imposables", valeurs: v(a.primesImposables) });
-    if (a.primesNonCotisables > 0) ligne(corps, { signe: "+", libelle: "Primes non soumises à cotisation", valeurs: v(a.primesNonCotisables) });
-    if (a.avantagesNature > 0) ligne(corps, { signe: "+", libelle: "Avantages en nature", valeurs: v(a.avantagesNature) });
-    ligne(corps, { classe: "total", signe: "=", libelle: "Salaire brut", valeurs: v(a.brutTotal) });
+    var n = r.entree.nombreSalaires;
+    ligne(corps, { cle: "base", libelle: "Salaire de base brut" + (n > 12 ? " (" + n + " salaires par an)" : ""), valeurs: v("salaireBase") });
+    if (a.primesImposables > 0) ligne(corps, { signe: "+", libelle: "Primes et indemnités imposables", valeurs: v("primesImposables") });
+    if (a.primesNonCotisables > 0) ligne(corps, { signe: "+", libelle: "Primes non soumises à cotisation", valeurs: v("primesNonCotisables") });
+    if (a.avantagesNature > 0) ligne(corps, { signe: "+", libelle: "Avantages en nature", valeurs: v("avantagesNature") });
+    ligne(corps, { classe: "total", signe: "=", libelle: "Salaire brut", valeurs: v("brutTotal") });
 
     var caisse = r.regime.caisse;
     var libCotis = "Cotisations " + caisse + " (" + fmtPourcent.format(ind.tauxCotisations) +
-      (a.primesNonCotisables > 0 ? " de " + montant(a.assietteCotisations / mois) + " DT/mois" : "") + ")";
-    ligne(corps, { classe: "retenue", signe: "−", cle: "cotisations", libelle: libCotis, valeurs: v(a.cotisations) });
+      (a.primesNonCotisables > 0 ? " de " + montant(m.annuel.assietteCotisations / mois) + " DT/mois" : "") + ")";
+    ligne(corps, { classe: "retenue", signe: "−", cle: "cotisations", libelle: libCotis, valeurs: v("cotisations") });
     a.cotisationsLignes.forEach(function (c) {
-      ligne(corps, { classe: "sous-ligne", cle: "cotis-" + c.code, libelle: c.libelle + " · " + fmtPourcent.format(c.taux), valeurs: v(c.montant) });
+      ligne(corps, { classe: "sous-ligne", cle: "cotis-" + c.code, libelle: c.libelle + " · " + fmtPourcent.format(c.taux), valeurs: v.liste("cotisationsLignes", c) });
     });
-    ligne(corps, { classe: "total", signe: "=", libelle: "Revenu après cotisations", valeurs: v(a.revenuApresCotisations) });
+    ligne(corps, { classe: "total", signe: "=", libelle: "Revenu après cotisations", valeurs: v("revenuApresCotisations") });
 
     ligne(corps, {
       signe: "−",
       cle: "frais",
       libelle: "Frais professionnels (" + fmtTaux.format(fp.taux) + ")",
       etiquette: ind.fraisPlafonnes ? "plafond " + dt(fp.plafondAnnuel) + "/an atteint" : null,
-      valeurs: v(a.fraisProfessionnels)
+      valeurs: v("fraisProfessionnels")
     });
-    ligne(corps, { classe: "total", signe: "=", libelle: "Revenu net", valeurs: v(a.revenuNet) });
+    ligne(corps, { classe: "total", signe: "=", libelle: "Revenu net", valeurs: v("revenuNet") });
 
     if (a.deductionsLignes.length === 0) {
-      ligne(corps, { signe: "−", libelle: "Déductions familiales (aucune)", valeurs: v(0) });
+      ligne(corps, { signe: "−", libelle: "Déductions familiales (aucune)", valeurs: [0, 0] });
     }
     a.deductionsLignes.forEach(function (d) {
       var lib = d.libelle + (d.code === "chef" ? "" : " × " + d.nombre);
-      ligne(corps, { signe: "−", cle: "ded-" + d.code, libelle: lib, valeurs: v(d.montant) });
+      ligne(corps, { signe: "−", cle: "ded-" + d.code, libelle: lib, valeurs: v.liste("deductionsLignes", d) });
     });
-    ligne(corps, { classe: "total", signe: "=", libelle: "Revenu net imposable", valeurs: v(a.revenuImposable) });
+    ligne(corps, { classe: "total", signe: "=", libelle: "Revenu net imposable", valeurs: v("revenuImposable") });
 
-    ligne(corps, { classe: "retenue", signe: "−", libelle: "IRPP (barème progressif)", valeurs: v(a.irpp) });
+    ligne(corps, { classe: "retenue", signe: "−", libelle: "IRPP (barème progressif)", valeurs: v("irpp") });
     ligne(corps, {
       classe: "retenue",
       signe: "−",
       cle: "css",
       libelle: "Contribution sociale de solidarité (" + fmtPourcent.format(P.css.taux) + ")",
       etiquette: ind.cssDispense ? "dispense ≤ " + dt(P.css.seuilDispense) : null,
-      valeurs: v(a.css)
+      valeurs: v("css")
     });
-    ligne(corps, { classe: "total", signe: "=", libelle: "Salaire net", valeurs: v(a.salaireNet) });
+    ligne(corps, { classe: "total", signe: "=", libelle: "Salaire net", valeurs: v("salaireNet") });
 
-    if (a.avantagesNature > 0) ligne(corps, { signe: "−", libelle: "Avantages en nature (non versés)", valeurs: v(a.avantagesNature) });
-    if (a.indemnitesNonImposables > 0) ligne(corps, { signe: "+", libelle: "Indemnités non imposables", valeurs: v(a.indemnitesNonImposables) });
-    ligne(corps, { classe: "total final", signe: "=", libelle: "Net à payer", valeurs: v(a.netAPayer) });
+    if (a.avantagesNature > 0) ligne(corps, { signe: "−", cle: "avantages-retires", libelle: "Avantages en nature (non versés)", valeurs: v("avantagesNature") });
+    if (a.indemnitesNonImposables > 0) ligne(corps, { signe: "+", libelle: "Indemnités non imposables", valeurs: v("indemnitesNonImposables") });
+    ligne(corps, { classe: "total final", signe: "=", libelle: "Net à payer", valeurs: v("netAPayer") });
     signalerChangements(corps, avant);
 
     /* Détail par tranche */
@@ -314,19 +343,18 @@
     signalerChangements(tc, avantTranches);
   }
 
-  function rendreEmployeur(r) {
+  function rendreEmployeur(r, m) {
     var a = r.annuel;
-    var mois = P.moisParAn;
     var corps = el("employeur-corps");
     var avant = instantane(corps);
     corps.textContent = "";
-    function v(x) { return [x / mois, x]; }
-    ligne(corps, { libelle: "Salaire brut", valeurs: v(a.brutTotal) });
+    var v = valeursMoisAnnee(r, m);
+    ligne(corps, { libelle: "Salaire brut", valeurs: v("brutTotal") });
     a.chargesPatronalesLignes.forEach(function (c) {
-      ligne(corps, { signe: "+", cle: "emp-" + c.code, libelle: c.libelle + " · " + fmtPourcent.format(c.taux), valeurs: v(c.montant) });
+      ligne(corps, { signe: "+", cle: "emp-" + c.code, libelle: c.libelle + " · " + fmtPourcent.format(c.taux), valeurs: v.liste("chargesPatronalesLignes", c) });
     });
-    if (a.indemnitesNonImposables > 0) ligne(corps, { signe: "+", libelle: "Indemnités non imposables", valeurs: v(a.indemnitesNonImposables) });
-    ligne(corps, { classe: "total final", signe: "=", libelle: "Coût total employeur", valeurs: v(a.coutEmployeur) });
+    if (a.indemnitesNonImposables > 0) ligne(corps, { signe: "+", libelle: "Indemnités non imposables", valeurs: v("indemnitesNonImposables") });
+    ligne(corps, { classe: "total final", signe: "=", libelle: "Coût total employeur", valeurs: v("coutEmployeur") });
     signalerChangements(corps, avant);
     rendreDinar(r);
   }
@@ -401,7 +429,7 @@
       nom.textContent = s.cle === "cnss" ? "Cotisations " + r.regime.caisse : s.nom;
       var val = doc.createElement("span");
       val.className = "legende__valeur chiffre";
-      val.textContent = montant(valeur / P.moisParAn);
+      val.textContent = montant(r.entree.nombreSalaires > 12 ? valeur : valeur / P.moisParAn);
       var pct = doc.createElement("span");
       pct.className = "legende__part";
       pct.textContent = fmtPourcent.format(part);
@@ -413,11 +441,15 @@
     });
 
     G.majBarre(el("barre"), parts);
+    el("titre-repartition").textContent = r.entree.nombreSalaires > 12
+      ? "Répartition du brut annuel (" + r.entree.nombreSalaires + " salaires)" : "Répartition du brut mensuel";
     el("barre-description").textContent =
-      "Répartition du salaire brut mensuel de " + montant(total / P.moisParAn) + " DT : " + description.join(", ") + ".";
+      (r.entree.nombreSalaires > 12
+        ? "Répartition du salaire brut annuel (" + r.entree.nombreSalaires + " salaires) de " + montant(total) + " DT : "
+        : "Répartition du salaire brut mensuel de " + montant(total / P.moisParAn) + " DT : ") + description.join(", ") + ".";
   }
 
-  function rendreAlertes(r, inverse) {
+  function rendreAlertes(r, inverse, m) {
     var liste = el("alertes");
     liste.textContent = "";
     var messages = [];
@@ -429,7 +461,7 @@
     }
     if (inverse && inverse.message) messages.push(inverse.message);
     var smig = P.reperes.smigMensuel40h;
-    var brutMensuel = r.annuel.brutTotal / P.moisParAn;
+    var brutMensuel = (m || r).annuel.brutTotal / P.moisParAn;
     if (brutMensuel > 0 && brutMensuel < smig) {
       messages.push("Ce brut est inférieur au SMIG mensuel (" + montant(smig) + " DT en régime 40 h, " + montant(P.reperes.smigMensuel48h) + " DT en 48 h), sauf temps partiel.");
     }
@@ -447,8 +479,15 @@
 
   var annonceTimer = null;
 
+  function texteSalaires(n) {
+    if (n <= 12) return "salaire mensuel seul";
+    if (n === 13) return "12 salaires + un 13e mois";
+    return "12 salaires + " + (n - 12) + " mois supplémentaires (primes)";
+  }
+
   function mettreAJourLibelles(sens, periode, secteur) {
     var mensuel = periode === "mensuel";
+    el("aide-salaires").textContent = texteSalaires(lireEntier("nombre-salaires"));
     var regime = P.regimes[secteur] || P.regimes[P.regimeParDefaut];
     el("aide-secteur").textContent = "Cotisations salariales " + regime.caisse + " : " +
       fmtPourcent.format(tauxRegime(regime)) + ". L’impôt est identique dans les deux secteurs.";
@@ -512,12 +551,15 @@
     var panneau = el("comparateur");
     if (!scenarios.B) { panneau.hidden = true; return; }
     panneau.hidden = false;
-    var ra = calculerEtat(scenarios.A).r;
-    var rb = calculerEtat(scenarios.B).r;
+    var ca = calculerEtat(scenarios.A);
+    var cb = calculerEtat(scenarios.B);
+    var ra = ca.r;
+    var rb = cb.r;
     var corps = el("comparateur-corps");
     var avant = instantane(corps);
     corps.textContent = "";
-    function m(r, cle) { return r.annuel[cle] / r.entree.facteur / (r.periode === "annuel" ? 12 : 1); }
+    /* Mois type */
+    function m(r, cle) { return (r === ra ? ca.m : cb.m).annuel[cle] / P.moisParAn; }
     function signe(x, fmt) { return Math.abs(x) < 0.0005 ? "=" : (x > 0 ? "+" : "−") + fmt(Math.abs(x)); }
     ligne(corps, { libelle: "Caisse (secteur)", valeurs: [ra.regime.caisse, rb.regime.caisse, ra.secteur === rb.secteur ? "=" : "≠"] });
     [
@@ -531,7 +573,15 @@
     ].forEach(function (l) {
       var va = m(ra, l[1]);
       var vb = m(rb, l[1]);
-      ligne(corps, { classe: l[2], libelle: l[0], valeurs: [montant(va), montant(vb), signe(vb - va, montant)] });
+      ligne(corps, { classe: l[2], libelle: l[0] + " (mois)", cle: l[1], valeurs: [montant(va), montant(vb), signe(vb - va, montant)] });
+    });
+    var na = ra.entree.nombreSalaires;
+    var nb = rb.entree.nombreSalaires;
+    ligne(corps, { libelle: "Salaires par an", valeurs: [String(na), String(nb), na === nb ? "=" : signe(nb - na, String)] });
+    [["Net à payer annuel", "netAPayer", "total"], ["Coût employeur annuel", "coutEmployeur"]].forEach(function (l) {
+      var va = ra.annuel[l[1]];
+      var vb = rb.annuel[l[1]];
+      ligne(corps, { classe: l[2], libelle: l[0], cle: l[1] + "-an", valeurs: [montant(va), montant(vb), signe(vb - va, montant)] });
     });
     var ta = ra.indicateurs.tauxPrelevementGlobal;
     var tb = rb.indicateurs.tauxPrelevementGlobal;
@@ -572,6 +622,10 @@
         fmtPourcent.format(aug.partNetDeLaHausseBrute) + " de la hausse brute."
       : "Saisissez une hausse pour voir son effet.";
     el("aug-vers-b").disabled = !(aug.hausseBrut > 0.0005);
+    var annee = el("aug-annee");
+    annee.hidden = !(mensuel && aug.hausseNet > 0.0005);
+    annee.textContent = "Sur l’année (" + aug.nombreSalaires + " salaires) : " + plus(aug.hausseNetAnnuelle) +
+      " de net et " + plus(aug.hausseCoutAnnuel) + " de coût employeur.";
   }
 
   /* ---------- Courbe du net selon le brut ---------- */
@@ -583,7 +637,9 @@
     var etat = scenarios[actif];
     var entree = entreeBrut(etat, r);
     var f = r.entree.facteur;
-    var base = r.annuel.salaireBase / f;
+    /* En mensuel, la courbe décrit le mois type (12 salaires) */
+    if (r.periode === "mensuel") entree.nombreSalaires = P.versements.minimum;
+    var base = entree.montant;
     var plancher = r.periode === "annuel" ? 36000 : 3000;
     var cible = Math.max(base * 2.5, plancher);
     var pas = G.pasRond(cible, 5);
@@ -594,7 +650,7 @@
         annoncer: function (t) { el("courbe-lecture").textContent = t; }
       });
     }
-    var net = r.annuel.netAPayer / f;
+    var net = C.calculerDepuisBrut(entree, P).annuel.netAPayer / f;
     courbe.maj({ points: points, actuel: { brut: base, net: net } });
 
     var pasTest = r.periode === "annuel" ? 1200 : 100;
@@ -685,29 +741,66 @@
 
     var calcul = calculerEtat(etat);
     resultatCourant = calcul.r;
-    afficher(calcul.r, sens, calcul.inverse);
+    afficher(calcul, sens);
     rendreComparateur();
     rendreAugmentation();
     rendreCourbe();
     majAdresse();
   }
 
-  function afficher(r, sens, inverse) {
+  function afficher(calcul, sens) {
+    var r = calcul.r;
+    var m = calcul.m;
+    var vs = calcul.v;
+    var inverse = calcul.inverse;
     var a = r.annuel;
     var mois = P.moisParAn;
     var mensuel = r.periode === "mensuel";
+    var n = vs.nombre;
 
-    var principal = sens === "brut" ? a.netAPayer : a.salaireBase;
+    /* En-têtes de colonnes : « Mensuel / Annuel », ou « Mois type / Année · N salaires » */
+    doc.querySelectorAll('[data-col="mois"]').forEach(function (th) { th.textContent = n > 12 ? "Mois type" : "Mensuel"; });
+    doc.querySelectorAll('[data-col="annee"]').forEach(function (th) { th.textContent = n > 12 ? "Année · " + n + " salaires" : "Annuel"; });
+
+    /* Montant principal : net du mois type (ou de l'année) ; en calcul inverse, salaire de base */
+    var principal, secondaire, uniteSecondaire;
+    var parAn = " DT par an" + (n > 12 ? " (" + n + " salaires)" : "");
+    if (sens === "brut") {
+      principal = mensuel ? vs.netMensuel : vs.netAnnuel;
+      secondaire = mensuel ? vs.netAnnuel : vs.netMensuel;
+    } else {
+      principal = mensuel ? vs.brutSupplementaire : a.salaireBase;
+      secondaire = mensuel ? a.salaireBase : vs.brutSupplementaire;
+    }
+    uniteSecondaire = mensuel ? parAn : " DT par mois";
     el("libelle-principal").textContent = sens === "brut"
       ? "Net à payer " + (mensuel ? "par mois" : "par an")
       : "Salaire de base brut nécessaire " + (mensuel ? "par mois" : "par an");
-    animerNombre(el("montant-principal"), mensuel ? principal / mois : principal);
+    animerNombre(el("montant-principal"), principal);
     el("texte-secondaire").textContent = "soit";
-    animerNombre(el("montant-secondaire"), mensuel ? principal : principal / mois);
-    el("montant-secondaire").nextSibling.textContent = mensuel ? " DT par an" : " DT par mois";
+    animerNombre(el("montant-secondaire"), secondaire);
+    el("montant-secondaire").nextSibling.textContent = uniteSecondaire;
+
+    /* Versements supplémentaires (13e mois, primes…) */
+    var info = el("versements-info");
+    info.hidden = vs.supplementaires === 0;
+    info.textContent = "";
+    if (vs.supplementaires > 0) {
+      var pl = vs.supplementaires > 1;
+      info.append(
+        doc.createTextNode("Sur " + n + " salaires : 12 mois à "),
+        texteFort(montant(vs.netMensuel) + "\u00a0DT"),
+        doc.createTextNode(" net, plus " + vs.supplementaires + " versement" + (pl ? "s" : "") + " supplémentaire" + (pl ? "s" : "") + " de "),
+        texteFort(montant(vs.netSupplementaire) + "\u00a0DT"),
+        doc.createTextNode(" net" + (pl ? " chacun" : "") + " (brut " + montant(vs.brutSupplementaire) + "\u00a0DT), plus imposé" + (pl ? "s" : "") +
+          " car il" + (pl ? "s s’ajoutent" : " s’ajoute") + " au revenu de l’année. Total : "),
+        texteFort(montant(vs.netAnnuel) + "\u00a0DT"),
+        doc.createTextNode(" net par an.")
+      );
+    }
 
     el("libelle-repere-1").textContent = sens === "brut" ? "Brut total mensuel" : "Net à payer mensuel";
-    el("repere-1").textContent = montant((sens === "brut" ? a.brutTotal : a.netAPayer) / mois) + " DT";
+    el("repere-1").textContent = montant((sens === "brut" ? m.annuel.brutTotal : m.annuel.netAPayer) / mois) + "\u00a0DT";
     el("repere-taux").textContent = fmtPourcent.format(r.indicateurs.tauxPrelevementGlobal);
     el("repere-marginal").textContent = fmtTaux.format(r.indicateurs.tauxMarginalIrpp);
 
@@ -725,19 +818,19 @@
     }
 
     el("barre-mobile-libelle").textContent = el("libelle-principal").textContent;
-    el("barre-mobile-montant").textContent = montant(mensuel ? principal / mois : principal) + "\u00a0DT";
+    el("barre-mobile-montant").textContent = montant(principal) + "\u00a0DT";
 
-    rendreAlertes(r, inverse);
+    rendreAlertes(r, inverse, m);
     rendreRepartition(r);
-    rendreEtapes(r);
-    rendreEmployeur(r);
+    rendreEtapes(r, m);
+    rendreEmployeur(r, m);
 
     /* Annonce pour lecteurs d'écran, après une pause de saisie */
     clearTimeout(annonceTimer);
     annonceTimer = setTimeout(function () {
       el("annonce").textContent = sens === "brut"
-        ? "Net à payer : " + montant(a.netAPayer / mois) + " dinars par mois, " + montant(a.netAPayer) + " par an."
-        : "Salaire de base brut nécessaire : " + montant(a.salaireBase / mois) + " dinars par mois." + (inverse && inverse.verifie ? " Vérification réussie." : "");
+        ? "Net à payer : " + montant(vs.netMensuel) + " dinars par mois, " + montant(vs.netAnnuel) + " par an sur " + n + " salaires."
+        : "Salaire de base brut nécessaire : " + montant(vs.brutSupplementaire) + " dinars par mois." + (inverse && inverse.verifie ? " Vérification réussie." : "");
     }, 900);
   }
 
@@ -770,10 +863,13 @@
     radio.addEventListener("change", function () {
       var vers = this.value;
       var facteur = vers === "annuel" ? P.moisParAn : 1 / P.moisParAn;
+      var n = lireEntier("nombre-salaires");
       ["montant", "primes", "non-cotisables", "avantages", "indemnites"].forEach(function (id) {
         var champ = el(id);
         var m = lireMontant(champ.value);
-        if (m.valide && !m.vide && m.valeur > 0) champ.value = fmtSaisie.format(C.arrondiMillime(m.valeur * facteur));
+        /* le salaire de base est versé N fois par an, les autres éléments 12 fois */
+        var f = id === "montant" ? (vers === "annuel" ? n : 1 / n) : facteur;
+        if (m.valide && !m.vide && m.valeur > 0) champ.value = fmtSaisie.format(C.arrondiMillime(m.valeur * f));
       });
     });
   });
@@ -793,7 +889,7 @@
     var champ = el(bouton.getAttribute("data-cible"));
     var pas = Number(bouton.getAttribute("data-pas"));
     var max = Number(champ.max);
-    var v = Math.max(0, Math.min(max, (Number(champ.value) || 0) + pas));
+    var v = Math.max(Number(champ.min) || 0, Math.min(max, (Number(champ.value) || 0) + pas));
     champ.value = String(v);
     majBoutonsPas();
     planifierCalcul();
