@@ -46,9 +46,18 @@
    *   primesImposables, primesNonCotisables, avantagesNature,
    *   indemnitesNonImposables,                                       (même période que montant)
    *   chefDeFamille, enfants, etudiants, handicapes, parents,
-   *   tauxAccidentTravail, industrieManufacturiere
+   *   tauxAccidentTravail, industrieManufacturiere,
+   *   nombreSalaires                     (versements du salaire de base par an : 12, 13, 14…)
    * }
+   * En saisie mensuelle, le salaire de base est versé `nombreSalaires` fois par an ;
+   * primes, avantages et indemnités mensuels restent comptés 12 fois.
    */
+  function nombreDeSalaires(e, params) {
+    var v = params.versements;
+    var n = Math.floor(nombre(e.nombreSalaires) || v.parDefaut);
+    return Math.min(Math.max(n, v.minimum), v.maximum);
+  }
+
   function normaliser(entree, params) {
     var e = entree || {};
     var facteur = e.periode === "annuel" ? 1 : params.moisParAn;
@@ -58,12 +67,14 @@
       : nombre(e.tauxAccidentTravail);
 
     var secteur = params.regimes[e.secteur] ? e.secteur : params.regimeParDefaut;
+    var nombreSalaires = nombreDeSalaires(e, params);
 
     return {
       periode: e.periode === "annuel" ? "annuel" : "mensuel",
       secteur: secteur,
       facteur: facteur,
-      salaireBase: positif(e.montant) * facteur,
+      nombreSalaires: nombreSalaires,
+      salaireBase: positif(e.montant) * (e.periode === "annuel" ? 1 : nombreSalaires),
       primesImposables: positif(e.primesImposables) * facteur,
       primesNonCotisables: positif(e.primesNonCotisables) * facteur,
       avantagesNature: positif(e.avantagesNature) * facteur,
@@ -275,6 +286,18 @@
    * donc toujours sur une solution exacte. On vérifie ensuite en recalculant.
    */
   function calculerDepuisNet(entree, params, options) {
+    var n = nombreDeSalaires(entree || {}, params);
+    if ((entree || {}).periode !== "annuel" && n !== params.versements.minimum) {
+      /* Saisie mensuelle : le net visé est celui du mois type ; on cherche le
+       * salaire de base sur 12 mois puis on recalcule l'année avec ses N versements. */
+      var inv = calculerDepuisNetSimple(Object.assign({}, entree, { nombreSalaires: params.versements.minimum }), params, options);
+      inv.resultat = calculerDepuisBrut(Object.assign({}, entree, { montant: inv.brut }), params);
+      return inv;
+    }
+    return calculerDepuisNetSimple(entree, params, options);
+  }
+
+  function calculerDepuisNetSimple(entree, params, options) {
     var opts = options || {};
     var tolerance = opts.tolerance || 0.0005; /* un demi-millime */
     var maxIterations = opts.maxIterations || 200;
@@ -344,6 +367,41 @@
     };
   }
 
+  /* ---------- Mois type et versements supplémentaires ---------- */
+
+  /*
+   * Sépare l'année en un « mois type » (salaire régulier, impôt calculé sur
+   * 12 mois comme la retenue mensuelle) et les versements supplémentaires
+   * (13e mois, primes…), qui supportent le complément d'impôt de l'année.
+   * Retourne { annee, moisType, versements: { nombre, supplementaires,
+   * netMensuel, brutSupplementaire, netSupplementaire, netAnnuel } }.
+   */
+  function calculerAvecVersements(entree, params) {
+    var annee = calculerDepuisBrut(entree, params);
+    var e = annee.entree;
+    var min = params.versements.minimum;
+    var mensuelBase = e.salaireBase / e.nombreSalaires;
+    var entreeMois = Object.assign({}, entree, {
+      nombreSalaires: min,
+      montant: e.periode === "annuel" ? mensuelBase * min : mensuelBase
+    });
+    var moisType = e.nombreSalaires === min ? annee : calculerDepuisBrut(entreeMois, params);
+    var supp = e.nombreSalaires - min;
+    return {
+      annee: annee,
+      moisType: moisType,
+      versements: {
+        nombre: e.nombreSalaires,
+        supplementaires: supp,
+        netMensuel: moisType.annuel.netAPayer / min,
+        brutMensuel: moisType.annuel.brutTotal / min,
+        brutSupplementaire: mensuelBase,
+        netSupplementaire: supp > 0 ? (annee.annuel.netAPayer - moisType.annuel.netAPayer) / supp : 0,
+        netAnnuel: annee.annuel.netAPayer
+      }
+    };
+  }
+
   /* ---------- Répartition d'un dinar de coût employeur ---------- */
 
   /*
@@ -408,9 +466,13 @@
    *   pourcent : hausse du salaire de base brut en % (10 = +10 %)
    * L'entrée décrit la situation actuelle « brut → net ».
    */
-  function simulerAugmentation(entree, params, augmentation) {
+  function simulerAugmentation(entreeAnnee, params, augmentation) {
     var aug = augmentation || {};
     var valeur = positif(aug.valeur);
+    /* En saisie mensuelle, on raisonne sur le mois type (12 salaires) ;
+     * l'effet sur l'année entière (avec ses N versements) est donné à part. */
+    var mensuel = (entreeAnnee || {}).periode !== "annuel";
+    var entree = mensuel ? Object.assign({}, entreeAnnee, { nombreSalaires: params.versements.minimum }) : entreeAnnee;
     var avant = calculerDepuisBrut(entree, params);
     var f = avant.entree.facteur;
     var baseAvant = avant.annuel.salaireBase / f;
@@ -429,7 +491,12 @@
     function ecart(cle) { return (apres.annuel[cle] - avant.annuel[cle]) / f; }
     var hausseNet = ecart("netAPayer");
     var hausseCout = ecart("coutEmployeur");
+    var anneeAvant = calculerDepuisBrut(entreeAnnee, params);
+    var anneeApres = calculerDepuisBrut(Object.assign({}, entreeAnnee, { montant: apres.annuel.salaireBase / f }), params);
     return {
+      nombreSalaires: anneeAvant.entree.nombreSalaires,
+      hausseNetAnnuelle: anneeApres.annuel.netAPayer - anneeAvant.annuel.netAPayer,
+      hausseCoutAnnuel: anneeApres.annuel.coutEmployeur - anneeAvant.annuel.coutEmployeur,
       avant: avant,
       apres: apres,
       verifie: verifie,
@@ -444,6 +511,7 @@
   }
 
   var API = {
+    calculerAvecVersements: calculerAvecVersements,
     repartitionCoutEmployeur: repartitionCoutEmployeur,
     courbeNetBrut: courbeNetBrut,
     simulerAugmentation: simulerAugmentation,

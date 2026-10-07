@@ -134,3 +134,73 @@ test("lien de partage : l'état décodé donne le même calcul", () => {
   const r2 = C.calculerDepuisBrut(E.versEntree(E.decoder(E.encoder(etat)).a), P);
   proche(r1.annuel.netAPayer, r2.annuel.netAPayer, "net identique");
 });
+
+/* ---------------- Nombre de salaires par an ---------------- */
+test("13 salaires : base annuelle = mensuel × 13, primes mensuelles × 12", () => {
+  const r = C.calculerDepuisBrut({ ...TYPE, nombreSalaires: 13, primesImposables: 100 }, P);
+  proche(r.annuel.salaireBase, 2500 * 13, "salaire de base annuel");
+  proche(r.annuel.primesImposables, 1200, "primes mensuelles sur 12 mois");
+  assert.equal(r.entree.nombreSalaires, 13);
+});
+
+test("13 salaires : le mois type est inchangé, le 13e mois supporte le complément d'impôt", () => {
+  const v12 = C.calculerAvecVersements(TYPE, P);
+  const v13 = C.calculerAvecVersements({ ...TYPE, nombreSalaires: 13 }, P);
+  proche(v13.versements.netMensuel, v12.versements.netMensuel, "net du mois type");
+  proche(v13.versements.netMensuel, 1862.018333, "net mensuel (cas typique)", 0.001);
+  assert.equal(v13.versements.supplementaires, 1);
+  proche(v13.versements.brutSupplementaire, 2500, "brut du 13e mois");
+  // 13e mois : 2 500 brut − 9,68 % − impôt marginal (30 % + 0,5 %) sur la base après cotisations
+  // (frais professionnels déjà plafonnés) : 2 500 × 0,9032 × (1 − 0,305) = 1 569,31
+  proche(v13.versements.netSupplementaire, 2500 * 0.9032 * (1 - 0.305), "net du 13e mois", 0.01);
+  proche(v13.versements.netAnnuel, 12 * v13.versements.netMensuel + v13.versements.netSupplementaire, "net annuel");
+  assert.ok(v13.annee.annuel.irpp > v12.annee.annuel.irpp, "impôt annuel plus élevé");
+});
+
+test("15 salaires et saisie annuelle : le montant annuel couvre les 15 versements", () => {
+  const m = C.calculerDepuisBrut({ ...TYPE, nombreSalaires: 15 }, P);
+  const a = C.calculerDepuisBrut({ ...TYPE, periode: "annuel", montant: 2500 * 15, nombreSalaires: 15 }, P);
+  proche(a.annuel.netAPayer, m.annuel.netAPayer, "même année");
+  const v = C.calculerAvecVersements({ ...TYPE, periode: "annuel", montant: 37500, nombreSalaires: 15 }, P);
+  proche(v.versements.brutSupplementaire, 2500, "versement = mensuel");
+  proche(v.versements.netMensuel, 1862.018333, "mois type", 0.001);
+  assert.equal(v.versements.supplementaires, 3);
+});
+
+test("nombre de salaires hors bornes ramené entre 12 et 16", () => {
+  assert.equal(C.calculerDepuisBrut({ ...TYPE, nombreSalaires: 7 }, P).entree.nombreSalaires, 12);
+  assert.equal(C.calculerDepuisBrut({ ...TYPE, nombreSalaires: 40 }, P).entree.nombreSalaires, 16);
+  assert.equal(C.calculerDepuisBrut({ ...TYPE }, P).entree.nombreSalaires, 12);
+});
+
+test("net → brut avec 13 salaires : le net mensuel visé donne le même salaire de base", () => {
+  const inv = C.calculerDepuisNet({ ...TYPE, montant: 1862.018333, nombreSalaires: 13 }, P);
+  assert.equal(inv.verifie, true);
+  proche(inv.brut, 2500, "salaire de base", 0.001);
+  assert.equal(inv.resultat.entree.nombreSalaires, 13);
+  proche(inv.resultat.annuel.salaireBase, 2500 * 13, "année sur 13 salaires", 0.02);
+});
+
+test("net → brut annuel avec 14 salaires : aller-retour exact", () => {
+  const direct = C.calculerDepuisBrut({ ...TYPE, periode: "annuel", montant: 42000, nombreSalaires: 14 }, P);
+  const inv = C.calculerDepuisNet({ ...TYPE, periode: "annuel", montant: direct.annuel.netAPayer, nombreSalaires: 14 }, P);
+  assert.equal(inv.verifie, true);
+  proche(inv.brut, 42000, "brut annuel retrouvé", 0.01);
+});
+
+test("augmentation avec 13 salaires : effet sur le mois type et sur l'année", () => {
+  const a = C.simulerAugmentation({ ...TYPE, nombreSalaires: 13 }, P, { mode: "net", valeur: 100 });
+  proche(a.hausseNet, 100, "hausse du net mensuel", 0.001);
+  assert.equal(a.nombreSalaires, 13);
+  assert.ok(a.hausseNetAnnuelle > 1200, "le 13e mois augmente aussi");
+  proche(a.hausseBrut * 13, a.apres.annuel.salaireBase * 13 / 12 - a.avant.annuel.salaireBase * 13 / 12, "cohérence", 0.01);
+});
+
+test("lien de partage : nombre de salaires conservé et borné", () => {
+  const etat = { ...E.etatParDefaut(), nombreSalaires: 13 };
+  assert.equal(E.encoder(etat), "m=2500&ns=13");
+  assert.equal(E.decoder("ns=13").a.nombreSalaires, 13);
+  assert.equal(E.decoder("ns=3").a.nombreSalaires, 12);
+  assert.equal(E.decoder("ns=99").a.nombreSalaires, 16);
+  assert.equal(E.versEntree(E.decoder("ns=14").a).nombreSalaires, 14);
+});

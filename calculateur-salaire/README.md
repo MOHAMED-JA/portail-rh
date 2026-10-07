@@ -34,7 +34,8 @@ graphique de répartition et un coût employeur indicatif.
 
 1. Choisissez le sens du calcul (**Brut → net** ou **Net → brut**), le
    secteur (**privé · CNSS** ou **public · CNRPS**) et la période
-   (**mensuel** ou **annuel**).
+   (**mensuel** ou **annuel**), puis le nombre de **salaires versés par an**
+   (12 = salaire mensuel seul ; 13 = 12 salaires + un 13e mois ; 14, 15…).
 2. Saisissez le montant (virgule décimale acceptée : `2 500,750`).
 3. Indiquez la situation familiale : chef de famille, enfants à charge,
    enfants étudiants non boursiers, enfants handicapés, parents à charge.
@@ -118,6 +119,30 @@ agents de l'État, des collectivités locales et des établissements publics
 - **Assiette de la CSS.** Elle est calculée sur le revenu net imposable (après
   déductions familiales), pas sur le brut.
 
+## Nombre de salaires par an (13e mois, primes)
+
+Beaucoup d'entreprises versent plus de 12 salaires par an (13e mois, primes
+de bilan ou de rentrée versées comme un mois de salaire). Le calculateur
+accepte de 12 à 16 versements :
+
+- **Revenu annuel** = salaire de base × nombre de salaires + primes,
+  avantages et indemnités mensuels × 12. L'impôt annuel (IRPP, CSS) est
+  calculé sur ce total.
+- **Mois type** : le salaire régulier, avec la retenue mensuelle calculée sur
+  12 mois. C'est le net affiché « par mois ».
+- **Versements supplémentaires** : chacun égal au salaire de base ; ils
+  supportent le complément d'impôt de l'année (taux marginal), d'où un net
+  inférieur à celui d'un mois normal. Exemple : 2 500 DT bruts, chef de
+  famille, 2 enfants, 13 salaires → 12 × 1 862,018 DT + 1 × 1 569,310 DT
+  = 23 913,530 DT net par an.
+- Les tableaux affichent alors deux colonnes : **Mois type** et
+  **Année · N salaires**.
+- En calcul **net → brut** mensuel, le net visé est celui du mois type ; en
+  saisie annuelle, c'est le net de l'année entière.
+
+Le minimum et le maximum se règlent dans `config/parametres.js`
+(`versements`).
+
 ## Méthode de calcul
 
 Le calcul est **annuel**, comme la retenue à la source : un salaire mensuel est
@@ -195,7 +220,7 @@ cd calculateur-salaire
 npm test            # ou : node --test tests/*.test.js
 ```
 
-38 tests couvrent : le barème, des cas typiques, le SMIG, les bas salaires
+46 tests couvrent : le barème, des cas typiques, le SMIG, les bas salaires
 (ni IRPP ni CSS), les très hauts salaires (tranche à 40 %), le salaire nul,
 les entrées invalides, les plafonds (frais professionnels, 4 enfants,
 parents), les primes et avantages, le coût employeur, le **secteur public
@@ -203,7 +228,8 @@ parents), les primes et avantages, le coût employeur, le **secteur public
 (privé et public), plus un balayage fin autour du seuil de la CSS ; ainsi que
 l'augmentation (en net, en brut, en %), la courbe net/brut, la répartition
 d'un dinar de coût employeur et le lien de partage (aller-retour, valeurs
-invalides, deux scénarios).
+invalides, deux scénarios) et le nombre de salaires par an (13e mois,
+15 salaires, saisie annuelle, calcul inverse, augmentation).
 
 ## Lancer en local
 
