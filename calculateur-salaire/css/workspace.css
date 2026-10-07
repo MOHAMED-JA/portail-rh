@@ -165,10 +165,13 @@ body.atelier {
 .atelier .form-panel .compteur { gap: 9px; }
 .atelier .form-panel .compteur__libelle { font-size: 12px; }
 .atelier .form-panel .compteur__precision { font-size: 11px; }
-.atelier .compteur--salaires { padding: 13px; border: 1px solid var(--trait); border-radius: 12px; background: var(--surface-2); gap: 9px; }
-.atelier .compteur--salaires .compteur__actions { gap: 6px; }
-.atelier .compteur--salaires .bouton-secondaire { font-size: 12px; padding: 8px 10px; }
+/* Chaque partie garde sa propre ligne, même avec l'ancien style de base en cache. */
+.atelier .compteur--salaires { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; padding: 13px; border: 1px solid var(--trait); border-radius: 12px; background: var(--surface-2); gap: 9px; }
+.atelier .compteur--salaires > * { min-width: 0; }
+.atelier .compteur--salaires .compteur__actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.atelier .compteur--salaires .bouton-secondaire { width: auto; font-size: 12px; padding: 8px 10px; }
 .atelier .compteur--salaires .compteur__controle input { width: 34px; }
+.atelier .compteur--salaires .champ__aide { margin: 0; }
 .atelier .form-panel .depliant__contenu { padding: 0 12px 12px; gap: 13px; }
 .atelier .form-panel .depliant__titre { padding: 9px 12px; font-size: 12px; }
 .form-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-top: 1px solid var(--trait); padding: 11px 18px; background: var(--surface-2); }
