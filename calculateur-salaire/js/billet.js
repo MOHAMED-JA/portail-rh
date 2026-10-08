@@ -285,11 +285,20 @@
 
     /* Coupons : retenues de la période (mois habituel ou année) */
     $("coupon-cnss-lib").textContent = "Retraite et santé · " + caisse;
+    var avantCoupons = [$("coupon-cnss").textContent, $("coupon-irpp").textContent, $("coupon-css").textContent];
     $("coupon-cnss").textContent = dt3(base.cotisations / div);
     $("coupon-cnss-note").textContent = pct(r.indicateurs.tauxCotisations) + " du salaire soumis à cotisation";
     $("coupon-irpp").textContent = dt3(base.irpp / div);
     $("coupon-irpp-note").textContent = base.irpp > 0 ? "Taux marginal " + pct(m.indicateurs.tauxMarginalIrpp) + " sur la dernière tranche" : "Aucun impôt à ce niveau de revenu";
     $("coupon-css").textContent = dt3(base.css / div);
+    doc.querySelectorAll(".coupon__talon").forEach(function (t) { t.textContent = "N° " + ("0000000" + serie).slice(-7) + "-" + t.getAttribute("data-talon"); });
+    if (animer && !mouvementReduit.matches && Element.prototype.animate) {
+      ["cnss", "irpp", "css"].forEach(function (k, i) {
+        if ($("coupon-" + k).textContent === avantCoupons[i]) return;
+        $("coupon-" + k).closest(".coupon").animate([{ transform: "translateY(0)" }, { transform: "translateY(3px)" }, { transform: "translateY(0)" }],
+          { duration: 260, delay: i * 40, easing: "cubic-bezier(.23,1,.32,1)" });
+      });
+    }
     $("coupon-css-note").textContent = m.indicateurs.cssDispense ? "Dispensé : revenu imposable sous " + dt0(P.css.seuilDispense) + " DT par an" : pct(P.css.taux) + " du revenu imposable";
 
     /* Versements en plus (13e mois…) */
@@ -330,6 +339,7 @@
     var parts = { cnss: base.cotisations / b, irpp: base.irpp / b, css: base.css / b };
     parts.net = Math.max(0, 1 - parts.cnss - parts.irpp - parts.css);
     ["net", "cnss", "irpp", "css"].forEach(function (k) { $("fil-" + k).style.setProperty("--g", String(Math.max(parts[k], 0.0001))); });
+    $("fil-micro").textContent = new Array(12).join("net " + nbsp(f2.format(parts.net * 100)) + " · cnss " + nbsp(f2.format(parts.cnss * 100)) + " · irpp " + nbsp(f2.format(parts.irpp * 100)) + " · css " + nbsp(f2.format(parts.css * 100)) + " · ");
     function b2(k) { return '<b class="t-' + k + '">' + nbsp(f2.format(parts[k] * 100)) + "</b>"; }
     $("cent").innerHTML = "Sur 100 dinars de brut, " + b2("net") + " restent pour vous, " + b2("cnss") +
       " financent votre retraite et votre santé, " + b2("irpp") + " partent en impôt et " + b2("css") + " en contribution de solidarité.";
@@ -405,7 +415,12 @@
       ]
     };
   }
-  function remplirOffre(cle, res) {
+  function remplirOffre(cle, res, c) {
+    if (c) {
+      var serieO = String(Math.round(c.v.brutMensuel));
+      $("offre-" + cle + "-serie").textContent = "N° " + ("0000000" + serieO).slice(-7) + " · " + c.r.regime.caisse + " · " + c.v.nombre;
+      $("offre-" + cle + "-micro").textContent = new Array(6).join((dt3(res.net) + " DT net · " + dt3(c.v.brutMensuel) + " DT brut · ").toUpperCase());
+    }
     $("offre-" + cle + "-net").innerHTML = dt3(res.net) + " <small>DT net / mois</small>";
     $("offre-" + cle + "-dl").innerHTML = res.lignes.map(function (l) { return "<div><dt>" + l[0] + "</dt><dd>" + l[1] + "</dd></div>"; }).join("");
   }
@@ -416,10 +431,10 @@
     var cA = calculerEtat(aBrut);
     var bm = lireMontant($("b-montant").value);
     $("b-montant").setAttribute("aria-invalid", bm.valide && !bm.vide ? "false" : "true");
-    remplirOffre("a", resumeOffre(cA));
+    remplirOffre("a", resumeOffre(cA), cA);
     if (!bm.valide || bm.vide) { $("offre-b-net").textContent = "—"; $("offre-b-dl").textContent = ""; $("ecart").textContent = "Saisissez le salaire brut de l'autre offre."; return; }
     var cB = calculerEtat(etatB(etat));
-    remplirOffre("b", resumeOffre(cB));
+    remplirOffre("b", resumeOffre(cB), cB);
     var d = cB.v.netMensuel - cA.v.netMensuel;
     var dAn = cB.r.annuel.netAPayer - cA.r.annuel.netAPayer;
     $("ecart").innerHTML = Math.abs(d) < 0.0005 ? "Les deux offres donnent le même net." :
@@ -470,7 +485,7 @@
     L("Coût total pour l'employeur", "coutEmployeur", { classe: "cle" });
     var tb = $("tableau-detail").tBodies[0];
     tb.innerHTML = lignes.map(function (l) {
-      return '<tr class="' + l.classe + '"><td>' + l.lib + '</td><td class="v">' + (mensuel ? dt3(l.vm) : "—") + '</td><td class="v">' + dt3(l.va) + "</td></tr>";
+      return '<tr class="' + l.classe + '"><td>' + l.lib + '</td><td class="v" data-lib="' + (mensuel ? (calc.v.nombre > 12 ? "Mois habituel" : "Par mois") : "") + '">' + (mensuel ? dt3(l.vm) : "—") + '</td><td class="v" data-lib="Par an">' + dt3(l.va) + "</td></tr>";
     }).join("");
   }
 
@@ -496,6 +511,11 @@
     pts.splice(plus, 0, exact);
     courbe.index = plus;
     var svg = $("courbe");
+    var etroit = svg.parentNode.clientWidth < 560;
+    G.l = etroit ? 360 : 640; G.H = etroit ? 280 : 320; G.g = etroit ? 46 : 52;
+    svg.setAttribute("viewBox", "0 0 " + G.l + " " + G.H);
+    svg.classList.toggle("etroit", etroit);
+    if (etroit) { pas = pasRond(cible, 4); xmax = Math.ceil(cible / pas) * pas; pts = C.courbeNetBrut(entree, P, { min: 0, max: xmax, points: 91 }); var ex2 = C.courbeNetBrut(entree, P, { min: actuel, max: actuel + 1e-6, points: 2 })[0]; plus = 0; while (plus < pts.length && pts[plus].brut < actuel) plus++; pts.splice(plus, 0, ex2); courbe.points = pts; courbe.xmax = xmax; courbe.ymax = xmax; courbe.index = plus; }
     svg.textContent = "";
     var W = G.l - G.g - G.d, H = G.H - G.h - G.b;
     function X(v) { return G.g + v / xmax * W; }
@@ -579,7 +599,7 @@
   }
 
   var frappe = null;
-  function ajusterLargeur() { var c = $("montant"); c.style.width = Math.max(4.2, c.value.length + 1.2) + "ch"; }
+  function ajusterLargeur() { doc.querySelectorAll(".blanc input").forEach(function (c) { c.style.width = Math.max(4.2, c.value.length + 1.2) + "ch"; }); }
   /* Chaque liste de la phrase prend la largeur du choix affiché, pas du plus long */
   var mesure = doc.createElement("span");
   mesure.setAttribute("aria-hidden", "true");
@@ -669,7 +689,7 @@
   });
 
   /* Offre B */
-  ["b-montant"].forEach(function (id) { $(id).addEventListener("input", function () { offreBTouchee = true; if (dernier) { rendreOffres(dernier.calc, dernier.etat); majAdresse(); } }); });
+  ["b-montant"].forEach(function (id) { $(id).addEventListener("input", function () { ajusterLargeur(); offreBTouchee = true; if (dernier) { rendreOffres(dernier.calc, dernier.etat); majAdresse(); } }); });
   ["b-secteur", "b-salaires"].forEach(function (id) { $(id).addEventListener("change", function () { offreBTouchee = true; if (dernier) { rendreOffres(dernier.calc, dernier.etat); majAdresse(); } }); });
 
   /* ---------- Thème ---------- */
@@ -761,15 +781,24 @@
   });
 
   /* ---------- Billet miniature (téléphone) ---------- */
-  if ("IntersectionObserver" in window) {
-    new IntersectionObserver(function (entrees) {
-      /* Le net reste visible : billet miniature dès que le vrai billet est hors de l'écran (au-dessus ou en dessous) */
-      var visible = !entrees[0].isIntersecting;
-      $("mini").classList.toggle("visible", visible);
-      $("mini").setAttribute("aria-hidden", visible ? "false" : "true");
-      $("mini").tabIndex = visible ? 0 : -1;
-    }, { threshold: 0 }).observe($("billet"));
-  }
+  /* Billet miniature : seulement quand le net est encore sous l'écran (pendant la saisie)
+     ou quand toute la zone du billet et des coupons est passée au-dessus. Calculé au
+     défilement, une fois par image, pour suivre aussi les sauts de position. */
+  (function () {
+    var mini = $("mini"), net = $("montant-principal"), zone = doc.querySelector(".billet-zone"), prevu = false;
+    function maj() {
+      prevu = false;
+      var h = window.innerHeight, rn = net.getBoundingClientRect(), rz = zone.getBoundingClientRect();
+      var visible = rn.bottom > h || rz.bottom < 0;
+      mini.classList.toggle("visible", visible);
+      mini.setAttribute("aria-hidden", visible ? "false" : "true");
+      mini.tabIndex = visible ? 0 : -1;
+    }
+    function planifier() { if (!prevu) { prevu = true; requestAnimationFrame(maj); } }
+    window.addEventListener("scroll", planifier, { passive: true });
+    window.addEventListener("resize", planifier);
+    planifier();
+  })();
   $("mini").addEventListener("click", function (e) {
     e.preventDefault();
     $("billet").scrollIntoView({ behavior: mouvementReduit.matches ? "auto" : "smooth", block: "center" });
