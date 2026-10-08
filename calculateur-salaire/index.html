@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <title>Salaire net Tunisie 2026 — du brut au net, au millime</title>
   <meta name="description" content="Calculez votre salaire net à partir du brut, ou le brut nécessaire pour un net donné, selon les règles tunisiennes 2026 : CNSS ou CNRPS, IRPP, CSS, situation de famille, 12 à 18 salaires par an.">
-  <meta name="theme-color" content="#EAEFE8" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0B1411" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F4F5F7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0B0D12" media="(prefers-color-scheme: dark)">
   <link rel="canonical" href="https://mohamed-ja.github.io/portail-rh/calculateur-salaire/">
   <link rel="icon" href="assets/icone.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icones/apple-touch-icon.png">
@@ -24,237 +24,252 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Calculateur de salaire brut et net pour la Tunisie : exemple avec 2 500 DT de brut et 1 862 DT de net.">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="preload" href="assets/fonts/bodoni-moda-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/mona-sans-var.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/billet.css">
+  <link rel="stylesheet" href="css/salaire.css">
   <link rel="stylesheet" href="css/espace-bande.css">
   <script src="js/theme-init.js"></script>
 </head>
 <body>
-<a class="evitement" href="#billet">Aller au résultat</a>
+<a class="evitement" href="#resultat">Aller au résultat</a>
 <aside class="efa" aria-label="Espace Finances TN"><span class="efa__badge">Nouveau</span><span>Enregistrez vos simulations dans votre espace personnel sécurisé.</span><a class="efa__lien" href="https://espace-finances-tn.jaouadimohamedaziz.workers.dev/connexion.html?mode=inscription" target="_blank" rel="noopener"><span>Créer mon espace</span><span class="efa__cache">(nouvel onglet)</span></a></aside>
 
 <svg width="0" height="0" class="cache" aria-hidden="true" focusable="false">
-  <symbol id="i-guide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11.5h5"/></symbol>
-  <symbol id="i-lune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></symbol>
-  <symbol id="i-soleil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></symbol>
-  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
-  <symbol id="i-moins" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14"/></symbol>
-  <symbol id="i-partager" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7.5 7.5 12 3l4.5 4.5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></symbol>
-  <symbol id="i-imprimer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M7 8V3h10v5"/><rect x="3" y="8" width="18" height="9" rx="2"/><path d="M7 14h10v7H7z"/></symbol>
-  <symbol id="i-installer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7.5 10.5 12 15l4.5-4.5"/><path d="M5 19h14"/></symbol>
-  <symbol id="i-fermer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
-  <symbol id="i-comparer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4v16M16 4v16"/><path d="M4 8l4-4 4 4M12 16l4 4 4-4"/></symbol>
+  <symbol id="i-guide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></symbol>
+  <symbol id="i-lune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></symbol>
+  <symbol id="i-soleil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-moins" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-partager" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7.5 7.5 12 3l4.5 4.5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></symbol>
+  <symbol id="i-imprimer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 8V3h10v5"/><rect x="3" y="8" width="18" height="9" rx="2"/><path d="M7 14h10v7H7z"/></symbol>
+  <symbol id="i-installer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7.5 10.5 12 15l4.5-4.5"/><path d="M5 19h14"/></symbol>
+  <symbol id="i-fermer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-comparer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4v16M16 4v16"/><path d="M4 8l4-4 4 4M12 16l4 4 4-4"/></symbol>
+  <symbol id="i-logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="9" fill="currentColor"/><rect x="7" y="18" width="4" height="7" rx="1.5" fill="#19C37D"/><rect x="14" y="12" width="4" height="13" rx="1.5" fill="#3B82F6"/><rect x="21" y="7" width="4" height="18" rx="1.5" fill="#F5B70A"/></symbol>
 </svg>
 
 <div class="page">
   <header class="tete">
     <a class="marque" href="./" aria-label="Salaire net Tunisie, accueil du calculateur">
-      <svg class="marque__sceau" viewBox="0 0 40 40" aria-hidden="true" id="sceau"></svg>
+      <svg class="marque__logo" aria-hidden="true"><use href="#i-logo"/></svg>
       <span class="marque__nom"><strong>Salaire net</strong><span>Tunisie · règles <span data-annee>2026</span></span></span>
     </a>
     <div class="tete__actions">
-      <button type="button" class="icone-bouton" id="ouvrir-guide" aria-haspopup="dialog" aria-label="Guide, méthode et sources"><svg aria-hidden="true"><use href="#i-guide"/></svg></button>
-      <button type="button" class="icone-bouton" id="bascule-theme" aria-label="Passer au thème sombre"><svg aria-hidden="true"><use href="#i-lune"/></svg></button>
+      <button type="button" class="rond" id="ouvrir-guide" aria-haspopup="dialog" aria-label="Méthode et sources"><svg aria-hidden="true"><use href="#i-guide"/></svg></button>
+      <button type="button" class="rond" id="bascule-theme" aria-label="Passer au thème sombre"><svg aria-hidden="true"><use href="#i-lune"/></svg></button>
     </div>
   </header>
 
   <main id="contenu">
-    <section class="scene" aria-labelledby="titre">
-      <form class="redaction" id="formulaire" novalidate>
-        <h1 class="titre" id="titre">Combien vous <em>reste‑t‑il</em>, au millime&nbsp;?</h1>
-        <p class="chapeau">Complétez la phrase&nbsp;: le billet se réimprime à chaque changement, selon les règles tunisiennes <span data-annee>2026</span>.</p>
+    <h1 class="titre">Votre salaire <span class="titre__net">net</span>, en un coup d'œil.</h1>
 
-        <p class="phrase" id="phrase">
-          Je gagne
-          <span class="blanc"><label for="montant" class="cache">Montant du salaire</label><input id="montant" name="montant" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="2 500" aria-describedby="erreur-montant"></span>
-          DT
-          <span class="blanc"><label for="sens" class="cache">Brut ou net</label><select id="sens" name="sens"><option value="brut">brut</option><option value="net">net</option></select></span>
-          par
-          <span class="blanc"><label for="periode" class="cache">Période</label><select id="periode" name="periode"><option value="mensuel">mois</option><option value="annuel">an</option></select></span>,
-          dans le secteur
-          <span class="blanc"><label for="secteur" class="cache">Secteur</label><select id="secteur" name="secteur"><option value="prive">privé</option><option value="public">public</option></select></span>.
-          Je suis
-          <span class="blanc"><label for="chef" class="cache">Situation de famille</label><select id="chef" name="chef"><option value="0">seul·e à déclarer</option><option value="1">chef de famille</option></select></span>
-          <span id="bloc-enfants">avec
-          <span class="pas" role="group" aria-labelledby="lib-enfants"><span id="lib-enfants" class="cache">Enfants à charge</span><button type="button" data-pas="-1" data-cible="enfants" aria-label="Un enfant de moins"><svg aria-hidden="true"><use href="#i-moins"/></svg></button><output id="enfants" aria-live="polite">0</output><button type="button" data-pas="1" data-cible="enfants" aria-label="Un enfant de plus"><svg aria-hidden="true"><use href="#i-plus"/></svg></button></span>
-          <span id="mot-enfants">enfant</span> à charge</span>,
-          et je reçois
-          <span class="blanc"><label for="nombre-salaires" class="cache">Nombre de salaires par an</label><select id="nombre-salaires" name="nombreSalaires"></select></span>
-          salaires par an.
-        </p>
-        <p class="erreur" id="erreur-montant" role="alert" hidden></p>
-        <p class="precision" id="precision-salaires">12 salaires = le salaire mensuel seul ; 13 = avec un 13ᵉ mois ; au-delà, des primes versées comme des mois de salaire.</p>
+    <section class="scene" aria-label="Calculateur">
+      <form class="carte saisie" id="formulaire" novalidate>
+        <div class="champ-montant">
+          <label for="montant" id="lib-montant">Salaire brut par mois</label>
+          <div class="montant-saisie">
+            <input id="montant" name="montant" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="2 500" aria-describedby="erreur-montant">
+            <span aria-hidden="true">DT</span>
+          </div>
+          <p class="erreur" id="erreur-montant" role="alert" hidden></p>
+        </div>
+
+        <div class="choix">
+          <div class="bascule" role="radiogroup" aria-label="Je saisis un montant">
+            <label><input type="radio" name="sens" value="brut" checked><span>Brut</span></label>
+            <label><input type="radio" name="sens" value="net"><span>Net</span></label>
+            <i class="bascule__pastille" aria-hidden="true"></i>
+          </div>
+          <div class="bascule" role="radiogroup" aria-label="Période">
+            <label><input type="radio" name="periode" value="mensuel" checked><span>Par mois</span></label>
+            <label><input type="radio" name="periode" value="annuel"><span>Par an</span></label>
+            <i class="bascule__pastille" aria-hidden="true"></i>
+          </div>
+        </div>
+        <div class="bascule bascule--large" role="radiogroup" aria-label="Secteur">
+          <label><input type="radio" name="secteur" value="prive" checked><span>Privé · CNSS</span></label>
+          <label><input type="radio" name="secteur" value="public"><span>Public · CNRPS</span></label>
+          <i class="bascule__pastille" aria-hidden="true"></i>
+        </div>
+
+        <div class="lignes">
+          <label class="ligne interrupteur">
+            <span class="ligne__txt"><strong>Chef de famille</strong><small>Déduction de 300 DT par an</small></span>
+            <input type="checkbox" id="chef" role="switch">
+            <span class="interrupteur__piste" aria-hidden="true"></span>
+          </label>
+          <div class="ligne" id="ligne-enfants" hidden>
+            <span class="ligne__txt" id="lib-enfants"><strong>Enfants à charge</strong><small>4 au plus ouvrent la déduction</small></span>
+            <span class="compteur" role="group" aria-labelledby="lib-enfants">
+              <button type="button" data-pas="-1" data-cible="enfants" aria-label="Un enfant de moins"><svg aria-hidden="true"><use href="#i-moins"/></svg></button>
+              <output id="enfants" aria-live="polite">0</output>
+              <button type="button" data-pas="1" data-cible="enfants" aria-label="Un enfant de plus"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
+            </span>
+          </div>
+          <div class="ligne">
+            <span class="ligne__txt" id="lib-salaires"><strong>Salaires par an</strong><small id="aide-salaires">12 = sans 13ᵉ mois</small></span>
+            <span class="compteur" role="group" aria-labelledby="lib-salaires">
+              <button type="button" data-pas="-1" data-cible="salaires" aria-label="Un salaire de moins par an"><svg aria-hidden="true"><use href="#i-moins"/></svg></button>
+              <output id="salaires" aria-live="polite">12</output>
+              <button type="button" data-pas="1" data-cible="salaires" aria-label="Un salaire de plus par an"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
+            </span>
+          </div>
+        </div>
 
         <details class="plus" id="plus">
-          <summary>Préciser ma situation<svg aria-hidden="true"><use href="#i-plus"/></svg></summary>
+          <summary><span>Plus d'options</span><svg aria-hidden="true"><use href="#i-chevron"/></svg></summary>
           <div class="plus__corps">
-            <div class="ligne-champ"><span>Enfants étudiants<small>sans bourse, moins de 25 ans</small></span>
-              <span class="pas" role="group" aria-label="Enfants étudiants"><button type="button" data-pas="-1" data-cible="etudiants" aria-label="Un étudiant de moins"><svg aria-hidden="true"><use href="#i-moins"/></svg></button><output id="etudiants" aria-live="polite">0</output><button type="button" data-pas="1" data-cible="etudiants" aria-label="Un étudiant de plus"><svg aria-hidden="true"><use href="#i-plus"/></svg></button></span></div>
-            <div class="ligne-champ"><span>Enfants en situation de handicap<small>déduction de 2 000 DT, sans limite de nombre</small></span>
-              <span class="pas" role="group" aria-label="Enfants en situation de handicap"><button type="button" data-pas="-1" data-cible="handicapes" aria-label="Un enfant de moins"><svg aria-hidden="true"><use href="#i-moins"/></svg></button><output id="handicapes" aria-live="polite">0</output><button type="button" data-pas="1" data-cible="handicapes" aria-label="Un enfant de plus"><svg aria-hidden="true"><use href="#i-plus"/></svg></button></span></div>
-            <div class="ligne-champ"><span>Parents à charge<small>2 au plus</small></span>
-              <span class="pas" role="group" aria-label="Parents à charge"><button type="button" data-pas="-1" data-cible="parents" aria-label="Un parent de moins"><svg aria-hidden="true"><use href="#i-moins"/></svg></button><output id="parents" aria-live="polite">0</output><button type="button" data-pas="1" data-cible="parents" aria-label="Un parent de plus"><svg aria-hidden="true"><use href="#i-plus"/></svg></button></span></div>
-            <label class="ligne-champ"><span>Primes imposables<small>par mois, soumises à cotisation</small></span><span class="montant-champ"><input id="primes" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><span>DT</span></span></label>
-            <label class="ligne-champ"><span>Primes non cotisables<small>par mois, imposables seulement</small></span><span class="montant-champ"><input id="non-cotisables" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><span>DT</span></span></label>
-            <label class="ligne-champ"><span>Avantages en nature<small>par mois (logement, voiture…)</small></span><span class="montant-champ"><input id="avantages" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><span>DT</span></span></label>
-            <label class="ligne-champ"><span>Indemnités non imposables<small>par mois (transport, panier…)</small></span><span class="montant-champ"><input id="indemnites" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><span>DT</span></span></label>
-            <label class="ligne-champ"><span>Taux accidents du travail<small>selon l'activité de l'employeur</small></span><span class="montant-champ"><input id="taux-at" type="text" inputmode="decimal" autocomplete="off"><span>%</span></span></label>
-            <label class="case"><input type="checkbox" id="industrie"> Industrie manufacturière (TFP à 1 %)</label>
+            <div class="ligne"><span class="ligne__txt" id="lib-etu"><strong>Enfants étudiants</strong><small>sans bourse, moins de 25 ans</small></span>
+              <span class="compteur" role="group" aria-labelledby="lib-etu"><button type="button" data-pas="-1" data-cible="etudiants" aria-label="Un étudiant de moins"><svg aria-hidden="true"><use href="#i-moins"/></svg></button><output id="etudiants" aria-live="polite">0</output><button type="button" data-pas="1" data-cible="etudiants" aria-label="Un étudiant de plus"><svg aria-hidden="true"><use href="#i-plus"/></svg></button></span></div>
+            <div class="ligne"><span class="ligne__txt" id="lib-han"><strong>Enfants handicapés</strong><small>2 000 DT de déduction chacun</small></span>
+              <span class="compteur" role="group" aria-labelledby="lib-han"><button type="button" data-pas="-1" data-cible="handicapes" aria-label="Un enfant de moins"><svg aria-hidden="true"><use href="#i-moins"/></svg></button><output id="handicapes" aria-live="polite">0</output><button type="button" data-pas="1" data-cible="handicapes" aria-label="Un enfant de plus"><svg aria-hidden="true"><use href="#i-plus"/></svg></button></span></div>
+            <div class="ligne"><span class="ligne__txt" id="lib-par"><strong>Parents à charge</strong><small>2 au plus</small></span>
+              <span class="compteur" role="group" aria-labelledby="lib-par"><button type="button" data-pas="-1" data-cible="parents" aria-label="Un parent de moins"><svg aria-hidden="true"><use href="#i-moins"/></svg></button><output id="parents" aria-live="polite">0</output><button type="button" data-pas="1" data-cible="parents" aria-label="Un parent de plus"><svg aria-hidden="true"><use href="#i-plus"/></svg></button></span></div>
+            <label class="ligne"><span class="ligne__txt"><strong>Primes imposables</strong><small>par mois</small></span><span class="petit-montant"><input id="primes" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><span>DT</span></span></label>
+            <label class="ligne"><span class="ligne__txt"><strong>Primes non cotisables</strong><small>par mois</small></span><span class="petit-montant"><input id="non-cotisables" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><span>DT</span></span></label>
+            <label class="ligne"><span class="ligne__txt"><strong>Avantages en nature</strong><small>par mois</small></span><span class="petit-montant"><input id="avantages" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><span>DT</span></span></label>
+            <label class="ligne"><span class="ligne__txt"><strong>Indemnités non imposables</strong><small>par mois</small></span><span class="petit-montant"><input id="indemnites" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><span>DT</span></span></label>
+            <label class="ligne"><span class="ligne__txt"><strong>Taux accidents du travail</strong><small>selon l'activité</small></span><span class="petit-montant"><input id="taux-at" type="text" inputmode="decimal" autocomplete="off"><span>%</span></span></label>
+            <label class="ligne interrupteur"><span class="ligne__txt"><strong>Industrie manufacturière</strong><small>TFP réduite à 1 %</small></span><input type="checkbox" id="industrie" role="switch"><span class="interrupteur__piste" aria-hidden="true"></span></label>
           </div>
         </details>
       </form>
 
-      <div class="billet-zone">
-        <article class="billet imprime" id="billet" aria-labelledby="billet-libelle" tabindex="-1">
-          <svg class="billet__trame" id="trame" aria-hidden="true" preserveAspectRatio="none"></svg>
-          <svg class="billet__rosace" id="rosace" viewBox="-100 -100 200 200" aria-hidden="true"></svg>
-          <span class="billet__cadre" aria-hidden="true"></span>
-          <div class="billet__micro" id="micro" aria-hidden="true"></div>
-          <div class="billet__haut">
-            <h2 class="billet__libelle" id="billet-libelle">Net à payer par mois</h2>
-            <span class="billet__serie" id="serie" aria-hidden="true"></span>
-          </div>
-          <div class="billet__montant">
-            <p class="montant" id="montant-principal" aria-live="polite" aria-atomic="true"><span class="cache" id="montant-lu"></span><span aria-hidden="true" class="chiffres" id="chiffres"></span><span aria-hidden="true" class="montant__dec" id="decimales"></span><span class="montant__unite" aria-hidden="true">DT</span></p>
-            <p class="billet__sous" id="billet-sous"></p>
-          </div>
-          <div class="billet__filigrane" aria-hidden="true">
-            <div class="filigrane__part" id="part-gardee">74 %</div>
-            <div class="filigrane__lib" id="part-lib">de votre brut vous revient</div>
-          </div>
-          <p class="billet__bas" id="billet-bas"></p>
-        </article>
+      <div class="carte resultat" id="resultat" tabindex="-1" aria-labelledby="resultat-lib">
+        <p class="resultat__lib" id="resultat-lib">Net à payer par mois</p>
+        <p class="grand" aria-live="polite" aria-atomic="true"><span class="cache" id="montant-lu"></span><span class="chiffres" id="chiffres" aria-hidden="true"></span><span class="grand__dec" id="decimales" aria-hidden="true"></span><span class="grand__unite" aria-hidden="true">DT</span></p>
+        <p class="resultat__sous" id="resultat-sous"></p>
 
-        <div class="coupons" aria-label="Retenues sur votre salaire">
-          <div class="coupon" data-part="cnss"><span class="coupon__lib"><i></i><span id="coupon-cnss-lib">Retraite et santé · CNSS</span></span><span class="coupon__val num"><span id="coupon-cnss">0</span><small>DT</small></span><span class="coupon__note" id="coupon-cnss-note"></span><span class="coupon__talon" data-talon="A" aria-hidden="true"></span></div>
-          <div class="coupon" data-part="irpp"><span class="coupon__lib"><i></i>Impôt sur le revenu · IRPP</span><span class="coupon__val num"><span id="coupon-irpp">0</span><small>DT</small></span><span class="coupon__note" id="coupon-irpp-note"></span><span class="coupon__talon" data-talon="B" aria-hidden="true"></span></div>
-          <div class="coupon" data-part="css"><span class="coupon__lib"><i></i>Solidarité · CSS</span><span class="coupon__val num"><span id="coupon-css">0</span><small>DT</small></span><span class="coupon__note" id="coupon-css-note"></span><span class="coupon__talon" data-talon="C" aria-hidden="true"></span></div>
+        <div class="blocs" aria-hidden="true">
+          <span class="bloc b-net" id="bloc-net"><b>Net</b></span>
+          <span class="bloc b-cnss" id="bloc-cnss"><b id="bloc-cnss-lib">CNSS</b></span>
+          <span class="bloc b-irpp" id="bloc-irpp"><b>Impôt</b></span>
+          <span class="bloc b-css" id="bloc-css"><b>CSS</b></span>
         </div>
 
-        <p class="supplement" id="supplement" hidden></p>
-        <p class="precision" id="alerte" hidden></p>
+        <ul class="legende" aria-label="Où va votre brut">
+          <li class="l-net"><i></i><span>Pour vous</span><strong id="leg-net"></strong><em id="leg-net-pct"></em></li>
+          <li class="l-cnss"><i></i><span id="leg-cnss-lib">Retraite et santé (CNSS)</span><strong id="leg-cnss"></strong><em id="leg-cnss-pct"></em></li>
+          <li class="l-irpp"><i></i><span>Impôt sur le revenu</span><strong id="leg-irpp"></strong><em id="leg-irpp-pct"></em></li>
+          <li class="l-css"><i></i><span>Contribution de solidarité</span><strong id="leg-css"></strong><em id="leg-css-pct"></em></li>
+        </ul>
+
+        <p class="encart" id="supplement" hidden></p>
+        <p class="note" id="alerte" hidden></p>
 
         <div class="actions">
-          <button type="button" class="bouton bouton--plein" id="partager"><svg aria-hidden="true"><use href="#i-partager"/></svg><span class="bouton__etat" id="partager-lib">Partager ce calcul</span></button>
-          <a class="bouton" href="#section-offres" id="aller-comparer"><svg aria-hidden="true"><use href="#i-comparer"/></svg>Comparer une autre offre</a>
+          <button type="button" class="bouton bouton--plein" id="partager"><svg aria-hidden="true"><use href="#i-partager"/></svg><span class="bouton__etat" id="partager-lib">Partager</span></button>
+          <a class="bouton" href="#section-offres"><svg aria-hidden="true"><use href="#i-comparer"/></svg>Comparer une offre</a>
           <button type="button" class="bouton" id="imprimer"><svg aria-hidden="true"><use href="#i-imprimer"/></svg>Imprimer</button>
           <button type="button" class="bouton" id="installer" hidden><svg aria-hidden="true"><use href="#i-installer"/></svg>Installer</button>
         </div>
       </div>
     </section>
 
-    <div class="sections">
-      <section class="section" id="section-cent" aria-labelledby="titre-cent">
-        <div class="section__tete">
-          <h2 id="titre-cent">Où partent vos dinars</h2>
-          <p>La même somme, ramenée à 100 dinars de brut : ce que vous gardez, ce qui finance votre protection sociale et ce qui revient à l'État.</p>
-        </div>
-        <div class="section__corps">
-          <div class="fil" aria-hidden="true"><span class="p-net" id="fil-net"></span><span class="p-cnss" id="fil-cnss"></span><span class="p-irpp" id="fil-irpp"></span><span class="p-css" id="fil-css"></span><span class="fil__micro" id="fil-micro"></span></div>
-          <p class="cent" id="cent"></p>
-        </div>
-      </section>
+    <section class="section" id="section-cent" aria-labelledby="titre-cent">
+      <div class="section__tete">
+        <h2 id="titre-cent">Sur 100 dinars de brut</h2>
+        <p id="cent"></p>
+      </div>
+      <div class="grille-cent" id="grille-cent" aria-hidden="true"></div>
+    </section>
 
-      <section class="section" id="section-hausse" aria-labelledby="titre-hausse">
-        <div class="section__tete">
-          <h2 id="titre-hausse">Et si votre salaire augmentait&nbsp;?</h2>
-          <p>Avant un entretien, voyez ce qu'une hausse change vraiment sur votre fiche de paie, et ce qu'elle coûte à votre employeur.</p>
+    <section class="section" id="section-hausse" aria-labelledby="titre-hausse">
+      <div class="section__tete">
+        <h2 id="titre-hausse">Et si vous étiez augmenté&nbsp;?</h2>
+        <p>Avant un entretien, voyez ce qu'une hausse change vraiment sur votre net, et ce qu'elle coûte à votre employeur.</p>
+      </div>
+      <div class="section__corps">
+        <div class="bascule bascule--petite" role="radiogroup" aria-label="Exprimer la hausse en">
+          <label><input type="radio" name="mode-hausse" value="brut" checked><span>DT brut</span></label>
+          <label><input type="radio" name="mode-hausse" value="pourcent"><span>%</span></label>
+          <label><input type="radio" name="mode-hausse" value="net"><span>DT net</span></label>
+          <i class="bascule__pastille" aria-hidden="true"></i>
         </div>
-        <div class="section__corps">
-          <div class="modes" role="radiogroup" aria-label="Exprimer la hausse en">
-            <label><input type="radio" name="mode-hausse" value="brut" checked><span>DT brut</span></label>
-            <label><input type="radio" name="mode-hausse" value="pourcent"><span>%</span></label>
-            <label><input type="radio" name="mode-hausse" value="net"><span>DT net</span></label>
+        <div class="curseur">
+          <div class="curseur__haut"><label for="hausse">Hausse</label><output class="curseur__val" id="hausse-val" for="hausse">+200 DT brut</output></div>
+          <input type="range" id="hausse" min="0" max="1000" step="10" value="200">
+        </div>
+        <div class="avant-apres" aria-hidden="true">
+          <div class="aa"><span>Aujourd'hui</span><i class="aa__barre"><b id="aa-avant"></b></i><strong id="aa-avant-val"></strong></div>
+          <div class="aa aa--apres"><span>Après</span><i class="aa__barre"><b id="aa-apres"></b></i><strong id="aa-apres-val"></strong></div>
+        </div>
+        <p class="phrase-resultat" id="verdict-hausse" aria-live="polite"></p>
+        <p class="note" id="hausse-annee"></p>
+        <div><button type="button" class="bouton" id="hausse-vers-offre">Comparer avec ma situation actuelle</button></div>
+      </div>
+    </section>
+
+    <section class="section" id="section-employeur" aria-labelledby="titre-employeur">
+      <div class="section__tete">
+        <h2 id="titre-employeur">Ce que vous coûtez à l'employeur</h2>
+        <p>Au-delà du brut, l'employeur paie ses propres cotisations et taxes. Voici le coût réel, et à qui va chaque dinar.</p>
+      </div>
+      <div class="section__corps">
+        <p class="total"><b id="cout-total"></b> <span id="cout-lib">DT par mois, charges comprises</span></p>
+        <div class="blocs blocs--fin" aria-hidden="true">
+          <span class="bloc b-net" id="emp-salarie"></span><span class="bloc b-cnss" id="emp-caisse"></span><span class="bloc b-irpp" id="emp-etat"></span>
+        </div>
+        <ul class="legende legende--3">
+          <li class="l-net"><i></i><span>Pour vous</span><strong id="emp-salarie-val"></strong><em id="emp-salarie-pct"></em></li>
+          <li class="l-cnss"><i></i><span id="emp-caisse-lib">Pour la CNSS</span><strong id="emp-caisse-val"></strong><em id="emp-caisse-pct"></em></li>
+          <li class="l-irpp"><i></i><span>Pour l'État</span><strong id="emp-etat-val"></strong><em id="emp-etat-pct"></em></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section--large" id="section-offres" aria-labelledby="titre-offres">
+      <div class="section__tete">
+        <h2 id="titre-offres">Comparer deux offres</h2>
+        <p>Votre situation d'aujourd'hui face à une autre offre, avec la même situation de famille.</p>
+      </div>
+      <div class="section__corps">
+        <div class="offre-saisie">
+          <label class="mini-champ"><span>Brut mensuel de l'autre offre</span><span class="petit-montant"><input id="b-montant" type="text" inputmode="decimal" autocomplete="off" value="2 800"><span>DT</span></span></label>
+          <div class="bascule bascule--petite" role="radiogroup" aria-label="Secteur de l'autre offre">
+            <label><input type="radio" name="b-secteur" value="prive" checked><span>Privé</span></label>
+            <label><input type="radio" name="b-secteur" value="public"><span>Public</span></label>
+            <i class="bascule__pastille" aria-hidden="true"></i>
           </div>
-          <div class="curseur">
-            <div class="curseur__haut"><label for="hausse">Hausse demandée</label><output class="curseur__val num" id="hausse-val" for="hausse">+200 DT</output></div>
-            <input type="range" id="hausse" min="0" max="1000" step="10" value="200">
-          </div>
-          <p class="verdict" id="verdict-hausse" aria-live="polite"></p>
-          <p class="annee" id="hausse-annee"></p>
-          <div><button type="button" class="bouton" id="hausse-vers-offre">Comparer avec ma situation actuelle</button></div>
-        </div>
-      </section>
-
-      <section class="section" id="section-employeur" aria-labelledby="titre-employeur">
-        <div class="section__tete">
-          <h2 id="titre-employeur">Ce que votre poste coûte à l'employeur</h2>
-          <p>Au-delà du brut, l'employeur paie ses propres cotisations et taxes. Voici le coût réel, et à qui va chaque dinar.</p>
-        </div>
-        <div class="section__corps">
-          <p class="total-cout"><b class="num" id="cout-total">0</b><span id="cout-lib">DT par mois, charges comprises</span></p>
-          <div class="pieces">
-            <div class="piece" data-part="salarie"><span class="piece__disque num" id="piece-salarie">0,00</span><span class="piece__txt"><strong>Pour vous</strong><span>net et indemnités non imposables</span></span><span class="piece__val num" id="piece-salarie-val"></span></div>
-            <div class="piece" data-part="caisse"><span class="piece__disque num" id="piece-caisse">0,00</span><span class="piece__txt"><strong id="piece-caisse-titre">Pour la CNSS</strong><span>cotisations salariales et patronales</span></span><span class="piece__val num" id="piece-caisse-val"></span></div>
-            <div class="piece" data-part="etat"><span class="piece__disque num" id="piece-etat">0,00</span><span class="piece__txt"><strong>Pour l'État</strong><span>impôt, CSS, TFP et FOPROLOS</span></span><span class="piece__val num" id="piece-etat-val"></span></div>
-          </div>
-          <p class="precision">Chaque disque se lit « sur 1 dinar dépensé par l'employeur ».</p>
-        </div>
-      </section>
-
-      <section class="section section--large" id="section-offres" aria-labelledby="titre-offres">
-        <div class="section__tete">
-          <h2 id="titre-offres">Comparer deux offres</h2>
-          <p>Votre situation d'aujourd'hui face à une autre offre : même famille, autre salaire, autre secteur ou autre nombre de salaires.</p>
-        </div>
-        <div class="section__corps">
-          <p class="phrase phrase--offre">
-            L'autre offre&nbsp;:
-            <span class="blanc"><label for="b-montant" class="cache">Salaire brut mensuel de l'autre offre</label><input id="b-montant" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="2 800"></span>
-            DT brut par mois, dans le secteur
-            <span class="blanc"><label for="b-secteur" class="cache">Secteur de l'autre offre</label><select id="b-secteur"><option value="prive">privé</option><option value="public">public</option></select></span>,
-            avec
-            <span class="blanc"><label for="b-salaires" class="cache">Salaires par an de l'autre offre</label><select id="b-salaires"></select></span>
-            salaires par an.
-          </p>
-          <div class="offres">
-            <article class="offre billet-mini" aria-labelledby="offre-a-titre">
-              <span class="billet-mini__trame" aria-hidden="true"></span>
-              <div class="offre__haut"><h3 class="offre__titre" id="offre-a-titre">Aujourd'hui</h3><span class="billet__serie" id="offre-a-serie" aria-hidden="true"></span></div>
-              <p class="offre__net num" id="offre-a-net"></p>
-              <dl id="offre-a-dl"></dl>
-              <div class="billet-mini__micro" id="offre-a-micro" aria-hidden="true"></div>
-            </article>
-            <article class="offre billet-mini" aria-labelledby="offre-b-titre">
-              <span class="billet-mini__trame" aria-hidden="true"></span>
-              <div class="offre__haut"><h3 class="offre__titre" id="offre-b-titre">L'autre offre</h3><span class="billet__serie" id="offre-b-serie" aria-hidden="true"></span></div>
-              <p class="offre__net num" id="offre-b-net"></p>
-              <dl id="offre-b-dl"></dl>
-              <div class="billet-mini__micro" id="offre-b-micro" aria-hidden="true"></div>
-            </article>
-          </div>
-          <p class="ecart" id="ecart" aria-live="polite"></p>
-        </div>
-      </section>
-
-      <section class="section" id="section-detail" aria-labelledby="titre-detail">
-        <div class="section__tete">
-          <h2 id="titre-detail">Le calcul, ligne par ligne</h2>
-          <p>Le même calcul qu'une fiche de paie : cotisations, frais professionnels, déductions de famille, barème de l'impôt et CSS.</p>
-        </div>
-        <div class="section__corps">
-          <div class="detail"><div class="detail-defile" tabindex="0" role="region" aria-label="Tableau du calcul, défilable horizontalement"><table id="tableau-detail"><caption id="detail-legende"></caption><thead><tr><th scope="col">Élément</th><th scope="col" class="v" id="col-periode">Par mois</th><th scope="col" class="v">Par an</th></tr></thead><tbody></tbody></table></div></div>
-        </div>
-      </section>
-
-      <section class="section" id="section-courbe" aria-labelledby="titre-courbe">
-        <div class="section__tete">
-          <h2 id="titre-courbe">Votre net selon le brut</h2>
-          <p>Promenez le doigt ou la souris sur la courbe, ou utilisez les flèches du clavier : chaque point est un calcul complet avec votre situation.</p>
-        </div>
-        <div class="section__corps">
-          <div class="courbe">
-            <svg id="courbe" viewBox="0 0 640 320" role="img" aria-labelledby="titre-courbe courbe-info" tabindex="0"></svg>
-            <p class="courbe__info" id="courbe-info" aria-live="polite"></p>
+          <div class="mini-champ"><span id="lib-b-salaires">Salaires par an</span>
+            <span class="compteur" role="group" aria-labelledby="lib-b-salaires"><button type="button" data-pas="-1" data-cible="bSalaires" aria-label="Un salaire de moins"><svg aria-hidden="true"><use href="#i-moins"/></svg></button><output id="bSalaires" aria-live="polite">12</output><button type="button" data-pas="1" data-cible="bSalaires" aria-label="Un salaire de plus"><svg aria-hidden="true"><use href="#i-plus"/></svg></button></span>
           </div>
         </div>
-      </section>
-    </div>
-    <a class="mini" id="mini" href="#billet" aria-hidden="true" tabindex="-1">
-  <span><span class="mini__lib" id="mini-lib">Net par mois</span><br><span class="mini__val num" id="mini-val"></span></span>
-  <span class="mini__fleche">Voir le billet</span>
-</a>
+        <div class="offres">
+          <article class="carte offre" aria-labelledby="offre-a-titre"><h3 id="offre-a-titre">Aujourd'hui</h3><p class="offre__net" id="offre-a-net"></p><i class="offre__barre" aria-hidden="true"><b id="offre-a-barre"></b></i><dl id="offre-a-dl"></dl></article>
+          <article class="carte offre" aria-labelledby="offre-b-titre"><h3 id="offre-b-titre">L'autre offre</h3><p class="offre__net" id="offre-b-net"></p><i class="offre__barre" aria-hidden="true"><b id="offre-b-barre"></b></i><dl id="offre-b-dl"></dl></article>
+        </div>
+        <p class="phrase-resultat" id="ecart" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="section" id="section-detail" aria-labelledby="titre-detail">
+      <div class="section__tete">
+        <h2 id="titre-detail">Le calcul ligne par ligne</h2>
+        <p>Comme sur une fiche de paie : cotisations, frais professionnels, déductions de famille, barème de l'impôt et CSS.</p>
+      </div>
+      <div class="section__corps">
+        <div class="carte detail"><div class="detail-defile" tabindex="0" role="region" aria-label="Tableau du calcul"><table id="tableau-detail"><caption id="detail-legende"></caption><thead><tr><th scope="col">Élément</th><th scope="col" class="v" id="col-periode">Par mois</th><th scope="col" class="v">Par an</th></tr></thead><tbody></tbody></table></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="section-courbe" aria-labelledby="titre-courbe">
+      <div class="section__tete">
+        <h2 id="titre-courbe">Votre net selon le brut</h2>
+        <p>Glissez le doigt ou la souris sur la courbe, ou utilisez les flèches du clavier : chaque point est un calcul complet.</p>
+      </div>
+      <div class="section__corps">
+        <div class="carte courbe">
+          <svg id="courbe" viewBox="0 0 640 320" role="img" aria-labelledby="titre-courbe courbe-info" tabindex="0"></svg>
+          <p class="courbe__info" id="courbe-info" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <a class="mini" id="mini" href="#resultat" aria-hidden="true" tabindex="-1">
+      <span><span class="mini__lib" id="mini-lib">Net par mois</span><span class="mini__val" id="mini-val"></span></span>
+      <span class="mini__fleche">Voir</span>
+    </a>
   </main>
 
   <footer class="pied">
@@ -273,19 +288,17 @@
   </footer>
 </div>
 
-
-
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <dialog class="guide" id="guide" aria-labelledby="guide-titre">
-  <div class="guide__tete"><h2 id="guide-titre">Méthode et sources</h2><button type="button" class="icone-bouton" id="fermer-guide" aria-label="Fermer"><svg aria-hidden="true"><use href="#i-fermer"/></svg></button></div>
+  <div class="guide__tete"><h2 id="guide-titre">Méthode et sources</h2><button type="button" class="rond" id="fermer-guide" aria-label="Fermer"><svg aria-hidden="true"><use href="#i-fermer"/></svg></button></div>
   <div class="guide__corps">
     <section><h3>Comment le net est calculé</h3><ul>
       <li>Les cotisations salariales sont retenues sur le brut : CNSS dans le privé, CNRPS dans le public.</li>
       <li>On retire 10 % de frais professionnels (plafonnés à 2 000 DT par an), puis les déductions de famille.</li>
       <li>L'impôt (IRPP) suit le barème annuel par tranches ; la CSS de 0,5 % s'y ajoute, sauf petits revenus.</li>
-      <li>Avec plus de 12 salaires par an, le mois type garde la retenue mensuelle ; les versements en plus portent le complément d'impôt.</li>
-      <li>Le calcul net → brut cherche le brut exact par dichotomie, puis le vérifie au millime.</li>
+      <li>Avec plus de 12 salaires par an, le mois habituel garde la retenue mensuelle ; les versements en plus portent le complément d'impôt.</li>
+      <li>Le calcul net → brut cherche le brut exact, puis le vérifie au millime.</li>
     </ul></section>
     <section><h3>Textes de référence</h3><ul class="sources" id="sources"></ul></section>
     <section><h3>Installer l'application</h3><p>Sur téléphone, ouvrez le menu du navigateur puis « Ajouter à l'écran d'accueil ». L'application fonctionne ensuite hors connexion.</p></section>
@@ -295,6 +308,6 @@
 <script src="config/parametres.js"></script>
 <script src="js/calcul.js"></script>
 <script src="js/etat.js"></script>
-<script src="js/billet.js"></script>
+<script src="js/salaire.js"></script>
 </body>
 </html>

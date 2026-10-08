@@ -289,11 +289,11 @@ calculateur-salaire/
 ├── config/parametres.js  Paramètres légaux de l'année (seul fichier à mettre à jour)
 ├── js/calcul.js          Moteur de calcul pur (brut → net, net → brut, augmentation, courbe)
 ├── js/etat.js            État d'une simulation ⇄ lien de partage (pur, testé)
-├── js/graphiques.js      Barres empilées et courbe SVG interactive
-├── js/app.js             Interface : formulaire, scénarios A/B, rendu, animations
+├── js/salaire.js         Interface : saisie, résultat animé, sections, courbe, partage
+├── js/theme-init.js      Thème clair/sombre appliqué avant affichage
 ├── sw.js                 Service worker (hors connexion)
 ├── manifest.webmanifest  Application installable (nom, icônes, couleurs)
-├── css/styles.css        Styles (tokens de couleurs, typographie, espacements)
+├── css/salaire.css       Styles « Lumineux et vivant » (jetons, composants, mouvement)
 ├── assets/               Icônes, QR d'installation, image d'aperçu, polices auto-hébergées
 ├── tests/                Tests automatisés (calcul.test.js, fonctions.test.js)
 ├── DESIGN.md             Système visuel
@@ -323,6 +323,6 @@ et [assurance automobile](https://mohamed-ja.github.io/simulateur-Assurance-Auto
 
 ## Licence
 
-Code sous licence MIT (voir [LICENSE](LICENSE)). Polices Manrope et JetBrains
+Code sous licence MIT (voir [LICENSE](LICENSE)). Polices Mona Sans et JetBrains
 Mono sous licence SIL Open Font License 1.1.
 

@@ -4,20 +4,19 @@
  * « cache d'abord, puis mise à jour en arrière-plan » pour les fichiers statiques.
  * Changez VERSION à chaque publication pour renouveler le cache.
  */
-var VERSION = "calc-salaire-v10";
+var VERSION = "calc-salaire-v11";
 var FICHIERS = [
   "./",
   "index.html",
-  "css/billet.css",
+  "css/salaire.css",
   "css/espace-bande.css",
   "config/parametres.js",
   "js/theme-init.js",
   "js/calcul.js",
   "js/etat.js",
-  "js/billet.js",
+  "js/salaire.js",
   "manifest.webmanifest",
   "assets/icone.svg",
-  "assets/fonts/bodoni-moda-var.woff2",
   "assets/fonts/mona-sans-var.woff2",
   "assets/fonts/jetbrains-mono-var.woff2",
   "assets/icones/icone-192.png",
