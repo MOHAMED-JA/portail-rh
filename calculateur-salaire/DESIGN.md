@@ -1,63 +1,75 @@
-# Design du calculateur de salaire — « Billet de dinar »
+# Design du calculateur de salaire — « Lumineux et vivant »
 
-Le net est un billet que l'on imprime pour la personne : le calcul se lit comme une coupure de banque, pas comme un tableau de bord. Une seule page, sans onglets ; la saisie est une phrase à compléter.
+Un fond clair, d'énormes chiffres noirs et un grand bloc de couleur franche pour chaque poste du salaire. On comprend son net d'un coup d'œil, puis on voit où part chaque dinar. Le tout tient sur une seule page, sans onglets, avec des champs classiques et clairs.
 
-## Monde visuel
+## Principes
 
-Impression monétaire : papier de billet clair légèrement vert, encre taille-douce vert profond, violet de sécurité, or de feuille, rouge de numérotation. Les guilloches, la rosace et le micro-texte sont **dessinés par le code** et **portent de vraies données** :
+- **Lisible d'abord** : le net s'affiche en très grand, en noir sur blanc. Une seule police sans empattement sert partout, et tous les chiffres sont tabulaires.
+- **Une couleur, un poste**, la même partout : net = vert, caisse (CNSS/CNRPS) = bleu, impôt (IRPP) = violet, solidarité (CSS) = jaune. Elle s'applique aux blocs, aux légendes, à la grille des 100 dinars, au coût employeur et à la courbe.
+- **Vivant, jamais bavard** : le mouvement confirme une action ou montre un changement de proportion. Rien ne bouge pendant la frappe.
+- Aucun montant décoratif : tout vient du moteur (`js/calcul.js`, `config/parametres.js`).
 
-- la rosace du billet a autant de lobes que de salaires par an (12 à 18) ; son amplitude suit la part du brut que la personne garde ;
-- le micro-texte en bas du billet et des billets d'offre répète les vrais montants (net, brut, CNSS, IRPP, CSS) ;
-- le numéro de série rouge est formé du salaire de base, de la caisse et du nombre de salaires ;
-- le fil de sécurité (« Où partent vos dinars ») porte les parts réelles en micro-texte.
+## Jetons (`css/salaire.css`)
 
-Aucun montant décoratif : tout vient du moteur (`js/calcul.js`, `config/parametres.js`).
-
-## Jetons (`css/billet.css`)
-
-| Rôle | Clair | Sombre (« tirage de nuit ») |
+| Rôle | Clair | Sombre |
 |---|---|---|
-| Papier (fond) `--papier` | #EAEFE8 | #0B1411 |
-| Billet (surfaces) `--billet` | #F6F8F2 | #13201B |
-| Filet `--filet` | #CBD6CC | #22352E |
-| Encre `--encre` / `--encre-2` / `--encre-3` | #0E3B34 / #34524B / #4E6760 | #E8F0EA / #BACBC2 / #93A89E |
-| Trame (guilloches) `--trame` / `--trame-forte` | vert à 16 % / 30 % | menthe à 14 % / 28 % |
-| Net, actions `--vert` | #0E6B57 | #7FD6B8 |
-| Cotisations (CNSS/CNRPS) `--bleu` | #1E5A86 | #8EC1F0 |
-| Impôt (IRPP) `--violet` | #4B2E83 | #B9A2F0 |
-| Solidarité (CSS) `--or` / `--or-feuille` | #7D5A10 / #C9A44C | #E2C46F / #B8933A |
-| Numérotation `--rouge` | #A3202B | #FF8A8A |
+| Fond `--fond` | #F4F5F7 | #0B0D12 |
+| Carte `--carte` | #FFFFFF | #14171F |
+| Champ `--champ` | #F4F5F7 | #1B1F29 |
+| Filet `--filet` / `--filet-fort` | #E3E5EA / #C9CDD6 | #262A35 / #3A4050 |
+| Encre `--encre` / `-2` / `-3` | #0B0D12 / #414652 / #5B6170 | #F3F4F7 / #C3C7D1 / #9AA0AE |
+| Net (bloc / texte / fond doux) | #19C37D / #087A4C / #DDF7EA | #19C37D / #4ADE9B / #10291F |
+| Caisse | #3B82F6 / #1D5FD0 / #E1ECFE | #3B82F6 / #7AA9FF / #13213A |
+| Impôt | #7C3AED / #6D28D9 / #EEE6FD | #7C3AED / #B49CFF / #221839 |
+| Solidarité | #F5B70A / #8A6100 / #FDF2CF | #F5B70A / #FACC4B / #2D250D |
 
-Couleur des données : net = vert, caisse = bleu, impôt = violet, CSS = or, partout (billet, coupons, fil, pièces de l'employeur).
+Le texte posé sur un bloc est noir, sauf sur le violet, où il est blanc. Toutes les paires de couleurs ont été vérifiées en AA.
 
 ## Typographie (polices libres, auto-hébergées)
 
-- **Bodoni Moda** (didone, axe optique) : titres et partie entière du net géant, filigrane, titres des billets d'offre. Jamais pour des montants avec décimales : la virgule d'une didone se lit comme un point.
-- **Mona Sans** : interface, phrase de saisie, tous les montants secondaires (chiffres tabulaires), millimes du net. Même police que l'Espace Finances TN.
-- **JetBrains Mono** : numéros de série, micro-texte, colonnes chiffrées du détail.
+- **Mona Sans** (variable, largeur 100–125 %) est la seule police de l'interface : titres larges et serrés, net géant (graisse 800), libellés, montants.
+- **JetBrains Mono** est réservée au détail ligne par ligne.
 
 ## Composants
 
-- **Phrase de saisie** : champs « blancs » en pointillés intégrés au texte, listes dimensionnées sur le choix affiché, compteurs ± (icônes SVG). « Préciser ma situation » regroupe les cas rares.
-- **Billet** (2,05:1 sur grand écran) : libellé, série rouge, net géant à rouleaux de chiffres, phrase d'explication, filigrane « % du brut gardé », ligne de contexte, micro-texte.
-- **Coupons** : retenues (caisse, IRPP, CSS) rattachées au billet par une rangée de trous poinçonnés, séparées par des tirets, talon numéroté ; jamais de survol « carte ».
-- **Billets d'offre** : même grammaire en réduit (trame, série, micro-texte) pour comparer deux offres.
-- **Billet miniature** (téléphone) : barre fixe en bas tant que le net n'est pas entièrement à l'écran.
-- **Sections** : où partent vos dinars (fil de sécurité), augmentation (curseur), coût employeur (pièces), deux offres, détail ligne par ligne (empilé sur téléphone), courbe net = f(brut) (version étroite sur téléphone).
+- **Saisie** : un grand champ montant, puis des bascules à pastille glissante (brut/net, mois/an, privé/public). Viennent ensuite un interrupteur « chef de famille » et des compteurs ± (enfants, salaires par an de 12 à 18). « Plus d'options » regroupe les cas rares.
+- **Résultat** : un libellé, le net géant avec des rouleaux de chiffres et des millimes plus petits, puis une phrase de contexte. Les quatre blocs de couleur ont une largeur égale à leur part du brut. Une légende en cartes douces donne les montants et les pourcentages. Les actions viennent en dernier : partager, comparer, imprimer.
+- **Sections** :
+  - sur 100 dinars de brut (grille de 100 carrés) ;
+  - augmentation (curseur, barres avant/après) ;
+  - coût employeur (blocs) ;
+  - deux offres (cartes à barre de net) ;
+  - détail ligne par ligne (empilé sur téléphone) ;
+  - courbe net = f(brut).
+- **Résultat miniature** (téléphone) : une barre sombre fixe en bas, affichée tant que le net n'est pas à l'écran.
 
-## Mouvement
+## Mouvement (`--sortie` .23,1,.32,1 · `--ressort` .34,1.45,.64,1 · `--tiroir` .32,.72,0,1)
 
-- Un seul moment marquant au chargement : la planche du billet se dévoile (clip-path, 720 ms), puis l'encre apparaît (flou 4 px → net, 420 ms).
-- Réimpression : les chiffres roulent (300 ms, décalés de droite à gauche) sur un changement de liste ou de compteur ; **instantané pendant la frappe**.
-- Rosace : morphing du tracé (420 ms) quand le nombre de salaires ou la part gardée change.
-- Coupons : décalage de 3 px le long de la perforation quand leur montant change.
-- Courbes : `--sortie` cubic-bezier(.23,1,.32,1), `--mouvement` (.77,0,.175,1), `--tiroir` (.32,.72,0,1). Boutons : `scale(.97)` à l'appui.
-- `prefers-reduced-motion` : pas de dévoilement, de roulement ni de déplacement ; les fondus restent.
+- **Arrivée** : le titre, la saisie puis le résultat montent en cascade (520 ms, 60 ms de décalage).
+- **Changement de réglage** : les chiffres roulent avec un léger rebond (420 ms, de droite à gauche). Les blocs se redimensionnent par ressort (560 ms) et clignent une fois. Pendant la frappe, l'affichage est **instantané**.
+- **Pastilles et interrupteurs** : glissement à ressort (300–320 ms). Les compteurs sautent légèrement quand on les change. Les boutons s'enfoncent à `scale(.97)` à l'appui.
+- **Défilement**, une seule fois par section :
+  - chaque section apparaît en montant ;
+  - les 100 carrés se remplissent en cascade (7 ms par carré) ;
+  - la courbe se trace (900 ms).
+- `prefers-reduced-motion` : aucune cascade, aucun roulement, aucun tracé. L'état final s'affiche directement.
 
 ## Accessibilité
 
-WCAG 2.1 AA vérifié par axe-core (clair, sombre, 1440 et 390 px) : libellés de chaque blanc de la phrase, annonce du résultat sans bavardage pendant la frappe, courbe pilotable au clavier, tableau défilable focalisable, dialogue natif pour la méthode et les sources, cibles de 44 px.
+WCAG 2.1 AA vérifié par axe-core, en clair et en sombre, à 1440 et 390 px :
+
+- les bascules sont de vrais boutons radio et les interrupteurs des cases `role="switch"` ;
+- le résultat est annoncé après la frappe, pas à chaque touche ;
+- la courbe se pilote au clavier ;
+- le tableau défilable peut recevoir le focus ;
+- la méthode et les sources s'ouvrent dans un dialogue natif ;
+- les cibles tactiles font au moins 40 à 44 px.
 
 ## Fichiers
 
-`index.html` (structure), `css/billet.css` (monde et composants), `js/billet.js` (interface, guilloches, rendu), `js/theme-init.js` (thème avant affichage). Le moteur `js/calcul.js`, les règles `config/parametres.js` et l'état partageable `js/etat.js` sont inchangés et testés. La copie de l'Espace Finances TN est produite par `scripts/importer-salaire.py` du dépôt espace-finances-tn.
+- `index.html` : structure.
+- `css/salaire.css` : jetons, composants, mouvement.
+- `js/salaire.js` : interface et rendu.
+- `js/theme-init.js` : thème appliqué avant l'affichage.
+
+Le moteur `js/calcul.js`, les règles `config/parametres.js` et l'état partageable `js/etat.js` sont inchangés et testés. La copie de l'Espace Finances TN est produite par `scripts/importer-salaire.py` du dépôt espace-finances-tn.
