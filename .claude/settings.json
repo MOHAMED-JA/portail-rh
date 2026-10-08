@@ -1,0 +1,12 @@
+{
+  "extraKnownMarketplaces": {
+    "mods-mohamed": {
+      "source": { "source": "github", "repo": "MOHAMED-JA/simulateur-credit" }
+    }
+  },
+  "enabledPlugins": {
+    "next-steps@mods-mohamed": true,
+    "record-mode@mods-mohamed": true,
+    "progress-bar@mods-mohamed": true
+  }
+}
