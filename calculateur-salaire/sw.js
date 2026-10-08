@@ -4,12 +4,13 @@
  * « cache d'abord, puis mise à jour en arrière-plan » pour les fichiers statiques.
  * Changez VERSION à chaque publication pour renouveler le cache.
  */
-var VERSION = "calc-salaire-v7";
+var VERSION = "calc-salaire-v8";
 var FICHIERS = [
   "./",
   "index.html",
   "css/styles.css",
   "css/workspace.css",
+  "css/espace-bande.css",
   "config/parametres.js",
   "js/calcul.js",
   "js/etat.js",

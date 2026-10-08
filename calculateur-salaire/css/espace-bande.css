@@ -1,0 +1,8 @@
+/* Bande « Espace Finances TN » : invitation à créer son espace personnel */
+.efa { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 14px; padding: 8px 16px; background: #0A0C0F; color: #EDF0F4; border-bottom: 1px solid #262C35; font: 500 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; text-align: center; position: relative; z-index: 5; }
+.efa__badge { font-size: 12px; font-weight: 700; color: #04140F; background: #5BEBC0; padding: 2px 9px; border-radius: 999px; }
+.efa__lien { display: inline-flex; align-items: center; min-height: 32px; color: #5BEBC0; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.efa__lien:hover { color: #8FF5D6; }
+.efa__lien:focus-visible { outline: 2px solid #8FF5D6; outline-offset: 2px; border-radius: 4px; }
+.efa__cache { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+@media print { .efa { display: none; } }
