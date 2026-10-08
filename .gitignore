@@ -28,3 +28,4 @@ outils/connecteur_pointeuse.etat.json
 node_modules/
 test-results/
 playwright-report/
+calculateur-salaire/.impeccable/

@@ -1,5 +1,5 @@
 {
-  "name": "Calculateur de salaire brut ⇄ net — Tunisie",
+  "name": "Salaire net — Tunisie",
   "short_name": "Salaire TN",
   "description": "Salaire net à partir du brut et brut nécessaire pour un net donné : CNSS ou CNRPS, IRPP, CSS et déductions familiales.",
   "lang": "fr",
@@ -9,8 +9,8 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#f3f5f7",
-  "theme_color": "#f3f5f7",
+  "background_color": "#EAEFE8",
+  "theme_color": "#EAEFE8",
   "categories": [
     "finance",
     "business",
