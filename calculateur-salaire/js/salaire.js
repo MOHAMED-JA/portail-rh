@@ -289,7 +289,8 @@
   }
 
   /* ---------- Augmentation ---------- */
-  var BORNES = { brut: [0, 1000, 10], pourcent: [0, 30, 0.5], net: [0, 800, 10] };
+  /* Hausse en DT brut, en % du salaire brut (le pourcentage s'applique toujours au brut) ou en DT net. */
+  var BORNES = { brut: [0, 5000, 10], pourcent: [0, 50, 0.5], net: [0, 3500, 10] };
   var modeHausse = "brut";
   var hausseCible = null;
   function majCurseur() {
@@ -302,7 +303,7 @@
     if (Number(c.value) > Number(c.max)) c.value = c.max;
     c.style.setProperty("--p", ((Number(c.value) - Number(c.min)) / (Number(c.max) - Number(c.min)) * 100) + "%");
     var val = Number(c.value);
-    $("hausse-val").textContent = "+" + (modeHausse === "pourcent" ? nbsp(fPct.format(val)) + " %" : dt0(val) + " DT " + (modeHausse === "net" ? "net" : "brut"));
+    $("hausse-val").textContent = "+" + (modeHausse === "pourcent" ? nbsp(fPct.format(val)) + " % du brut" : dt0(val) + " DT " + (modeHausse === "net" ? "net" : "brut"));
   }
   var dernierAug = null;
   function rendreHausse(calc) {
