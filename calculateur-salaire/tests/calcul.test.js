@@ -301,3 +301,41 @@ test("net → brut : autour du seuil de dispense de CSS, le net cible est toujou
     }
   }
 });
+
+/* ---------- Cas réel : 4 000 DT brut × 17 salaires, chef de famille, secteur privé ---------- */
+test("4 000 DT × 17 : impôt sur le revenu annuel cumulé, mois habituel et mois de prime", () => {
+  const e = { montant: 4000, periode: "mensuel", nombreSalaires: 17, secteur: "prive", chefDeFamille: true };
+  const av = C.calculerAvecVersements(e, P), a = av.annee.annuel, m = av.moisType.annuel;
+  /* Année : brut 68 000 ; CNSS 9,68 % = 6 582,4 ; frais pro plafonnés 2 000 ; chef de famille 300 → imposable 59 117,6 */
+  proche(a.brutTotal, 68000, "brut annuel");
+  proche(a.cotisations, 6582.4, "CNSS salariale");
+  proche(a.revenuImposable, 59117.6, "revenu imposable");
+  /* Barème : 0 + 750 + 2 500 + 3 000 + 3 300 + 3 600 + 38 % × 9 117,6 = 16 614,688 */
+  proche(a.irpp, 16614.688, "IRPP annuel");
+  assert.equal(av.annee.indicateurs.tauxMarginalIrpp, 0.38);
+  /* Part de l'impôt sur 100 DT de brut, sur l'année : 24,43 DT (et non la part d'un mois habituel, plus faible) */
+  proche(a.irpp / a.brutTotal * 100, 24.4334, "IRPP pour 100 DT", 0.001);
+  assert.ok(m.irpp / m.brutTotal < a.irpp / a.brutTotal, "un mois habituel supporte moins d'impôt que la moyenne de l'année");
+  /* Les mois de prime supportent le supplément d'impôt de l'année */
+  const impotSupp = (a.irpp + a.css - m.irpp - m.css) / 5;
+  assert.ok(impotSupp > (m.irpp + m.css) / 12, "impôt plus élevé les mois de prime");
+  proche(av.versements.netMensuel * 12 + av.versements.netSupplementaire * 5, a.netAPayer, "net annuel = 12 mois + 5 versements", 0.01);
+});
+
+test("Coût employeur : charges légales, fiche habituelle et autres charges de l'entreprise", () => {
+  const base = { montant: 4000, periode: "mensuel", nombreSalaires: 17, secteur: "prive", chefDeFamille: true };
+  const av = C.calculerAvecVersements(base, P);
+  /* 16,57 + 0,5 + 0,5 (AT) + 2 (TFP) + 1 (FOPROLOS) = 20,57 % du brut */
+  proche(av.annee.annuel.chargesPatronales, 68000 * 0.2057, "charges patronales annuelles");
+  proche(av.annee.annuel.coutEmployeur, 81987.6, "coût employeur annuel");
+  proche(av.moisType.annuel.coutEmployeur / 12, 4822.8, "coût d'une fiche de paie habituelle");
+  /* Assurance groupe 3 % du brut + retraite complémentaire 50 DT par mois (12 mois) */
+  const avec = C.calculerAvecVersements(Object.assign({}, base, { autresChargesPct: 3, autresChargesMontant: 50 }), P);
+  const autres = avec.annee.annuel.chargesPatronalesLignes.find((l) => l.code === "autres");
+  proche(autres.montant, 68000 * 0.03 + 600, "autres charges annuelles");
+  proche(avec.annee.annuel.coutEmployeur, 81987.6 + 2640, "coût employeur avec autres charges");
+  proche(avec.annee.annuel.netAPayer, av.annee.annuel.netAPayer, "le net du salarié ne change pas");
+  const rep = C.repartitionCoutEmployeur(avec.annee);
+  proche(rep.caisse.dontComplementaire, 2640, "protection complémentaire dans la répartition");
+  proche(rep.salarie.part + rep.caisse.part + rep.etat.part, 1, "répartition complète", 1e-9);
+});

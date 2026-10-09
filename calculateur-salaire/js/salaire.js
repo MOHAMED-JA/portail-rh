@@ -88,7 +88,9 @@
       avantagesNature: m("avantages"),
       indemnitesNonImposables: m("indemnites"),
       tauxAccidentTravailPct: at.vide || !at.valide || Math.abs(at.valeur - P.employeur.accidentTravail.tauxParDefaut * 100) < 1e-9 ? null : Math.min(at.valeur, P.employeur.accidentTravail.tauxMax * 100),
-      industrieManufacturiere: $("industrie").checked
+      industrieManufacturiere: $("industrie").checked,
+      autresChargesPct: m("autres-pct"),
+      autresChargesMontant: m("autres-dt")
     };
   }
 
@@ -107,7 +109,9 @@
     texte("indemnites", e.indemnitesNonImposables);
     $("taux-at").value = nbsp(fSaisie.format(e.tauxAccidentTravailPct == null ? P.employeur.accidentTravail.tauxParDefaut * 100 : e.tauxAccidentTravailPct));
     $("industrie").checked = !!e.industrieManufacturiere;
-    if (e.etudiants || e.handicapes || e.parents || e.primesImposables || e.primesNonCotisables || e.avantagesNature || e.indemnitesNonImposables || e.tauxAccidentTravailPct != null || e.industrieManufacturiere) $("plus").open = true;
+    texte("autres-pct", e.autresChargesPct);
+    texte("autres-dt", e.autresChargesMontant);
+    if (e.etudiants || e.handicapes || e.parents || e.primesImposables || e.primesNonCotisables || e.avantagesNature || e.indemnitesNonImposables || e.tauxAccidentTravailPct != null || e.industrieManufacturiere || e.autresChargesPct || e.autresChargesMontant) $("plus").open = true;
     majCompteurs();
   }
 
@@ -230,14 +234,20 @@
     $("leg-css").textContent = dt3(base.css / div) + " DT";
     $("leg-net-pct").textContent = pct1(parts.net) + " du brut";
     $("leg-cnss-pct").textContent = pct(r.indicateurs.tauxCotisations) + " de cotisations";
-    $("leg-irpp-pct").textContent = base.irpp > 0 ? "taux marginal " + pct(m.indicateurs.tauxMarginalIrpp) : "aucun impôt";
+    /* Le taux marginal est celui de l'année entière : l'impôt se calcule sur le revenu annuel cumulé (primes comprises). */
+    $("leg-irpp-pct").textContent = base.irpp > 0 ? "taux marginal " + pct(r.indicateurs.tauxMarginalIrpp) : "aucun impôt";
     $("leg-css-pct").textContent = m.indicateurs.cssDispense ? "dispensé (petit revenu)" : pct(P.css.taux) + " du revenu imposable";
 
     var sup = $("supplement");
     if (mensuel && v.supplementaires > 0) {
       sup.hidden = false;
+      /* Mois habituel : impôt calculé comme si l'année comptait 12 salaires. Mois de prime : le supplément d'impôt
+         de l'année entière (barème sur le revenu annuel cumulé), réparti sur les versements supplémentaires. */
+      var impotMois = (ma.irpp + ma.css) / 12, impotSupp = (a.irpp + a.css - ma.irpp - ma.css) / v.supplementaires;
       sup.innerHTML = "En plus, <strong>" + v.supplementaires + " × " + dt3(v.netSupplementaire) + " DT net</strong> " +
-        (v.supplementaires === 1 ? "pour votre 13ᵉ mois" : "pour vos versements supplémentaires") + ", soit <strong>" + dt3(a.netAPayer) + " DT net</strong> sur l'année.";
+        (v.supplementaires === 1 ? "pour votre 13ᵉ mois" : "pour vos versements supplémentaires") + ", soit <strong>" + dt3(a.netAPayer) + " DT net</strong> sur l'année. " +
+        "Ces mois-là, l'impôt est plus élevé : <strong>" + dt3(impotSupp) + " DT</strong> par versement (taux marginal " + pct(r.indicateurs.tauxMarginalIrpp) + "), contre " + dt3(impotMois) + " DT un mois habituel. " +
+        "Sur l'année, l'impôt total (" + dt3(a.irpp + a.css) + " DT) est calculé sur le revenu annuel cumulé.";
     } else sup.hidden = true;
 
     var alertes = [];
@@ -252,9 +262,13 @@
     clearTimeout(annonceTimer);
     annonceTimer = setTimeout(function () { $("montant-lu").textContent = lib + " : " + texte + " dinars."; }, 600);
 
-    rendreCent(parts);
+    /* Sur 100 dinars : toujours sur l'année réelle (tous les salaires et primes), car l'impôt dépend du revenu annuel cumulé. */
+    var ba = Math.max(a.brutTotal, 1e-9);
+    var partsAn = { cnss: a.cotisations / ba, irpp: a.irpp / ba, css: a.css / ba };
+    partsAn.net = Math.max(0, 1 - partsAn.cnss - partsAn.irpp - partsAn.css);
+    rendreCent(partsAn, n);
     rendreHausse(calc, etat);
-    rendreEmployeur(r, mensuel, animer);
+    rendreEmployeur(r, m, n, mensuel, animer);
     rendreOffres(calc, etat);
     rendreDetail(calc);
     rendreCourbe(calc);
@@ -264,13 +278,13 @@
   /* ---------- Sur 100 dinars ---------- */
   var grille = $("grille-cent");
   for (var gi = 0; gi < 100; gi++) grille.appendChild(doc.createElement("span"));
-  function rendreCent(parts) {
+  function rendreCent(parts, n) {
     var nb = { net: Math.round(parts.net * 100), cnss: Math.round(parts.cnss * 100), irpp: Math.round(parts.irpp * 100) };
     nb.css = Math.max(0, 100 - nb.net - nb.cnss - nb.irpp);
     var ordre = [].concat(Array(nb.net).fill("net"), Array(nb.cnss).fill("cnss"), Array(nb.irpp).fill("irpp"), Array(nb.css).fill("css"));
     Array.prototype.forEach.call(grille.children, function (c, i) { c.setAttribute("data-p", ordre[i] || ""); });
     function b2(k) { return '<b class="t-' + k + '">' + nbsp(f2.format(parts[k] * 100)) + " DT</b>"; }
-    $("cent").innerHTML = b2("net") + " restent pour vous, " + b2("cnss") + " financent votre retraite et votre santé, " +
+    $("cent").innerHTML = (n > 12 ? "Sur l'année, vos " + n + " salaires compris : " : "Sur l'année : ") + b2("net") + " restent pour vous, " + b2("cnss") + " financent votre retraite et votre santé, " +
       b2("irpp") + " partent en impôt et " + b2("css") + " en contribution de solidarité. Chaque carré vaut 1 dinar.";
   }
 
@@ -315,15 +329,19 @@
   }
 
   /* ---------- Employeur ---------- */
-  function rendreEmployeur(r, mensuel, animer) {
+  function rendreEmployeur(r, m, n, mensuel, animer) {
+    /* Répartition sur l'année réelle ; en affichage mensuel, le total est celui d'une fiche de paie habituelle. */
     var rep = C.repartitionCoutEmployeur(r);
-    var div = mensuel ? 12 : 1;
-    $("cout-total").textContent = dt3(rep.total / div);
-    $("cout-lib").textContent = "DT " + (mensuel ? "par mois" : "par an") + ", charges comprises";
-    $("emp-caisse-lib").textContent = "Pour la " + r.regime.caisse;
+    var coutAn = r.annuel.coutEmployeur, coutMois = m.annuel.coutEmployeur / 12;
+    $("cout-total").textContent = dt3(mensuel ? coutMois : coutAn);
+    $("cout-lib").textContent = "DT " + (mensuel ? "pour un mois habituel" : "par an") + ", charges patronales comprises";
+    $("cout-annee").textContent = mensuel
+      ? "Sur l'année (" + n + " salaires) : " + dt3(coutAn) + " DT, soit " + dt3(coutAn / 12) + " DT en moyenne par mois. Charges patronales : " + dt3(r.annuel.chargesPatronales) + " DT par an."
+      : "Charges patronales : " + dt3(r.annuel.chargesPatronales) + " DT par an, soit " + dt3(coutAn / 12) + " DT en moyenne par mois.";
+    $("emp-caisse-lib").textContent = rep.caisse.dontComplementaire > 0 ? "Pour la " + r.regime.caisse + " et la protection complémentaire" : "Pour la " + r.regime.caisse;
     poserBlocs(["emp-salarie", "emp-caisse", "emp-etat"], [rep.salarie.part, rep.caisse.part, rep.etat.part], animer);
     ["salarie", "caisse", "etat"].forEach(function (k) {
-      $("emp-" + k + "-val").textContent = dt3(rep[k].montant / div) + " DT";
+      $("emp-" + k + "-val").textContent = dt3(rep[k].montant) + " DT par an";
       $("emp-" + k + "-pct").textContent = nbsp(f2.format(rep[k].part)) + " DT par dinar dépensé";
     });
   }
@@ -559,7 +577,7 @@
     var lu = lireMontant(this.value);
     if (lu.valide && !lu.vide) this.value = nbsp(fSaisie.format(lu.valeur));
   });
-  ["primes", "non-cotisables", "avantages", "indemnites", "taux-at"].forEach(function (id) {
+  ["primes", "non-cotisables", "avantages", "indemnites", "taux-at", "autres-pct", "autres-dt"].forEach(function (id) {
     $(id).addEventListener("input", function () { clearTimeout(frappe); frappe = setTimeout(function () { calculer(false); }, 160); });
   });
   $("industrie").addEventListener("change", function () { calculer(true); });
@@ -588,7 +606,7 @@
         if (dernier.etat.sens === "net") montant = vers === "annuel" ? c.r.annuel.netAPayer : c.v.netMensuel;
         else montant = plafondMillime(vers === "annuel" ? c.r.annuel.salaireBase : c.r.annuel.salaireBase / c.v.nombre);
         $("montant").value = nbsp(fSaisie.format(C.arrondiMillime(montant)));
-        ["primes", "non-cotisables", "avantages", "indemnites"].forEach(function (id) {
+        ["primes", "non-cotisables", "avantages", "indemnites", "autres-dt"].forEach(function (id) {
           var x = lireMontant($(id).value);
           if (x.valide && !x.vide && x.valeur > 0) $(id).value = nbsp(fSaisie.format(C.arrondiMillime(x.valeur * (vers === "annuel" ? 12 : 1 / 12))));
         });

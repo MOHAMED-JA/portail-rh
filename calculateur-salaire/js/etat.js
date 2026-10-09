@@ -26,7 +26,9 @@
     { nom: "avantagesNature", cle: "ava", type: "montant", defaut: 0 },
     { nom: "indemnitesNonImposables", cle: "ind", type: "montant", defaut: 0 },
     { nom: "tauxAccidentTravailPct", cle: "at", type: "montant", defaut: null },
-    { nom: "industrieManufacturiere", cle: "man", type: "booleen", defaut: false }
+    { nom: "industrieManufacturiere", cle: "man", type: "booleen", defaut: false },
+    { nom: "autresChargesPct", cle: "acp", type: "montant", defaut: 0 },
+    { nom: "autresChargesMontant", cle: "acm", type: "montant", defaut: 0 }
   ];
 
   function etatParDefaut() {
@@ -136,7 +138,9 @@
       indemnitesNonImposables: etat.indemnitesNonImposables,
       tauxAccidentTravail: etat.tauxAccidentTravailPct === null || etat.tauxAccidentTravailPct === undefined
         ? undefined : etat.tauxAccidentTravailPct / 100,
-      industrieManufacturiere: etat.industrieManufacturiere
+      industrieManufacturiere: etat.industrieManufacturiere,
+      autresChargesPct: etat.autresChargesPct,
+      autresChargesMontant: etat.autresChargesMontant
     };
   }
 
