@@ -131,6 +131,8 @@
             <label class="ligne"><span class="ligne__txt"><strong>Indemnités non imposables</strong><small>par mois</small></span><span class="petit-montant"><input id="indemnites" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><span>DT</span></span></label>
             <label class="ligne"><span class="ligne__txt"><strong>Taux accidents du travail</strong><small>selon l'activité</small></span><span class="petit-montant"><input id="taux-at" type="text" inputmode="decimal" autocomplete="off"><span>%</span></span></label>
             <label class="ligne interrupteur"><span class="ligne__txt"><strong>Industrie manufacturière</strong><small>TFP réduite à 1 %</small></span><input type="checkbox" id="industrie" role="switch"><span class="interrupteur__piste" aria-hidden="true"></span></label>
+            <label class="ligne"><span class="ligne__txt"><strong>Autres charges de l'entreprise</strong><small>assurance groupe, retraite complémentaire… en % du brut</small></span><span class="petit-montant"><input id="autres-pct" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><span>%</span></span></label>
+            <label class="ligne"><span class="ligne__txt"><strong>Autres charges, montant fixe</strong><small>payé par l'employeur, par mois</small></span><span class="petit-montant"><input id="autres-dt" type="text" inputmode="decimal" autocomplete="off" placeholder="0"><span>DT</span></span></label>
           </div>
         </details>
       </form>
@@ -207,6 +209,7 @@
       </div>
       <div class="section__corps">
         <p class="total"><b id="cout-total"></b> <span id="cout-lib">DT par mois, charges comprises</span></p>
+        <p class="note" id="cout-annee"></p>
         <div class="blocs blocs--fin" aria-hidden="true">
           <span class="bloc b-net" id="emp-salarie"></span><span class="bloc b-cnss" id="emp-caisse"></span><span class="bloc b-irpp" id="emp-etat"></span>
         </div>

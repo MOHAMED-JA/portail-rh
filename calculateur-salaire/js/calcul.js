@@ -85,7 +85,11 @@
       handicapes: entier(e.handicapes),
       parents: entier(e.parents, params.irpp.deductions.parentACharge.nombreMax),
       tauxAccidentTravail: Math.min(Math.max(taux, at.tauxMin), at.tauxMax),
-      industrieManufacturiere: Boolean(e.industrieManufacturiere)
+      industrieManufacturiere: Boolean(e.industrieManufacturiere),
+      /* Charges propres à l'entreprise (assurance groupe, retraite complémentaire…) :
+         un pourcentage du brut et/ou un montant fixe par mois (12 mois par an). */
+      autresChargesTaux: Math.min(positif(e.autresChargesPct), 50) / 100,
+      autresChargesAnnuel: positif(e.autresChargesMontant) * (e.periode === "annuel" ? 1 : params.moisParAn)
     };
   }
 
@@ -207,6 +211,11 @@
     }
     if (applicables.foprolos) {
       employeurLignes.push({ code: "foprolos", libelle: emp.foprolos.libelle, taux: emp.foprolos.taux, montant: brutTotal * emp.foprolos.taux });
+    }
+    if (e.autresChargesTaux > 0 || e.autresChargesAnnuel > 0) {
+      var montantAutres = brutTotal * e.autresChargesTaux + e.autresChargesAnnuel;
+      employeurLignes.push({ code: "autres", libelle: "Autres charges de l’entreprise (assurance groupe, retraite complémentaire…)",
+        taux: brutTotal > 0 ? montantAutres / brutTotal : 0, montant: montantAutres });
     }
     var chargesPatronales = somme(employeurLignes, "montant");
 
@@ -407,16 +416,21 @@
   /*
    * Ventile le coût total employeur entre le salarié, la caisse sociale et l'État.
    * Salarié : salaire net + indemnités non imposables (avantages en nature compris).
-   * Caisse  : cotisations salariales + cotisations patronales de la caisse + accidents du travail.
+   * Caisse  : cotisations salariales + cotisations patronales de la caisse + accidents du travail
+   *           + autres charges de l'entreprise (protection sociale complémentaire), détaillées à part.
    * État    : IRPP + CSS + TFP + FOPROLOS.
    */
   function repartitionCoutEmployeur(resultat) {
     var a = resultat.annuel;
     var caissePatronale = 0;
     var etatPatronal = 0;
+    var complementaire = 0;
     a.chargesPatronalesLignes.forEach(function (l) {
       if (l.code === "tfp" || l.code === "foprolos") etatPatronal += l.montant;
-      else caissePatronale += l.montant;
+      else {
+        caissePatronale += l.montant;
+        if (l.code === "autres") complementaire += l.montant;
+      }
     });
     var salarie = a.salaireNet + a.indemnitesNonImposables;
     var caisse = a.cotisations + caissePatronale;
@@ -426,7 +440,7 @@
     return {
       total: total,
       salarie: { montant: salarie, part: part(salarie) },
-      caisse: { montant: caisse, part: part(caisse) },
+      caisse: { montant: caisse, part: part(caisse), dontComplementaire: complementaire },
       etat: { montant: etat, part: part(etat) }
     };
   }
