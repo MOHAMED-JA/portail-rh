@@ -27,7 +27,7 @@ Consulté sur téléphone et ordinateur, souvent au moment d'une décision (offr
 - Contraintes : site statique sans build ; moteur `js/calcul.js`, règles `config/parametres.js` et état `js/etat.js` inchangés et testés ; CSP stricte dans l'Espace (aucun script en ligne) ; l'Espace attend `window.EspaceOutil` (etat, resume, nomParDefaut, charger).
 
 ## Brand Commitments
-Signature commune « Application développée par Mohamed Aziz Jaouadi » (lien LinkedIn) et liens vers les autres simulateurs du même auteur. Langue française, montants en dinars au millime (format tunisien, espace fine et virgule).
+Signature commune « Application développée par Mohamed Aziz Jaouadi » (lien LinkedIn) et liens vers les autres applications du même auteur (Orbite en premier). Liens vers Orbite (référencement) : bande du haut et carte « Ce net, et ensuite ? » sous le résultat, toujours vers l'**accueil** d'Orbite (jamais vers la connexion, exclue des moteurs), avec un texte qui décrit Orbite (salaire, crédit, impôt, retraite) ; styles dans `css/espace-bande.css`. Langue française, montants en dinars au millime (format tunisien, espace fine et virgule).
 
 ## Evidence on Hand
 Barèmes et taux officiels 2026 dans `config/parametres.js` avec sources ; aucun témoignage, aucun chiffre d'usage : ne pas en inventer.
