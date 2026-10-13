@@ -29,5 +29,9 @@
 .pont__action .bouton span[aria-hidden] { transition: transform 160ms var(--sortie); }
 @media (hover: hover) and (pointer: fine) { .pont__action .bouton:hover span[aria-hidden] { transform: translateX(3px); } }
 .pont__essai { font-size: 13px; color: var(--encre-3); }
-@media (max-width: 440px) { .pont { grid-template-columns: minmax(0, 1fr); } .pont__action { grid-column: 1; } }
+/* Liens directs vers les calculs publics d'Orbite (texte précis : utile aux lecteurs et aux moteurs de recherche). */
+.pont__liens { grid-column: 2; list-style: none; margin: 2px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; }
+.pont__liens a { color: var(--encre-2); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--filet-fort); }
+.pont__liens a:hover { color: var(--encre); text-decoration-color: currentColor; }
+@media (max-width: 440px) { .pont { grid-template-columns: minmax(0, 1fr); } .pont__action, .pont__liens { grid-column: 1; } }
 @media print { .pont { display: none; } }
